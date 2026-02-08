@@ -53,7 +53,7 @@ export function ParallaxBackground({
   }, [layers]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`relative overflow-hidden ${className}`}
     >
@@ -76,7 +76,7 @@ export function ParallaxBackground({
 
       {/* Tire tracks overlay */}
       {showTireTracks && (
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none opacity-10 z-0"
           style={{
             backgroundImage: `repeating-linear-gradient(
@@ -97,7 +97,7 @@ export function ParallaxBackground({
 
       {/* Checkered flag pattern */}
       {showCheckeredFlag && (
-        <div 
+        <div
           className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none z-10"
           style={{
             backgroundImage: `
@@ -152,7 +152,7 @@ export function ParallaxLayer({ speed = 0.5, children, className = '' }: Paralla
   }, [speed]);
 
   return (
-    <div 
+    <div
       ref={layerRef}
       className={`will-change-transform ${className}`}
     >
@@ -168,13 +168,13 @@ interface RacingStripesProps {
   animated?: boolean;
 }
 
-export function RacingStripes({ 
-  position = 'top', 
-  color = '#ff4422',
-  animated = true 
+export function RacingStripes({
+  position = 'top',
+  color = '#F5B500',
+  animated = true
 }: RacingStripesProps) {
   return (
-    <div 
+    <div
       className={`absolute left-0 right-0 h-3 ${position === 'top' ? 'top-0' : 'bottom-0'}`}
       style={{
         background: `linear-gradient(90deg, 

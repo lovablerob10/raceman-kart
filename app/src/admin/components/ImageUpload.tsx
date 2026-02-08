@@ -110,8 +110,8 @@ export function ImageUpload({
           ${sizeClasses[size]}
           ${shape === 'circle' ? 'rounded-full' : 'rounded-xl'}
           ${isDragging
-                        ? 'border-4 border-[#ff4422] bg-orange-50'
-                        : 'border-4 border-dashed border-gray-300 bg-gray-50 hover:border-[#ff4422] hover:bg-orange-50'
+                        ? 'border-4 border-[#F5B500] bg-orange-50/5'
+                        : 'border-4 border-dashed border-gray-300 bg-gray-50/5 hover:border-[#F5B500] hover:bg-orange-50/5'
                     }
           transition-all duration-200
           flex items-center justify-center
@@ -147,7 +147,7 @@ export function ImageUpload({
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                         <div className="w-3/4 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-[#ff4422] transition-all duration-200"
+                                className="h-full bg-[#F5B500] transition-all duration-200"
                                 style={{ width: `${uploadProgress}%` }}
                             />
                         </div>

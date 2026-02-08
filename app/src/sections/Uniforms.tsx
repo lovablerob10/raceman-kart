@@ -93,8 +93,8 @@ export function Uniforms() {
             className="py-16 md:py-24 bg-[#0a0a0f] relative overflow-hidden"
         >
             {/* Background effects */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(48,50,133,0.15),transparent_50%)]" />
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#ff4422]/50 to-transparent" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(46,106,156,0.15),transparent_50%)]" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#F5B500]/50 to-transparent" />
 
             <div className="container mx-auto px-4 relative z-10">
                 {/* Header */}
@@ -104,19 +104,19 @@ export function Uniforms() {
                         className="text-5xl md:text-7xl lg:text-8xl font-display font-bold uppercase italic text-white flex items-center leading-none tracking-tighter"
                         style={{ fontFamily: 'Teko, sans-serif' }}
                     >
-                        <span className="w-3 h-12 md:h-16 bg-[#ff4422] mr-4 inline-block transform -skew-x-12 shadow-[0_0_15px_rgba(255,68,34,0.5)]" />
+                        <span className="w-3 h-12 md:h-16 bg-[#F5B500] mr-4 inline-block transform -skew-x-12 shadow-[0_0_15px_rgba(245,181,0,0.5)]" />
                         Uniformes 2026
                     </h2>
                     <p className="text-white/60 mt-4 text-lg max-w-2xl">
                         Confira o texto personalizado que cada piloto terá estampado em seu uniforme oficial da temporada.
                     </p>
-                    <div className="h-1 w-48 bg-gradient-to-r from-[#ff4422] to-transparent mt-4 opacity-50" />
+                    <div className="h-1 w-48 bg-gradient-to-r from-[#F5B500] to-transparent mt-4 opacity-50" />
                 </div>
 
                 {/* PRO Category */}
                 <div className="mb-12">
                     <div className="flex items-center gap-3 mb-6">
-                        <Award className="text-[#ff4422]" size={24} />
+                        <Award className="text-[#F5B500]" size={24} />
                         <h3
                             className="text-3xl font-bold uppercase text-white tracking-wider"
                             style={{ fontFamily: 'Teko, sans-serif' }}
@@ -135,7 +135,7 @@ export function Uniforms() {
                 {/* LIGHT Category */}
                 <div>
                     <div className="flex items-center gap-3 mb-6">
-                        <Award className="text-[#22c55e]" size={24} />
+                        <Award className="text-[#2E6A9C]" size={24} />
                         <h3
                             className="text-3xl font-bold uppercase text-white tracking-wider"
                             style={{ fontFamily: 'Teko, sans-serif' }}
@@ -153,15 +153,15 @@ export function Uniforms() {
             </div>
 
             {/* Decorative elements */}
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#ff4422]/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute top-1/3 left-0 w-64 h-64 bg-[#303285]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#F5B500]/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-1/3 left-0 w-64 h-64 bg-[#2E6A9C]/10 rounded-full blur-3xl pointer-events-none" />
         </section>
     );
 }
 
 function UniformCard({ uniform }: { uniform: UniformData }) {
     const isPro = uniform.categoria === 'PRO';
-    const accentColor = isPro ? '#ff4422' : '#22c55e';
+    const accentColor = isPro ? '#F5B500' : '#2E6A9C';
 
     return (
         <article

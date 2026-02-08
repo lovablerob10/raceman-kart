@@ -8,6 +8,7 @@ import { Menu, X } from 'lucide-react';
 const pageTitles: Record<string, string> = {
     '/admin': 'Dashboard',
     '/admin/etapas': 'Gestão de Etapas',
+    '/admin/manutencao': 'Gestão de Manutenção',
     '/admin/classificacao': 'Classificação Geral',
     '/admin/pilotos': 'Gestão de Pilotos',
     '/admin/noticias': 'Notícias & Galeria',

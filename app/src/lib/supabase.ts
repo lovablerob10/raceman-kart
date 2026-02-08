@@ -27,6 +27,11 @@ export interface Stage {
     date: string;
     is_active: boolean;
     created_at: string;
+    track_length?: string;
+    track_corners?: number;
+    track_record?: string;
+    track_description?: string;
+    track_id?: string;
 }
 
 export interface News {
@@ -37,6 +42,10 @@ export interface News {
     image_url: string | null;
     author: string;
     published_at: string;
+    status: 'draft' | 'published';
+    meta_title?: string;
+    meta_description?: string;
+    slug?: string;
 }
 
 export interface Standing {

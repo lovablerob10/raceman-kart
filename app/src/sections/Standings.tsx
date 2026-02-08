@@ -249,7 +249,7 @@ export function Standings() {
       {/* Dynamic Background Elements */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-[#2E6A9C]/10 to-transparent" />
-        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-[#ff4422]/10 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-[#F5B500]/10 to-transparent" />
         {/* Carbon fiber texture overlay */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none carbon-fiber" />
       </div>
@@ -270,7 +270,7 @@ export function Standings() {
           >
             Classificação Geral
           </h2>
-          <div className="h-1.5 w-32 bg-[#ff4422] mx-auto mt-6 shadow-[0_0_15px_#ff4422]" />
+          <div className="h-1.5 w-32 bg-[#F5B500] mx-auto mt-6 shadow-[0_0_15px_#F5B500]" />
         </div>
 
         {/* Premium Podium */}
@@ -372,7 +372,7 @@ export function Standings() {
           className="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.5)] bg-white/5 backdrop-blur-2xl border border-white/10"
         >
           {/* Table Header - Racing Stripe style */}
-          <div className="flex bg-gradient-to-r from-[#2E6A9C] via-[#303285] to-[#ff4422] text-white font-display text-xl md:text-2xl uppercase italic py-5 px-6 tracking-wider" style={{ fontFamily: 'Teko, sans-serif' }}>
+          <div className="flex bg-gradient-to-r from-[#2E6A9C] via-[#0D0D0D] to-[#F5B500] text-white font-display text-xl md:text-2xl uppercase italic py-5 px-6 tracking-wider" style={{ fontFamily: 'Teko, sans-serif' }}>
             <div className="w-20 text-center">POS</div>
             <div className="w-24 text-center hidden sm:block border-l border-white/20">CAT</div>
             <div className="flex-1 pl-8 border-l border-white/20">PILOTO</div>
@@ -388,7 +388,7 @@ export function Standings() {
                   standings-row relative group flex items-center py-5 px-6 
                   transition-all duration-500
                   hover:bg-white/[0.07]
-                  ${item.highlight ? 'bg-[#ff4422]/5' : ''}
+                  ${item.highlight ? 'bg-[#F5B500]/5' : ''}
                 `}
               >
                 {/* Position Marker */}
@@ -407,7 +407,7 @@ export function Standings() {
                 <div className="w-24 text-center hidden sm:block">
                   <span className={`
                     text-[10px] font-black px-2.5 py-1 rounded skew-x-[-15deg] uppercase tracking-widest
-                    ${item.category === 'Pro' ? 'bg-[#ff4422] text-white' : 'bg-gray-700 text-gray-300'}
+                    ${item.category === 'Pro' ? 'bg-[#F5B500] text-black' : 'bg-gray-700 text-gray-300'}
                   `}>
                     <span className="inline-block skew-x-[15deg]">{item.category}</span>
                   </span>
@@ -422,7 +422,7 @@ export function Standings() {
                       position={item.position}
                       showBorder={index < 3}
                     />
-                    {item.highlight && <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#ff4422] rounded-full animate-ping" />}
+                    {item.highlight && <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#F5B500] rounded-full animate-ping" />}
                   </div>
                   <div className="ml-4">
                     <span className={`
@@ -438,13 +438,13 @@ export function Standings() {
                 {/* Points Counter */}
                 <div className={`
                   w-32 text-right pr-6 font-display text-3xl italic font-black tracking-tighter transition-all duration-300
-                  ${item.highlight ? 'text-[#ff4422] scale-110' : 'text-white/60 group-hover:text-white'}
+                  ${item.highlight ? 'text-[#F5B500] scale-110' : 'text-white/60 group-hover:text-white'}
                 `} style={{ fontFamily: 'Teko, sans-serif' }}>
                   {animatedPoints[index]} <span className="text-xs ml-1 opacity-50 not-italic uppercase">Pts</span>
                 </div>
 
                 {/* Row Hover Line */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ff4422] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 shadow-[0_0_10px_#ff4422]" />
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#F5B500] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 shadow-[0_0_10px_#F5B500]" />
               </div>
             ))}
           </div>
@@ -453,15 +453,15 @@ export function Standings() {
           <div className="py-6 text-center bg-black/40 backdrop-blur-md border-t border-white/10 group/footer overflow-hidden relative">
             <button className="relative z-10 text-white font-display font-black uppercase text-xl leading-none italic tracking-widest flex items-center justify-center gap-3 mx-auto transition-all duration-500 hover:gap-6" style={{ fontFamily: 'Teko, sans-serif' }}>
               Ver Relatório de Temporada Completo
-              <TrendingUp size={24} className="text-[#ff4422]" />
+              <TrendingUp size={24} className="text-[#F5B500]" />
             </button>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff4422]/5 to-transparent -translate-x-full group-hover/footer:translate-x-full transition-transform duration-1000" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F5B500]/5 to-transparent -translate-x-full group-hover/footer:translate-x-full transition-transform duration-1000" />
           </div>
         </div>
       </div>
 
       {/* Decorative side lines */}
-      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-[#ff4422]/20 to-transparent" />
+      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-[#F5B500]/20 to-transparent" />
       <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-[#2E6A9C]/20 to-transparent" />
     </section>
 

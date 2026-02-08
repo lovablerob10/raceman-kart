@@ -6,10 +6,10 @@ import { GlitchCard } from '../components/GlitchCard';
 gsap.registerPlugin(ScrollTrigger);
 
 const proDrivers = [
-  { number: '27', name: 'Lucas Silveira', color: '#ff4422', image: '/images/pilots/pilot_pro_01.png' },
+  { number: '27', name: 'Lucas Silveira', color: '#F5B500', image: '/images/pilots/pilot_pro_01.png' },
   { number: '45', name: 'Bruno Oliveira', color: '#3b82f6', image: '/images/pilots/pilot_pro_02.png' },
   { number: '07', name: 'Marco Aurélio', color: '#3b82f6', image: '/images/pilots/pilot_pro_03.png' },
-  { number: '88', name: 'Gabriel Santos', color: '#ff4422', image: '/images/pilots/pilot_pro_04.png' },
+  { number: '88', name: 'Gabriel Santos', color: '#F5B500', image: '/images/pilots/pilot_pro_04.png' },
   { number: '03', name: 'Daniel Mendes', color: '#3b82f6', image: '/images/pilots/pilot_pro_05.png' },
   { number: '82', name: 'Gustavo Lima', color: '#3b82f6', image: '/images/pilots/pilot_pro_06.png' },
 ];
@@ -127,8 +127,8 @@ export function Drivers() {
     >
       {/* Background Elements */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#303285]/20 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#ff4422]/10 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#2E6A9C]/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#F5B500]/10 to-transparent" />
 
         {/* Animated grid/racing lines */}
         <div
@@ -150,7 +150,7 @@ export function Drivers() {
             className="text-5xl md:text-8xl font-display font-black uppercase italic text-white flex items-center justify-center leading-none tracking-tighter"
             style={{ fontFamily: 'Teko, sans-serif' }}
           >
-            <span className="w-3 h-12 md:h-16 bg-[#303285] mr-4 inline-block transform -skew-x-12 shadow-[0_0_15px_#303285]" />
+            <span className="w-3 h-12 md:h-16 bg-[#F5B500] mr-4 inline-block transform -skew-x-12 shadow-[0_0_15px_#F5B500]" />
             Grid de Pilotos
           </h2>
           <p className="text-gray-400 mt-4 text-xl font-medium tracking-widest uppercase italic" style={{ fontFamily: 'Teko, sans-serif' }}>
@@ -169,7 +169,7 @@ export function Drivers() {
               className={`
                 px-10 py-3 font-display uppercase text-2xl font-bold italic rounded-xl transition-all duration-500
                 ${activeTab === 'pro'
-                  ? 'bg-gradient-to-r from-[#ff4422] to-[#ff6644] text-white shadow-[0_10px_30px_rgba(255,68,34,0.4)] scale-105'
+                  ? 'bg-gradient-to-r from-[#F5B500] to-[#FFD700] text-black shadow-[0_10px_30px_rgba(245,181,0,0.4)] scale-105'
                   : 'text-white/40 hover:text-white hover:bg-white/5'
                 }
               `}
@@ -182,7 +182,7 @@ export function Drivers() {
               className={`
                 px-10 py-3 font-display uppercase text-2xl font-bold italic rounded-xl transition-all duration-500
                 ${activeTab === 'light'
-                  ? 'bg-gradient-to-r from-[#303285] to-[#2E6A9C] text-white shadow-[0_10px_30px_rgba(48,50,133,0.4)] scale-105'
+                  ? 'bg-gradient-to-r from-[#2E6A9C] to-[#3b82f6] text-white shadow-[0_10px_30px_rgba(46,106,156,0.4)] scale-105'
                   : 'text-white/40 hover:text-white hover:bg-white/5'
                 }
               `}
@@ -270,7 +270,7 @@ export function Drivers() {
           <div className="grid grid-cols-3 gap-8 md:gap-16">
             <div className="text-center group">
               <div
-                className="text-5xl md:text-7xl font-display font-black text-white leading-none group-hover:scale-110 group-hover:text-[#ff4422] transition-all duration-500"
+                className="text-5xl md:text-7xl font-display font-black text-white leading-none group-hover:scale-110 group-hover:text-[#F5B500] transition-all duration-500"
                 style={{ fontFamily: 'Teko, sans-serif' }}
               >
                 {currentDrivers.length}
@@ -279,8 +279,8 @@ export function Drivers() {
             </div>
             <div className="text-center group">
               <div
-                className="text-5xl md:text-7xl font-display font-black text-[#ff4422] leading-none group-hover:scale-110 transition-all duration-500"
-                style={{ fontFamily: 'Teko, sans-serif', textShadow: '0 0 30px rgba(255,68,34,0.3)' }}
+                className="text-5xl md:text-7xl font-display font-black text-[#F5B500] leading-none group-hover:scale-110 transition-all duration-500"
+                style={{ fontFamily: 'Teko, sans-serif', textShadow: '0 0 30px rgba(245,181,0,0.3)' }}
               >
                 {activeTab === 'pro' ? '52' : '34'}
               </div>
@@ -288,7 +288,7 @@ export function Drivers() {
             </div>
             <div className="text-center group">
               <div
-                className="text-5xl md:text-7xl font-display font-black text-white leading-none group-hover:scale-110 group-hover:text-[#303285] transition-all duration-500"
+                className="text-5xl md:text-7xl font-display font-black text-white leading-none group-hover:scale-110 group-hover:text-[#2E6A9C] transition-all duration-500"
                 style={{ fontFamily: 'Teko, sans-serif' }}
               >
                 12

@@ -78,12 +78,14 @@
   --sidebar-accent-foreground: 0 0% 20%;
   --sidebar-border: 0 0% 91%;
   --sidebar-ring: 0 72.2% 50.6%;
-  
-  /* Karting Theme Colors */
-  --racing-red: #ff4422;
-  --racing-navy: #303285;
-  --racing-yellow: #ffd700;
-  --racing-orange: #ff6b35;
+
+  /* Raceman Brand Colors */
+  --racing-red: #F5B500;
+  /* Rebranding primary to Raceman Yellow */
+  --racing-navy: #2E6A9C;
+  /* Rebranding secondary to Raceman Blue */
+  --racing-yellow: #F5B500;
+  --racing-orange: #FFD700;
   --racing-black: #1a1a1a;
   --racing-gray: #2a2a2a;
 }
@@ -126,10 +128,12 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Roboto', sans-serif;
   }
+
   html {
     scroll-behavior: smooth;
   }
@@ -164,9 +168,11 @@
     transform: translateY(0) scale(0.5) rotate(0deg);
     opacity: 0.8;
   }
+
   50% {
     opacity: 0.4;
   }
+
   100% {
     transform: translateY(-150px) scale(2.5) rotate(180deg);
     opacity: 0;
@@ -174,9 +180,12 @@
 }
 
 @keyframes smoke-drift {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   50% {
     transform: translateX(30px);
   }
@@ -186,34 +195,40 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  background: radial-gradient(circle, rgba(200,200,200,0.6) 0%, rgba(150,150,150,0.3) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(200, 200, 200, 0.6) 0%, rgba(150, 150, 150, 0.3) 50%, transparent 100%);
   border-radius: 50%;
   pointer-events: none;
   animation: smoke-rise 2.5s ease-out forwards, smoke-drift 2s ease-in-out infinite;
 }
 
 .smoke-particle-dark {
-  background: radial-gradient(circle, rgba(80,80,80,0.7) 0%, rgba(50,50,50,0.4) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(80, 80, 80, 0.7) 0%, rgba(50, 50, 50, 0.4) 50%, transparent 100%);
 }
 
 /* ==================== GLITCH EFFECT ==================== */
 @keyframes glitch-1 {
-  0%, 100% {
+
+  0%,
+  100% {
     clip-path: inset(0 0 85% 0);
     transform: translate(-2px, 2px);
   }
+
   20% {
     clip-path: inset(33% 0 33% 0);
     transform: translate(2px, -2px);
   }
+
   40% {
     clip-path: inset(50% 0 20% 0);
     transform: translate(-2px, 2px);
   }
+
   60% {
     clip-path: inset(10% 0 60% 0);
     transform: translate(2px, -2px);
   }
+
   80% {
     clip-path: inset(70% 0 10% 0);
     transform: translate(-2px, 2px);
@@ -221,22 +236,28 @@
 }
 
 @keyframes glitch-2 {
-  0%, 100% {
+
+  0%,
+  100% {
     clip-path: inset(85% 0 0 0);
     transform: translate(2px, -2px);
   }
+
   20% {
     clip-path: inset(33% 0 33% 0);
     transform: translate(-2px, 2px);
   }
+
   40% {
     clip-path: inset(20% 0 50% 0);
     transform: translate(2px, -2px);
   }
+
   60% {
     clip-path: inset(60% 0 10% 0);
     transform: translate(-2px, 2px);
   }
+
   80% {
     clip-path: inset(10% 0 70% 0);
     transform: translate(2px, -2px);
@@ -244,18 +265,24 @@
 }
 
 @keyframes glitch-skew {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: skew(0deg);
   }
+
   20% {
     transform: skew(-2deg);
   }
+
   40% {
     transform: skew(2deg);
   }
+
   60% {
     transform: skew(-1deg);
   }
+
   80% {
     transform: skew(1deg);
   }
@@ -302,9 +329,11 @@
     transform: translateX(-100%) scaleX(0);
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     transform: translateX(200%) scaleX(1);
     opacity: 0;
@@ -325,10 +354,12 @@
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(255, 68, 34, 0.7);
   }
+
   50% {
     transform: scale(1.02);
     box-shadow: 0 0 20px 10px rgba(255, 68, 34, 0);
   }
+
   100% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(255, 68, 34, 0);
@@ -344,23 +375,22 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 50px 0;
   }
 }
 
 .tire-tracks-bg {
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 10px,
-    rgba(0,0,0,0.1) 10px,
-    rgba(0,0,0,0.1) 12px,
-    transparent 12px,
-    transparent 22px,
-    rgba(0,0,0,0.1) 22px,
-    rgba(0,0,0,0.1) 24px
-  );
+  background-image: repeating-linear-gradient(90deg,
+      transparent,
+      transparent 10px,
+      rgba(0, 0, 0, 0.1) 10px,
+      rgba(0, 0, 0, 0.1) 12px,
+      transparent 12px,
+      transparent 22px,
+      rgba(0, 0, 0, 0.1) 22px,
+      rgba(0, 0, 0, 0.1) 24px);
   background-size: 50px 100%;
 }
 
@@ -370,19 +400,23 @@
 
 /* ==================== CHECKERED FLAG ==================== */
 @keyframes wave {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: skewY(0deg);
   }
+
   25% {
     transform: skewY(2deg);
   }
+
   75% {
     transform: skewY(-2deg);
   }
 }
 
 .checkered-pattern {
-  background-image: 
+  background-image:
     linear-gradient(45deg, #000 25%, transparent 25%),
     linear-gradient(-45deg, #000 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #000 75%),
@@ -401,6 +435,7 @@
     opacity: 0;
     transform: translateX(-100px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -412,6 +447,7 @@
     opacity: 0;
     transform: translateX(100px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -423,6 +459,7 @@
     opacity: 0;
     transform: translateY(60px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -434,6 +471,7 @@
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -445,6 +483,7 @@
     opacity: 0;
     transform: rotate(-10deg) scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: rotate(0) scale(1);
@@ -473,21 +512,28 @@
 
 /* ==================== KART ANIMATION ==================== */
 @keyframes kart-vibrate {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   25% {
     transform: translateY(-1px);
   }
+
   75% {
     transform: translateY(1px);
   }
 }
 
 @keyframes kart-engine {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.02);
   }
@@ -507,6 +553,7 @@
     transform: translate(0, 0) scale(1);
     opacity: 1;
   }
+
   100% {
     transform: translate(var(--spark-x, 50px), var(--spark-y, -50px)) scale(0);
     opacity: 0;
@@ -525,9 +572,12 @@
 
 /* ==================== NEON GLOW ==================== */
 @keyframes neon-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 5px var(--racing-red), 0 0 10px var(--racing-red), 0 0 15px var(--racing-red);
   }
+
   50% {
     box-shadow: 0 0 10px var(--racing-red), 0 0 20px var(--racing-red), 0 0 30px var(--racing-red);
   }
@@ -553,7 +603,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff6644;
+  background: #ffcc33;
 }
 
 /* ==================== PERFORMANCE ==================== */
@@ -567,6 +617,7 @@
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -601,23 +652,24 @@
 
 /* ==================== RACING STRIPE ==================== */
 .racing-stripe {
-  background: linear-gradient(
-    90deg,
-    var(--racing-red) 0%,
-    var(--racing-red) 30%,
-    white 30%,
-    white 35%,
-    var(--racing-red) 35%,
-    var(--racing-red) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--racing-red) 0%,
+      var(--racing-red) 30%,
+      white 30%,
+      white 35%,
+      var(--racing-red) 35%,
+      var(--racing-red) 100%);
 }
 
 /* ==================== COUNTDOWN ANIMATION ==================== */
 @keyframes countdown-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     text-shadow: 0 0 10px var(--racing-red);
   }
+
   50% {
     transform: scale(1.1);
     text-shadow: 0 0 30px var(--racing-red), 0 0 60px var(--racing-red);
@@ -633,18 +685,17 @@
   0% {
     background-position: -200% center;
   }
+
   100% {
     background-position: 200% center;
   }
 }
 
 .trophy-shine {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 215, 0, 0.3) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 215, 0, 0.3) 50%,
+      transparent 100%);
   background-size: 200% 100%;
   animation: trophy-shine 3s linear infinite;
 }
@@ -655,6 +706,7 @@
     transform: scale(0);
     opacity: 1;
   }
+
   100% {
     transform: scale(4);
     opacity: 0;

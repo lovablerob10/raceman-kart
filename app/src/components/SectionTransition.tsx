@@ -16,7 +16,7 @@ interface SectionTransitionProps {
  */
 export function SectionTransition({
   fromColor = '#000000',
-  toColor = '#E10600',
+  toColor = '#2E6A9C',
   type = 'diagonal'
 }: SectionTransitionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ export function SectionTransition({
           gsap.set(overlay, { scaleX: 0, transformOrigin: 'left center' });
           break;
         case 'diagonal':
-          gsap.set(overlay, { 
+          gsap.set(overlay, {
             clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
             background: `linear-gradient(135deg, ${fromColor} 0%, ${toColor} 100%)`
           });
@@ -95,19 +95,19 @@ export function SectionTransition({
   }, [type, fromColor, toColor]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="h-32 relative overflow-hidden"
+      className="h-12 relative overflow-hidden"
       style={{ pointerEvents: 'none' }}
     >
-      <div 
+      <div
         ref={overlayRef}
         className="absolute inset-0"
-        style={{ 
+        style={{
           background: `linear-gradient(90deg, ${fromColor} 0%, ${toColor} 100%)`
         }}
       />
-      
+
       {/* Decorative elements based on type */}
       {type === 'diagonal' && (
         <>
@@ -115,7 +115,7 @@ export function SectionTransition({
           <div className="absolute bottom-0 left-0 w-full h-px bg-white/20" />
         </>
       )}
-      
+
       {type === 'wipe' && (
         <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/30" />
       )}
@@ -132,10 +132,10 @@ interface SplitTransitionProps {
 /**
  * SplitTransition - Divide a tela em duas partes que se separam
  */
-export function SplitTransition({ 
-  children, 
+export function SplitTransition({
+  children,
   direction = 'horizontal',
-  className = '' 
+  className = ''
 }: SplitTransitionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -148,11 +148,11 @@ export function SplitTransition({
     if (!container || !top || !bottom) return;
 
     const ctx = gsap.context(() => {
-      gsap.set(top, { 
-        [direction === 'horizontal' ? 'y' : 'x']: 0 
+      gsap.set(top, {
+        [direction === 'horizontal' ? 'y' : 'x']: 0
       });
-      gsap.set(bottom, { 
-        [direction === 'horizontal' ? 'y' : 'x']: 0 
+      gsap.set(bottom, {
+        [direction === 'horizontal' ? 'y' : 'x']: 0
       });
 
       ScrollTrigger.create({
@@ -186,8 +186,8 @@ export function SplitTransition({
       <div ref={topRef} className="relative z-10">
         {children}
       </div>
-      <div 
-        ref={bottomRef} 
+      <div
+        ref={bottomRef}
         className="absolute inset-0 z-0 bg-gradient-to-b from-red-600 to-orange-500"
       />
     </div>
@@ -238,7 +238,7 @@ export function RevealTransition({
         scrub: 0.5,
         onUpdate: (self) => {
           const progress = self.progress;
-          
+
           let clipPath;
           switch (revealFrom) {
             case 'left':
@@ -272,8 +272,8 @@ export function RevealTransition({
       <div ref={contentRef} className="relative z-0">
         {children}
       </div>
-      <div 
-        ref={maskRef} 
+      <div
+        ref={maskRef}
         className="absolute inset-0 z-10 bg-gradient-to-br from-red-600/20 to-orange-500/20"
       />
     </div>

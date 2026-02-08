@@ -8,12 +8,14 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
-    LogOut
+    LogOut,
+    Wrench
 } from 'lucide-react';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
     { icon: Calendar, label: 'Etapas', path: '/admin/etapas' },
+    { icon: Wrench, label: 'Manutenção', path: '/admin/manutencao' },
     { icon: Trophy, label: 'Classificação', path: '/admin/classificacao' },
     { icon: Users, label: 'Pilotos', path: '/admin/pilotos' },
     { icon: Newspaper, label: 'Notícias', path: '/admin/noticias' },

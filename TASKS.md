@@ -9,19 +9,24 @@ Este arquivo é usado para coordenação entre **Antigravity** (local) e **Bella
 <!-- Bella: adicione tarefas aqui no formato abaixo -->
 <!-- [ ] Descrição da tarefa -->
 
-- [ ] Integrar seção de **Pedidos Mecânicos** na home com visual finalizado e conexão Supabase (Bella)
+- [ ] Implementar **Painel Administrativo** para o mecânico gerenciar os pedidos (Dashboard)
+- [ ] Implementar Sistema de Login para acesso Restrito
+- [ ] Adicionar Categorias Dinâmicas no Dashboard
 
 ---
 
 ## 🔄 Em Progresso
 
-- [ ] Subcomponente de pedidos mecânicos (form + histórico) – **Bella** (finalizando UI)
+*Nenhuma tarefa em progresso.*
 
 ---
 
 ## ✅ Concluídas
 
-- [x] Melhorar o visual do componente de calendário (solicitado pela Bella no chat) - 2026-02-08 13:00 <!-- Antigravity -->
+- [x] Melhorar o visual do componente de calendário - 2026-02-08 13:00 <!-- Antigravity -->
+- [x] Atualizar calendário 2026 com 11 etapas e integração Supabase - 2026-02-08 18:00 <!-- Antigravity -->
+- [x] Criar componente de Uniformes com 12 pilotos - 2026-02-08 18:05 <!-- Antigravity -->
+- [x] Implementar módulo de Pedidos Mecânicos completo (Form + Histórico) - 2026-02-08 18:15 <!-- Antigravity -->
 
 ---
 

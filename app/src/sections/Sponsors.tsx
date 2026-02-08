@@ -6,7 +6,7 @@ import { Fuel, Wrench, Shield, Gauge, Flag } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 const sponsors = [
-  { name: 'RACING CO', icon: Flag, color: '#303285' },
+  { name: 'RACING CO', icon: Flag, color: '#2E6A9C' },
   { name: 'FUEL UP', icon: Fuel, color: '#22c55e' },
   { name: 'MECHANIX', icon: Wrench, color: '#3b82f6' },
   { name: 'SECURE TIRES', icon: Shield, color: '#ef4444' },
@@ -179,7 +179,7 @@ export function Sponsors() {
           className="relative max-w-5xl mx-auto group"
         >
           {/* Animated Glow Backdrop */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-[#ff4422] via-[#303285] to-[#F5B500] rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200 animate-pulse" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#F5B500] via-[#2E6A9C] to-[#FFD700] rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200 animate-pulse" />
 
           <div className="relative bg-[#0d0d0d] rounded-[2.5rem] p-10 md:p-14 overflow-hidden border border-white/10">
             {/* Background Texture */}
@@ -187,14 +187,14 @@ export function Sponsors() {
 
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
               <div className="text-center lg:text-left flex-1">
-                <div className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#ff4422] text-xs font-black uppercase tracking-[0.3em] mb-6">
+                <div className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#F5B500] text-xs font-black uppercase tracking-[0.3em] mb-6">
                   OPORTUNIDADE DE PARCERIA
                 </div>
                 <h4
                   className="text-4xl md:text-6xl font-display font-black text-white mb-6 uppercase italic leading-none"
                   style={{ fontFamily: 'Teko, sans-serif' }}
                 >
-                  Acelere sua marca <br /> <span className="text-[#ff4422]">no topo do pódio</span>
+                  Acelere sua marca <br /> <span className="text-[#F5B500]">no topo do pódio</span>
                 </h4>
                 <p className="text-gray-400 text-lg md:text-xl max-w-xl leading-relaxed">
                   Junte-se à temporada 2026 do RKT Raceman Kart e alcance uma audiência apaixonada no maior campeonato de kart amador do Brasil.
@@ -203,7 +203,7 @@ export function Sponsors() {
 
               <div className="flex flex-col items-center gap-6">
                 <button
-                  className="group/btn relative px-12 py-5 bg-[#ff4422] text-white font-display font-black uppercase text-2xl italic tracking-widest rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-[0_20px_40px_rgba(255,68,34,0.4)] overflow-hidden"
+                  className="group/btn relative px-12 py-5 bg-[#F5B500] text-black font-display font-black uppercase text-2xl italic tracking-widest rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-[0_20px_40px_rgba(245,181,0,0.4)] overflow-hidden"
                   style={{ fontFamily: 'Teko, sans-serif' }}
                 >
                   <span className="relative z-10 flex items-center gap-3">

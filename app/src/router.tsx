@@ -10,6 +10,10 @@ const AdminStandings = lazy(() => import('./admin/pages/Standings'));
 const AdminPilots = lazy(() => import('./admin/pages/Pilots'));
 const AdminNews = lazy(() => import('./admin/pages/News'));
 const AdminSettings = lazy(() => import('./admin/pages/Settings'));
+const AdminLogin = lazy(() => import('./admin/pages/Login'));
+const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
+const PilotLogin = lazy(() => import('./pages/PilotLogin'));
+const PilotDashboard = lazy(() => import('./pages/PilotDashboard'));
 
 // Loading fallback
 const AdminLoader = () => (
@@ -27,6 +31,30 @@ export const router = createBrowserRouter([
     {
         path: '/',
         element: <App />,
+    },
+    {
+        path: '/pilot/login',
+        element: (
+            <Suspense fallback={<AdminLoader />}>
+                <PilotLogin />
+            </Suspense>
+        ),
+    },
+    {
+        path: '/pilot/dashboard',
+        element: (
+            <Suspense fallback={<AdminLoader />}>
+                <PilotDashboard />
+            </Suspense>
+        ),
+    },
+    {
+        path: '/admin/login',
+        element: (
+            <Suspense fallback={<AdminLoader />}>
+                <AdminLogin />
+            </Suspense>
+        ),
     },
     {
         path: '/admin',
@@ -49,6 +77,14 @@ export const router = createBrowserRouter([
                 element: (
                     <Suspense fallback={<AdminLoader />}>
                         <AdminStages />
+                    </Suspense>
+                ),
+            },
+            {
+                path: 'manutencao',
+                element: (
+                    <Suspense fallback={<AdminLoader />}>
+                        <AdminMaintenance />
                     </Suspense>
                 ),
             },

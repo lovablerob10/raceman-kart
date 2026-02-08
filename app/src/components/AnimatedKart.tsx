@@ -10,10 +10,10 @@ interface AnimatedKartProps {
   color?: string;
 }
 
-export function AnimatedKart({ 
-  containerRef, 
+export function AnimatedKart({
+  containerRef,
   direction = 'left-to-right',
-  color = '#ff4422'
+  color = '#F5B500'
 }: AnimatedKartProps) {
   const kartRef = useRef<HTMLDivElement>(null);
   const wheelsRef = useRef<HTMLDivElement[]>([]);
@@ -30,9 +30,9 @@ export function AnimatedKart({
       // Initial position - off screen
       const startX = direction === 'left-to-right' ? '-120%' : '120%';
       const endX = direction === 'left-to-right' ? '120%' : '-120%';
-      
-      gsap.set(kart, { 
-        x: startX, 
+
+      gsap.set(kart, {
+        x: startX,
         opacity: 0,
         scale: 0.7,
         rotateY: direction === 'left-to-right' ? 0 : 180
@@ -49,7 +49,7 @@ export function AnimatedKart({
             // Acceleration effect based on scroll velocity
             const velocity = Math.abs(self.getVelocity());
             setIsAccelerating(velocity > 200);
-            
+
             // Wheel rotation based on progress
             const rotation = self.progress * 720 * (direction === 'left-to-right' ? 1 : -1);
             wheelsRef.current.forEach(wheel => {
@@ -84,20 +84,20 @@ export function AnimatedKart({
         duration: 0.25,
         ease: 'power2.out'
       })
-      // Cruise through
-      .to(kart, {
-        x: direction === 'left-to-right' ? '50%' : '-50%',
-        duration: 0.4,
-        ease: 'none'
-      })
-      // Exit animation
-      .to(kart, {
-        x: endX,
-        opacity: 0,
-        scale: 1.2,
-        duration: 0.35,
-        ease: 'power2.in'
-      });
+        // Cruise through
+        .to(kart, {
+          x: direction === 'left-to-right' ? '50%' : '-50%',
+          duration: 0.4,
+          ease: 'none'
+        })
+        // Exit animation
+        .to(kart, {
+          x: endX,
+          opacity: 0,
+          scale: 1.2,
+          duration: 0.35,
+          ease: 'power2.in'
+        });
 
     });
 
@@ -140,10 +140,10 @@ export function AnimatedKart({
   const isLeftToRight = direction === 'left-to-right';
 
   return (
-    <div 
+    <div
       ref={kartRef}
       className="absolute top-1/2 -translate-y-1/2 z-30 will-change-transform"
-      style={{ 
+      style={{
         width: '180px',
         height: '80px',
         perspective: '500px'
@@ -151,112 +151,112 @@ export function AnimatedKart({
     >
       {/* Smoke particles container */}
       <div ref={particleContainerRef} className="absolute inset-0 pointer-events-none" />
-      
+
       {/* Kart Body */}
-      <div 
+      <div
         className={`relative w-full h-full ${isAccelerating ? 'kart-accelerating' : 'kart-idle'}`}
         style={{
           filter: isAccelerating ? 'brightness(1.2)' : 'brightness(1)'
         }}
       >
         {/* Main chassis */}
-        <div 
+        <div
           className="absolute bottom-4 left-0 right-0 h-10 rounded-lg"
-          style={{ 
+          style={{
             background: `linear-gradient(180deg, ${color} 0%, ${adjustColor(color, -30)} 100%)`,
-            boxShadow: isAccelerating 
-              ? `0 0 30px ${color}, 0 0 60px ${color}80` 
+            boxShadow: isAccelerating
+              ? `0 0 30px ${color}, 0 0 60px ${color}80`
               : `0 5px 20px rgba(0,0,0,0.3)`,
             clipPath: 'polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)'
           }}
         />
-        
+
         {/* Cockpit */}
-        <div 
+        <div
           className="absolute bottom-10 left-1/4 w-16 h-12 rounded-t-lg"
-          style={{ 
+          style={{
             background: 'linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%)',
             clipPath: 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)'
           }}
         />
-        
+
         {/* Driver helmet */}
-        <div 
+        <div
           className="absolute bottom-14 left-8 w-8 h-8 rounded-full"
-          style={{ 
+          style={{
             background: 'radial-gradient(circle at 30% 30%, #fff 0%, #ccc 50%, #999 100%)',
             boxShadow: 'inset -2px -2px 4px rgba(0,0,0,0.3)'
           }}
         />
-        
+
         {/* Front wing */}
-        <div 
+        <div
           className="absolute bottom-2 left-0 w-8 h-4 rounded-l"
           style={{ background: color }}
         />
-        
+
         {/* Rear wing */}
-        <div 
+        <div
           className="absolute bottom-8 right-0 w-6 h-12 rounded-r"
           style={{ background: color }}
         />
-        
+
         {/* Side pods */}
-        <div 
+        <div
           className="absolute bottom-4 left-8 w-12 h-6 rounded"
-          style={{ 
+          style={{
             background: `linear-gradient(90deg, ${adjustColor(color, -20)} 0%, ${color} 100%)`
           }}
         />
-        <div 
+        <div
           className="absolute bottom-4 right-8 w-12 h-6 rounded"
-          style={{ 
+          style={{
             background: `linear-gradient(90deg, ${color} 0%, ${adjustColor(color, -20)} 100%)`
           }}
         />
-        
+
         {/* Number */}
-        <div 
+        <div
           className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white font-bold text-xl"
-          style={{ 
+          style={{
             fontFamily: 'Teko, sans-serif',
             textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
           }}
         >
           07
         </div>
-        
+
         {/* Wheels */}
-        <div 
+        <div
           ref={el => { if (el) wheelsRef.current[0] = el; }}
           className="absolute -bottom-2 left-2 w-10 h-10 rounded-full border-4 border-gray-800"
-          style={{ 
+          style={{
             background: 'repeating-conic-gradient(from 0deg, #1a1a1a 0deg 30deg, #333 30deg 60deg)'
           }}
         />
-        <div 
+        <div
           ref={el => { if (el) wheelsRef.current[1] = el; }}
           className="absolute -bottom-2 right-2 w-10 h-10 rounded-full border-4 border-gray-800"
-          style={{ 
+          style={{
             background: 'repeating-conic-gradient(from 0deg, #1a1a1a 0deg 30deg, #333 30deg 60deg)'
           }}
         />
-        
+
         {/* Speed lines when accelerating */}
         {isAccelerating && (
           <>
-            <div 
+            <div
               className="absolute top-1/2 -translate-y-1/2 h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-60"
-              style={{ 
+              style={{
                 width: '100px',
                 left: isLeftToRight ? '-100px' : 'auto',
                 right: isLeftToRight ? 'auto' : '-100px',
                 animation: 'speed-line 0.3s linear infinite'
               }}
             />
-            <div 
+            <div
               className="absolute top-1/3 -translate-y-1/2 h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-40"
-              style={{ 
+              style={{
                 width: '80px',
                 left: isLeftToRight ? '-80px' : 'auto',
                 right: isLeftToRight ? 'auto' : '-80px',
@@ -265,25 +265,25 @@ export function AnimatedKart({
             />
           </>
         )}
-        
+
         {/* Exhaust flame */}
         {isAccelerating && (
-          <div 
+          <div
             ref={exhaustRef}
             className="absolute bottom-6 rounded-full"
-            style={{ 
+            style={{
               width: '30px',
               height: '12px',
               right: isLeftToRight ? '-20px' : 'auto',
               left: isLeftToRight ? 'auto' : '-20px',
-              background: 'linear-gradient(90deg, #ff4422 0%, #ff8844 50%, transparent 100%)',
+              background: 'linear-gradient(90deg, #F5B500 0%, #FFD700 50%, transparent 100%)',
               filter: 'blur(2px)',
               animation: 'exhaust-flicker 0.1s ease-in-out infinite alternate'
             }}
           />
         )}
       </div>
-      
+
       <style>{`
         @keyframes exhaust-flicker {
           from { transform: scaleX(1) scaleY(1); opacity: 0.8; }

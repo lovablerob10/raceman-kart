@@ -257,9 +257,9 @@ export function Champions() {
             </div>
 
             <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
-              <Star className="absolute -right-4 -top-4 w-24 h-24 text-[#ff4422] opacity-10 group-hover:opacity-20 transition-opacity rotate-45" />
+              <Star className="absolute -right-4 -top-4 w-24 h-24 text-[#F5B500] opacity-10 group-hover:opacity-20 transition-opacity rotate-45" />
               <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>200<span className="text-[#ff4422]">+</span></div>
+                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>200<span className="text-[#F5B500]">+</span></div>
                 <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Guerreiros</div>
               </div>
             </div>

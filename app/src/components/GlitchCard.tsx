@@ -13,8 +13,8 @@ interface GlitchCardProps {
 export function GlitchCard({
   children,
   className = '',
-  glitchColor1 = '#ff4422',
-  glitchColor2 = '#303285',
+  glitchColor1 = '#F5B500',
+  glitchColor2 = '#2E6A9C',
   intensity = 'medium',
   onHover
 }: GlitchCardProps) {
@@ -44,7 +44,7 @@ export function GlitchCard({
 
     const angle = Math.random() * Math.PI * 2;
     const distance = Math.random() * 40 + 20;
-    
+
     gsap.to(spark, {
       x: Math.cos(angle) * distance,
       y: Math.sin(angle) * distance - 20,
@@ -144,8 +144,8 @@ export function GlitchCard({
       style={{
         transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
         transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease',
-        boxShadow: isHovered 
-          ? `0 20px 40px rgba(0,0,0,0.3), 0 0 30px ${glitchColor1}40` 
+        boxShadow: isHovered
+          ? `0 20px 40px rgba(0,0,0,0.3), 0 0 30px ${glitchColor1}40`
           : '0 4px 6px rgba(0,0,0,0.1)'
       }}
     >
@@ -157,14 +157,14 @@ export function GlitchCard({
       {/* Glitch overlay layers */}
       {isHovered && (
         <>
-          <div 
+          <div
             className="absolute inset-0 pointer-events-none z-20 mix-blend-screen"
             style={{
               background: `linear-gradient(90deg, ${glitchColor1}20 0%, transparent 50%, ${glitchColor2}20 100%)`,
               animation: `glitch-1 ${config.duration}s linear infinite`,
             }}
           />
-          <div 
+          <div
             className="absolute inset-0 pointer-events-none z-20 mix-blend-multiply"
             style={{
               background: `linear-gradient(90deg, ${glitchColor2}15 0%, transparent 50%, ${glitchColor1}15 100%)`,
@@ -176,7 +176,7 @@ export function GlitchCard({
 
       {/* Scan lines effect */}
       {isHovered && (
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none z-30 opacity-20"
           style={{
             background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)',
@@ -188,19 +188,19 @@ export function GlitchCard({
       {/* Corner accents on hover */}
       {isHovered && (
         <>
-          <div 
+          <div
             className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 pointer-events-none z-40"
             style={{ borderColor: glitchColor1 }}
           />
-          <div 
+          <div
             className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 pointer-events-none z-40"
             style={{ borderColor: glitchColor2 }}
           />
-          <div 
+          <div
             className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 pointer-events-none z-40"
             style={{ borderColor: glitchColor2 }}
           />
-          <div 
+          <div
             className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 pointer-events-none z-40"
             style={{ borderColor: glitchColor1 }}
           />

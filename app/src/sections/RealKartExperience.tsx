@@ -141,8 +141,8 @@ export function RealKartExperience() {
             className="text-center px-4"
           >
             {/* Premium Badge */}
-            <div className="inline-flex items-center gap-3 bg-[#ff4422]/20 border border-[#ff4422]/40 px-6 py-2 rounded-full mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(255,68,34,0.3)]">
-              <span className="w-2.5 h-2.5 bg-[#ff4422] rounded-full animate-ping" />
+            <div className="inline-flex items-center gap-3 bg-[#F5B500]/20 border border-[#F5B500]/40 px-6 py-2 rounded-full mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(245,181,0,0.3)]">
+              <span className="w-2.5 h-2.5 bg-[#F5B500] rounded-full animate-ping" />
               <span className="text-white font-display text-lg uppercase font-black tracking-[0.3em]" style={{ fontFamily: 'Teko, sans-serif' }}>
                 Experiência Imersiva 360°
               </span>
@@ -157,7 +157,7 @@ export function RealKartExperience() {
               }}
             >
               <span className="block opacity-80">SENSAÇÃO DE</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ff4422] via-[#ff6644] to-[#F5B500] drop-shadow-[0_0_30px_rgba(255,68,34,0.5)]">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F5B500] via-[#FFD700] to-[#2E6A9C] drop-shadow-[0_0_30px_rgba(245,181,0,0.5)]">
                 PURA ADRENALINA
               </span>
             </h2>
@@ -168,14 +168,14 @@ export function RealKartExperience() {
               style={{ fontFamily: 'Teko, sans-serif' }}
             >
               Acelere a fundo. Controle cada curva. Sinta o asfalto.
-              O controle está <span className="text-white font-black underline decoration-[#ff4422]">no seu scroll</span>.
+              O controle está <span className="text-white font-black underline decoration-[#F5B500]">no seu scroll</span>.
             </p>
 
             {/* Premium Scroll indicator */}
             <div className="flex flex-col items-center gap-4">
-              <div className="w-1 h-32 bg-gradient-to-b from-transparent via-[#ff4422] to-transparent animate-[scroll-line_2s_infinite]" />
+              <div className="w-1 h-32 bg-gradient-to-b from-transparent via-[#F5B500] to-transparent animate-[scroll-line_2s_infinite]" />
               <div className="relative">
-                <div className="absolute inset-0 bg-[#ff4422] blur-xl opacity-20 animate-pulse" />
+                <div className="absolute inset-0 bg-[#F5B500] blur-xl opacity-20 animate-pulse" />
                 <span className="relative z-10 text-white font-display text-2xl font-black uppercase italic tracking-[0.5em] border border-white/20 px-8 py-2 rounded-lg backdrop-blur-xl" style={{ fontFamily: 'Teko, sans-serif' }}>
                   SCROLL PARA ACELERAR
                 </span>
@@ -195,7 +195,7 @@ export function RealKartExperience() {
             }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-1.5 h-4 bg-[#ff4422]" />
+              <div className="w-1.5 h-4 bg-[#F5B500]" />
               <span className="text-[10px] text-white/50 font-black uppercase tracking-[0.3em]">Velocidade Atual</span>
             </div>
             <div className="flex items-baseline gap-2">
@@ -203,21 +203,21 @@ export function RealKartExperience() {
                 className="text-6xl md:text-8xl font-display font-black italic tabular-nums leading-none tracking-tighter"
                 style={{
                   fontFamily: 'Teko, sans-serif',
-                  color: telemetry.speed > 140 ? '#ff4422' : telemetry.speed > 80 ? '#F5B500' : '#ffffff',
-                  textShadow: telemetry.speed > 120 ? '0 0 30px rgba(255, 68, 34, 0.5)' : 'none'
+                  color: telemetry.speed > 140 ? '#F5B500' : telemetry.speed > 80 ? '#FFD700' : '#ffffff',
+                  textShadow: telemetry.speed > 120 ? '0 0 30px rgba(245, 181, 0, 0.5)' : 'none'
                 }}
               >
                 {telemetry.speed}
               </span>
-              <span className="text-[#ff4422] text-xl font-display font-black italic" style={{ fontFamily: 'Teko, sans-serif' }}>KM/H</span>
+              <span className="text-[#F5B500] text-xl font-display font-black italic" style={{ fontFamily: 'Teko, sans-serif' }}>KM/H</span>
             </div>
             <div className="mt-4 w-40 md:w-56 h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-100"
                 style={{
                   width: `${(telemetry.speed / 180) * 100}%`,
-                  background: `linear-gradient(90deg, #303285 0%, #ff4422 100%)`,
-                  boxShadow: '0 0 10px rgba(255, 68, 34, 0.5)'
+                  background: `linear-gradient(90deg, #2E6A9C 0%, #F5B500 100%)`,
+                  boxShadow: '0 0 10px rgba(245, 181, 0, 0.5)'
                 }}
               />
             </div>
@@ -237,8 +237,8 @@ export function RealKartExperience() {
               className="text-7xl md:text-9xl font-display font-black leading-none italic"
               style={{
                 fontFamily: 'Teko, sans-serif',
-                color: telemetry.gear === '6' ? '#ff4422' : '#ffffff',
-                textShadow: telemetry.gear === '6' ? '0 0 30px #ff4422' : '0 0 20px rgba(255,255,255,0.2)'
+                color: telemetry.gear === '6' ? '#F5B500' : '#ffffff',
+                textShadow: telemetry.gear === '6' ? '0 0 30px #F5B500' : '0 0 20px rgba(255,255,255,0.2)'
               }}
             >
               {telemetry.gear}
@@ -260,7 +260,7 @@ export function RealKartExperience() {
                 className="text-4xl font-display font-black italic tracking-tight italic"
                 style={{
                   fontFamily: 'Teko, sans-serif',
-                  color: telemetry.rpm > 13000 ? '#ff4422' : '#ffffff'
+                  color: telemetry.rpm > 13000 ? '#F5B500' : '#ffffff'
                 }}
               >
                 {telemetry.rpm.toLocaleString()}
@@ -271,7 +271,7 @@ export function RealKartExperience() {
               <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-2">OVERBOOST TURBO</div>
               <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/10">
                 <div
-                  className="h-full bg-gradient-to-r from-[#303285] to-cyan-400 rounded-full transition-all duration-100"
+                  className="h-full bg-gradient-to-r from-[#2E6A9C] to-cyan-400 rounded-full transition-all duration-100"
                   style={{
                     width: `${telemetry.turbo}%`,
                     boxShadow: '0 0 15px rgba(0, 191, 255, 0.4)'
@@ -302,7 +302,7 @@ export function RealKartExperience() {
         <div className="absolute bottom-0 left-0 right-0 z-30">
           <div className="h-2 bg-white/5 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#303285] via-[#ff4422] to-[#F5B500] brightness-150 shadow-[0_0_20px_#ff4422]"
+              className="h-full bg-gradient-to-r from-[#2E6A9C] via-[#F5B500] to-[#FFD700] brightness-150 shadow-[0_0_20px_#F5B500]"
               style={{ width: `${telemetry.progress * 100}%` }}
             />
           </div>

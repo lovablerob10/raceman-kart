@@ -11,6 +11,7 @@ import { News } from './sections/News';
 import { Standings } from './sections/Standings';
 import { Drivers } from './sections/Drivers';
 import { Uniforms } from './sections/Uniforms';
+import { MaintenanceRequests } from './sections/MaintenanceRequests';
 import { Champions } from './sections/Champions';
 import { Sponsors } from './sections/Sponsors';
 import { Footer } from './sections/Footer';
@@ -134,6 +135,16 @@ function App() {
         <SectionTransition
           type="fade"
           fromColor="#0a0a0f"
+          toColor="#0d0d12"
+        />
+
+        {/* Maintenance Requests Section */}
+        <MaintenanceRequests />
+
+        {/* Transition */}
+        <SectionTransition
+          type="wipe"
+          fromColor="#0d0d12"
           toColor="#0D0D0D"
         />
 
