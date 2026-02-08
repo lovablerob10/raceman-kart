@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="RKT Raceman Kart - O campeonato de kart mais emocionante do interior paulista. Acompanhe calendário, classificação e notícias." />
+  <meta name="keywords" content="kart, corrida, campeonato, Paulínia, Arujá, automobilismo" />
+  <meta name="author" content="RKT Raceman Kart" />
+  <meta name="theme-color" content="#ff4422" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="RKT Raceman Kart - Premium Racing" />
+  <meta property="og:description" content="O campeonato de kart mais emocionante do interior paulista" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <title>RKT Raceman Kart - Premium Racing</title>
+
+  <style>
+    /* Critical CSS for initial load */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Prevent FOUC */
+    .loading {
+      opacity: 0;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root" class="loading"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

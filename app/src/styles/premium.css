@@ -1,0 +1,387 @@
+/* ============================================
+   KART PÉ DE CHUMBO - PREMIUM F1 STYLE
+   High-Fidelity Design System
+   ============================================ */
+
+/* === FONTS === */
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
+
+/* === DESIGN TOKENS === */
+:root {
+  /* Colors - F1 Racing Palette */
+  --f1-red: #E10600;
+  --f1-navy: #001F3F;
+  --f1-carbon: #0D0D0D;
+  --f1-silver: #C0C0C0;
+  --f1-gold: #FFD700;
+  --f1-white: #FFFFFF;
+  --f1-accent: #FF4422;
+  
+  /* Gradients */
+  --gradient-racing: linear-gradient(135deg, var(--f1-red) 0%, #FF4422 50%, var(--f1-gold) 100%);
+  --gradient-carbon: linear-gradient(180deg, #1a1a1a 0%, #0D0D0D 100%);
+  --gradient-metallic: linear-gradient(90deg, #C0C0C0 0%, #FFFFFF 50%, #C0C0C0 100%);
+  
+  /* Typography */
+  --font-display: 'Teko', sans-serif;
+  --font-technical: 'Rajdhani', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+  
+  /* Spacing - F1 Grid System */
+  --space-unit: 0.25rem;
+  --space-xs: calc(var(--space-unit) * 2);
+  --space-sm: calc(var(--space-unit) * 4);
+  --space-md: calc(var(--space-unit) * 6);
+  --space-lg: calc(var(--space-unit) * 8);
+  --space-xl: calc(var(--space-unit) * 12);
+  --space-2xl: calc(var(--space-unit) * 16);
+  
+  /* Animation Timing - Physics Based */
+  --ease-racing: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-braking: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-drift: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-inertia: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Duration */
+  --duration-instant: 0.1s;
+  --duration-fast: 0.2s;
+  --duration-normal: 0.4s;
+  --duration-slow: 0.8s;
+  --duration-dramatic: 1.2s;
+}
+
+/* === BASE STYLES === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-technical);
+  background: var(--f1-carbon);
+  color: var(--f1-white);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* === TYPOGRAPHY SYSTEM === */
+.f1-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+}
+
+.f1-heading-xl {
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-style: italic;
+}
+
+.f1-heading-lg {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-style: italic;
+}
+
+.f1-heading-md {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.f1-technical {
+  font-family: var(--font-technical);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.f1-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+/* === CARBON FIBER TEXTURE === */
+.carbon-fiber {
+  background-color: #0D0D0D;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.03) 2px,
+      rgba(255,255,255,0.03) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.02) 2px,
+      rgba(255,255,255,0.02) 4px
+    );
+}
+
+/* === METALLIC STRIPES === */
+.metallic-stripe {
+  background: var(--gradient-metallic);
+  height: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metallic-stripe::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  animation: metallic-shine 3s linear infinite;
+}
+
+@keyframes metallic-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* === TELEMETRY UI ELEMENTS === */
+.telemetry-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 4px;
+}
+
+.telemetry-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--f1-red);
+  min-width: 3ch;
+  text-align: right;
+}
+
+.telemetry-label {
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+}
+
+.telemetry-bar {
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.telemetry-bar-fill {
+  height: 100%;
+  background: var(--gradient-racing);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+/* === RPM GAUGE === */
+.rpm-gauge {
+  position: relative;
+  width: 200px;
+  height: 100px;
+  overflow: hidden;
+}
+
+.rpm-gauge-bg {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 8px solid rgba(255, 255, 255, 0.1);
+  border-bottom-color: transparent;
+  transform: rotate(-90deg);
+}
+
+.rpm-gauge-fill {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 8px solid transparent;
+  border-bottom-color: var(--f1-red);
+  transform: rotate(-90deg);
+  transition: transform 0.1s linear;
+}
+
+.rpm-gauge-text {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* === GLOW EFFECTS === */
+.glow-red {
+  box-shadow: 0 0 20px rgba(225, 6, 0, 0.5),
+              0 0 40px rgba(225, 6, 0, 0.3),
+              0 0 60px rgba(225, 6, 0, 0.1);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px currentColor,
+               0 0 20px currentColor,
+               0 0 40px currentColor;
+}
+
+/* === HEAT HAZE EFFECT === */
+.heat-haze {
+  position: relative;
+}
+
+.heat-haze::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: inherit;
+  filter: blur(8px) saturate(1.5);
+  opacity: 0.3;
+  z-index: -1;
+  animation: heat-shimmer 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes heat-shimmer {
+  0% { transform: translateY(-2px) scale(1.01); }
+  100% { transform: translateY(2px) scale(0.99); }
+}
+
+/* === SPEED LINES === */
+.speed-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.speed-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  animation: speed-line-move 0.5s linear infinite;
+}
+
+@keyframes speed-line-move {
+  0% { transform: translateX(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(100vw); opacity: 0; }
+}
+
+/* === DATA STREAM EFFECT === */
+.data-stream {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.data-stream span {
+  display: inline-block;
+  animation: data-scroll 10s linear infinite;
+}
+
+@keyframes data-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* === CHECKERED PATTERN === */
+.checkered {
+  background-image: 
+    linear-gradient(45deg, #000 25%, transparent 25%),
+    linear-gradient(-45deg, #000 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #000 75%),
+    linear-gradient(-45deg, transparent 75%, #000 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* === RACING BORDER === */
+.racing-border {
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.racing-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: var(--gradient-racing);
+  z-index: -1;
+  border-radius: inherit;
+}
+
+/* === SKEWED ELEMENTS === */
+.skew-racing {
+  transform: skewX(-15deg);
+}
+
+.skew-racing > * {
+  transform: skewX(15deg);
+}
+
+/* === LOADING STATES === */
+.loading-pulse {
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* === SCROLLBAR STYLING === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--f1-carbon);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--f1-red);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF4422;
+}
+
+/* === SELECTION === */
+::selection {
+  background: var(--f1-red);
+  color: white;
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
