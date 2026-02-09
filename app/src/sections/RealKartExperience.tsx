@@ -157,7 +157,7 @@ export function RealKartExperience() {
               }}
             >
               <span className="block opacity-80">SENSAÇÃO DE</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F5B500] via-[#FFD700] to-[#2E6A9C] drop-shadow-[0_0_30px_rgba(245,181,0,0.5)]">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F5B500] via-[#F5B500] to-white drop-shadow-[0_0_30px_rgba(245,181,0,0.5)]">
                 PURA ADRENALINA
               </span>
             </h2>
