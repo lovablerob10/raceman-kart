@@ -424,7 +424,7 @@ export function Standings() {
                   <div className="w-24 text-center hidden sm:block">
                     <span className={`
                     text-[10px] font-black px-2.5 py-1 rounded skew-x-[-15deg] uppercase tracking-widest
-                    ${item.category === 'Ouro' ? 'bg-[#F5B500] text-black' : 'bg-gray-700 text-gray-300'}
+                    ${item.category === 'PRO' ? 'bg-[#F5B500] text-black' : 'bg-gray-700 text-gray-300'}
                   `}>
                       <span className="inline-block skew-x-[15deg]">{item.category}</span>
                     </span>
