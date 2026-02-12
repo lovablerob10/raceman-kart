@@ -133,7 +133,7 @@ export function GlitchCard({
     }
   };
 
-  const config = intensityConfig[intensity];
+
 
   return (
     <div
@@ -155,7 +155,8 @@ export function GlitchCard({
       </div>
 
       {/* Glitch overlay layers */}
-      {isHovered && (
+      {/* Glitch overlay layers removed for cleaner look */}
+      {/* {isHovered && (
         <>
           <div
             className="absolute inset-0 pointer-events-none z-20 mix-blend-screen"
@@ -172,10 +173,11 @@ export function GlitchCard({
             }}
           />
         </>
-      )}
+      )} */}
 
       {/* Scan lines effect */}
-      {isHovered && (
+      {/* Scan lines effect removed for cleaner look */}
+      {/* {isHovered && (
         <div
           className="absolute inset-0 pointer-events-none z-30 opacity-20"
           style={{
@@ -183,7 +185,7 @@ export function GlitchCard({
             animation: 'scanline 0.5s linear infinite'
           }}
         />
-      )}
+      )} */}
 
       {/* Corner accents on hover */}
       {isHovered && (

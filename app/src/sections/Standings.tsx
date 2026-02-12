@@ -1,73 +1,42 @@
 import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Trophy, TrendingUp } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-gsap.registerPlugin(ScrollTrigger);
-
-// Pilot image mapping - uses generated photos when available
-const pilotImages: Record<string, string> = {
-  'Lucas Silveira': '/images/pilots/pilot_pro_01.png',
-  'Bruno Oliveira': '/images/pilots/pilot_pro_02.png',
-  'Marco Aurélio': '/images/pilots/pilot_pro_03.png',
-  'Gabriel Santos': '/images/pilots/pilot_pro_04.png',
-  'Daniel Mendes': '/images/pilots/pilot_pro_05.png',
-  'Gustavo Lima': '/images/pilots/pilot_pro_06.png',
-  'Thiago Oliveira': '/images/pilots/pilot_light_01.png',
-  'João Pedro': '/images/pilots/pilot_light_02.png',
-  'Mateus Silva': '/images/pilots/pilot_light_03.png',
-  'Vinícius Souza': '/images/pilots/pilot_light_04.png',
-  'Leonardo Ferreira': '/images/pilots/pilot_light_05.png',
-  'Rafael Gomes': '/images/pilots/pilot_light_06.png',
-  // Fallback mapping for pilots not yet with photos
-  'Pedro Henrique': '/images/pilots/pilot_light_01.png',
-  'Paulo Souza': '/images/pilots/pilot_light_02.png',
-  'Carlos Eduardo': '/images/pilots/pilot_pro_01.png',
-  'Rodrigo Costa': '/images/pilots/pilot_light_03.png',
-  'Renan Farah': '/images/pilots/pilot_pro_02.png',
-  'Rodrigo Berger': '/images/pilots/pilot_pro_03.png',
-};
-
-// Get pilot image or return null for fallback
-const getPilotImage = (name: string): string | null => {
-  return pilotImages[name] || null;
-};
-
-// Get initials from name
+// Get pilot initials
 const getInitials = (name: string): string => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase();
 };
 
-const podiumData = [
-  { position: 2, name: 'Ademir Alcântara', points: 0, category: 'Prata' },
-  { position: 1, name: 'Alessandro Rodolpho', points: 0, category: 'Ouro', highlight: true },
-  { position: 3, name: 'Cauê Aro', points: 0, category: 'Prata' },
-];
-
-const standingsData = [
-  { position: 1, category: 'Ouro', name: 'Alessandro Rodolpho', points: 0, highlight: true },
-  { position: 2, category: 'Prata', name: 'Ademir Alcântara', points: 0 },
-  { position: 3, category: 'Prata', name: 'Cauê Aro', points: 0 },
-  { position: 4, category: 'Ouro', name: 'Cesar David', points: 0 },
-  { position: 5, category: 'Prata', name: 'Cristiano Aro', points: 0 },
-  { position: 6, category: 'Ouro', name: 'Douglas Michilino', points: 0 },
-];
+interface StandingData {
+  position: number;
+  category: string;
+  name: string;
+  points: number;
+  photo_url?: string | null;
+  number?: number | null;
+  highlight?: boolean;
+}
 
 // Avatar component with fallback
 function PilotAvatar({
   name,
+  photo_url,
   size = 'sm',
   position,
   showBorder = true
 }: {
   name: string;
+  photo_url?: string | null;
   size?: 'sm' | 'md' | 'lg';
   position?: number;
   showBorder?: boolean;
 }) {
   const [imageError, setImageError] = useState(false);
-  const imageSrc = getPilotImage(name);
   const initials = getInitials(name);
+
+  // Prioritize DB photo
+  const imageSrc = photo_url || null;
 
   // Size classes
   const sizeClasses = {
@@ -110,12 +79,10 @@ function PilotAvatar({
       `}
     >
       {showFallback ? (
-        // Fallback: Show initials
         <div className={`w-full h-full flex items-center justify-center font-bold ${getFallbackBg()}`}>
           {initials}
         </div>
       ) : (
-        // Show photo with object-fit cover
         <img
           src={imageSrc}
           alt={name}
@@ -133,7 +100,59 @@ export function Standings() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const podiumRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
-  const [animatedPoints, setAnimatedPoints] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [animatedPoints, setAnimatedPoints] = useState<number[]>([]);
+  const [standingsData, setStandingsData] = useState<StandingData[]>([]);
+  const [podiumData, setPodiumData] = useState<StandingData[]>([]);
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('standings')
+          .select(`
+            id,
+            points,
+            position,
+            category,
+            pilot:pilot_id (
+              name,
+              photo_url
+            )
+          `)
+          .order('points', { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const mapped = data.map((s: any, index: number) => ({
+            position: index + 1,
+            category: s.category,
+            name: s.pilot?.name || 'Piloto',
+            points: s.points,
+            photo_url: s.pilot?.photo_url,
+            number: s.pilot?.number,
+            highlight: index === 0
+          }));
+
+          setStandingsData(mapped);
+
+          // Set podium (top 3)
+          const podium = [
+            mapped[1] || null, // 2nd
+            mapped[0] || null, // 1st
+            mapped[2] || null  // 3rd
+          ].filter(Boolean) as StandingData[];
+
+          setPodiumData(podium);
+          setAnimatedPoints(new Array(mapped.length).fill(0));
+        }
+      } catch (err) {
+        console.error('Error fetching standings:', err);
+      }
+    };
+
+    fetchStandings();
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -220,7 +239,7 @@ export function Standings() {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [standingsData.length]); // Added standingsData.length to dependency array
 
   const getPositionColor = (position: number) => {
     switch (position) {
@@ -250,13 +269,12 @@ export function Standings() {
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-[#2E6A9C]/10 to-transparent" />
         <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-[#F5B500]/10 to-transparent" />
-        {/* Carbon fiber texture overlay */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none carbon-fiber" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-20 relative">
           <div className="inline-flex items-center gap-3 bg-[#2E6A9C]/20 border border-[#2E6A9C]/30 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
             <Trophy size={16} className="text-[#F5B500] animate-bounce" />
             <span className="text-[#F5B500] text-sm font-bold uppercase tracking-widest" style={{ fontFamily: 'Teko, sans-serif' }}>
@@ -289,7 +307,6 @@ export function Standings() {
                 key={position}
                 className={`podium-item flex flex-col items-center w-full md:w-1/3 ${isWinner ? 'order-1 md:order-2 z-20 scale-110 md:-translate-y-4' : position === 2 ? 'order-2 md:order-1' : 'order-3'}`}
               >
-                {/* Avatar with glow for winner */}
                 <div className="relative mb-6">
                   <div className={`
                     absolute inset-0 rounded-full blur-2xl opacity-50
@@ -300,9 +317,9 @@ export function Standings() {
                     size={isWinner ? 'lg' : 'md'}
                     position={position}
                     showBorder={true}
+                    photo_url={pilot.photo_url}
                   />
 
-                  {/* Winner Crown Icon */}
                   {isWinner && (
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-[#F5B500]">
                       <Trophy size={40} className="drop-shadow-[0_0_10px_#F5B500]" />
@@ -310,7 +327,6 @@ export function Standings() {
                   )}
                 </div>
 
-                {/* Pilot Info - Premium Plate */}
                 <div className={`
                   w-full text-center px-6 py-4 mb-2 rounded-t-2xl backdrop-blur-xl border-x border-t
                   ${isWinner
@@ -326,7 +342,6 @@ export function Standings() {
                   </div>
                 </div>
 
-                {/* Podium pedestal block */}
                 <div
                   className={`
                     w-full relative overflow-hidden transition-all duration-500
@@ -337,7 +352,6 @@ export function Standings() {
                     shadow-[0_20px_50px_rgba(0,0,0,0.5)]
                   `}
                 >
-                  {/* High-tech pattern overlay */}
                   <div
                     className="absolute inset-0 opacity-20 pointer-events-none"
                     style={{
@@ -345,7 +359,6 @@ export function Standings() {
                     }}
                   />
 
-                  {/* Position number - Large and integrated */}
                   <div className="relative z-10 flex flex-col items-center">
                     <span className={`
                       font-display font-black text-white leading-none tracking-tighter
@@ -356,7 +369,6 @@ export function Standings() {
                     <span className="text-white/60 font-bold uppercase tracking-widest text-[10px] -mt-2">POSITION</span>
                   </div>
 
-                  {/* Winner shimmer effect */}
                   {isWinner && (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-[200%] -translate-x-full animate-[trophy-shine_3s_linear_infinite] pointer-events-none" />
                   )}
@@ -367,7 +379,7 @@ export function Standings() {
         </div>
 
         {/* Premium Standings Table */}
-        {standingsData.reduce((acc, curr) => acc + curr.points, 0) === 0 ? (
+        {standingsData.length === 0 || standingsData.reduce((acc, curr) => acc + curr.points, 0) === 0 ? (
           <div className="max-w-5xl mx-auto rounded-3xl p-20 text-center bg-white/5 backdrop-blur-2xl border border-white/10">
             <TrendingUp size={64} className="text-[#F5B500] mx-auto mb-6 opacity-20" />
             <h3 className="text-4xl font-display font-black uppercase italic text-white/40 mb-4" style={{ fontFamily: 'Teko, sans-serif' }}>
@@ -380,7 +392,6 @@ export function Standings() {
             ref={tableRef}
             className="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.5)] bg-white/5 backdrop-blur-2xl border border-white/10"
           >
-            {/* Table Header - Racing Stripe style */}
             <div className="flex bg-gradient-to-r from-[#2E6A9C] via-[#0D0D0D] to-[#F5B500] text-white font-display text-xl md:text-2xl uppercase italic py-5 px-6 tracking-wider" style={{ fontFamily: 'Teko, sans-serif' }}>
               <div className="w-20 text-center">POS</div>
               <div className="w-24 text-center hidden sm:block border-l border-white/20">CAT</div>
@@ -388,7 +399,6 @@ export function Standings() {
               <div className="w-32 text-right pr-6 border-l border-white/20">TOTAL PONTOS</div>
             </div>
 
-            {/* Rows */}
             <div className="divide-y divide-white/5">
               {standingsData.map((item, index) => (
                 <div
@@ -400,7 +410,6 @@ export function Standings() {
                   ${item.highlight ? 'bg-[#F5B500]/5' : ''}
                 `}
                 >
-                  {/* Position Marker */}
                   <div className={`
                   w-20 text-center font-display font-black text-3xl italic tracking-tighter leading-none
                   ${item.position === 1 ? 'text-[#F5B500] drop-shadow-[0_0_8px_#F5B500]' :
@@ -412,7 +421,6 @@ export function Standings() {
                     #{item.position.toString().padStart(2, '0')}
                   </div>
 
-                  {/* Category Badge */}
                   <div className="w-24 text-center hidden sm:block">
                     <span className={`
                     text-[10px] font-black px-2.5 py-1 rounded skew-x-[-15deg] uppercase tracking-widest
@@ -422,7 +430,6 @@ export function Standings() {
                     </span>
                   </div>
 
-                  {/* Pilot Identity */}
                   <div className="flex-1 pl-8 flex items-center">
                     <div className="relative group-hover:scale-110 transition-transform duration-300">
                       <PilotAvatar
@@ -430,21 +437,21 @@ export function Standings() {
                         size="sm"
                         position={item.position}
                         showBorder={index < 3}
+                        photo_url={item.photo_url}
                       />
                       {item.highlight && <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#F5B500] rounded-full animate-ping" />}
                     </div>
                     <div className="ml-4">
                       <span className={`
-                      block font-display text-xl uppercase italic tracking-wide transition-colors
-                      ${item.highlight ? 'text-white font-black' : 'text-white/80 group-hover:text-white'}
-                    `} style={{ fontFamily: 'Teko, sans-serif' }}>
-                        {item.name}
+                       block font-display text-xl uppercase italic tracking-wide transition-colors
+                       ${item.highlight ? 'text-white font-black' : 'text-white/80 group-hover:text-white'}
+                     `} style={{ fontFamily: 'Teko, sans-serif' }}>
+                        {item.name} {item.number && <span className="text-[#F5B500] ml-2">#{item.number}</span>}
                       </span>
                       <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest leading-none">Scuderia RKT</span>
                     </div>
                   </div>
 
-                  {/* Points Counter */}
                   <div className={`
                   w-32 text-right pr-6 font-display text-3xl italic font-black tracking-tighter transition-all duration-300
                   ${item.highlight ? 'text-[#F5B500] scale-110' : 'text-white/60 group-hover:text-white'}
@@ -452,13 +459,11 @@ export function Standings() {
                     {animatedPoints[index]} <span className="text-xs ml-1 opacity-50 not-italic uppercase">Pts</span>
                   </div>
 
-                  {/* Row Hover Line */}
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#F5B500] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 shadow-[0_0_10px_#F5B500]" />
                 </div>
               ))}
             </div>
 
-            {/* Table Footer - High Tech Link */}
             <div className="py-6 text-center bg-black/40 backdrop-blur-md border-t border-white/10 group/footer overflow-hidden relative">
               <button className="relative z-10 text-white font-display font-black uppercase text-xl leading-none italic tracking-widest flex items-center justify-center gap-3 mx-auto transition-all duration-500 hover:gap-6" style={{ fontFamily: 'Teko, sans-serif' }}>
                 Ver Relatório de Temporada Completo
@@ -470,11 +475,9 @@ export function Standings() {
         )}
       </div>
 
-      {/* Decorative side lines */}
       <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-[#F5B500]/20 to-transparent" />
       <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-[#2E6A9C]/20 to-transparent" />
     </section>
-
   );
 }
 

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ChevronLeft, ChevronRight, MapPin, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, Sun, Moon } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
 import { supabase, type Stage as DBStage } from '../lib/supabase';
 import { TrackMap } from '../components/TrackMap';
@@ -13,54 +13,70 @@ interface LocalStage extends Partial<DBStage> {
   month: string;
   name: string;
   location: string;
-  active: boolean;
+  active?: boolean;
   trainingDate?: string;
   raceDate?: string;
   period?: string;
   dayOfWeek?: string;
   time?: string;
   tire?: string;
-  trackId?: string;
+  track_id?: string;
 }
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 // Complete 2026 Racing Season Schedule
 const SEASON_2026: LocalStage[] = [
-  { day: '28', month: 'Fev', name: 'Etapa 1', location: 'KNO', active: false, trainingDate: '21/02/26', raceDate: '28/02/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 01', trackId: 'KNO_A' },
-  { day: '28', month: 'Mar', name: 'Etapa 2', location: 'KNO', active: false, trainingDate: '21/03/26', raceDate: '28/03/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 01', trackId: 'KNO_B' },
-  { day: '25', month: 'Abr', name: 'Etapa 3', location: 'KNO', active: false, trainingDate: '18/04/26', raceDate: '25/04/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 02', trackId: 'KNO_A' },
-  { day: '30', month: 'Mai', name: 'Etapa 4', location: 'KNO', active: false, trainingDate: '23/05/26', raceDate: '30/05/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 02', trackId: 'KNO_B' },
-  { day: '26', month: 'Jun', name: 'Etapa 5', location: 'Paulínia', active: false, trainingDate: '24/06/26', raceDate: '26/06/26', period: 'Noturno', dayOfWeek: 'Quinta', time: '19:00 às 22:00', tire: 'PNEU 02', trackId: 'Paulínia' },
-  { day: '26', month: 'Jul', name: 'Etapa 6', location: 'KNO', active: false, trainingDate: '22/07/26', raceDate: '26/07/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 03', trackId: 'KNO_A' },
-  { day: '26', month: 'Ago', name: 'Etapa 7', location: 'KNO', active: false, trainingDate: '19/08/26', raceDate: '26/08/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 03', trackId: 'KNO_B' },
-  { day: '30', month: 'Set', name: 'Etapa 8', location: 'KNO', active: false, trainingDate: '23/09/26', raceDate: '30/09/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 03', trackId: 'KNO_A' },
-  { day: '24', month: 'Out', name: 'Etapa 9', location: 'Paulínia', active: false, trainingDate: '21/10/26', raceDate: '24/10/26', period: 'Noturno', dayOfWeek: 'Quinta', time: '19:00 às 22:00', tire: 'PNEU 04', trackId: 'Paulínia' },
-  { day: '12', month: 'Nov', name: 'Etapa 10', location: 'KNO', active: false, trainingDate: '11/11/26', raceDate: '12/11/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 04', trackId: 'KNO_B' },
-  { day: '12', month: 'Dez', name: 'Etapa 11', location: 'KNO', active: false, trainingDate: '05/12/26', raceDate: '12/12/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 04', trackId: 'KNO_A' },
+  { day: '28', month: 'Fev', name: 'Etapa 1', location: 'KNO', trainingDate: '21/02/26', raceDate: '28/02/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 01', track_id: 'KNO_A' },
+  { day: '28', month: 'Mar', name: 'Etapa 2', location: 'KNO', trainingDate: '21/03/26', raceDate: '28/03/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 01', track_id: 'KNO_B' },
+  { day: '25', month: 'Abr', name: 'Etapa 3', location: 'KNO', trainingDate: '18/04/26', raceDate: '25/04/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 01', track_id: 'KNO_A' },
+  { day: '30', month: 'Mai', name: 'Etapa 4', location: 'KNO', trainingDate: '23/05/26', raceDate: '30/05/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 02', track_id: 'KNO_B' },
+  { day: '25', month: 'Jun', name: 'Etapa 5', location: 'Paulínia', trainingDate: '24/06/26', raceDate: '25/06/26', period: 'Noturno', dayOfWeek: 'Quinta', time: '19:00 às 22:00', tire: 'PNEU 02', track_id: 'Paulínia' },
+  { day: '25', month: 'Jul', name: 'Etapa 6', location: 'KNO', trainingDate: '18/07/26', raceDate: '25/07/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 02', track_id: 'KNO_A' },
+  { day: '29', month: 'Ago', name: 'Etapa 7', location: 'KNO', trainingDate: '22/08/26', raceDate: '29/08/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 03', track_id: 'KNO_B' },
+  { day: '26', month: 'Set', name: 'Etapa 8', location: 'KNO', trainingDate: '19/09/26', raceDate: '26/09/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 03', track_id: 'KNO_A' },
+  { day: '24', month: 'Out', name: 'Etapa 9', location: 'KNO', trainingDate: '17/10/26', raceDate: '24/10/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 03', track_id: 'KNO_B' },
+  { day: '12', month: 'Nov', name: 'Etapa 10', location: 'Paulínia', trainingDate: '11/11/26', raceDate: '12/11/26', period: 'Noturno', dayOfWeek: 'Quinta', time: '19:00 às 22:00', tire: 'PNEU 04', track_id: 'Paulínia' },
+  { day: '12', month: 'Dez', name: 'Etapa 11', location: 'KNO', trainingDate: '05/12/26', raceDate: '12/12/26', period: 'Diurna', dayOfWeek: 'Sábado', time: '08:00 às 12:00', tire: 'PNEU 04', track_id: 'KNO_A' },
 ];
 
 // Function to determine which stage is active based on current date
-function getStagesWithActiveFlag(stages: LocalStage[]): LocalStage[] {
+function getStagesWithDynamicActive(stages: LocalStage[]): LocalStage[] {
   const today = new Date();
   const currentYear = today.getFullYear();
 
-  return stages.map((stage, index) => {
-    // Parse race date (format: DD/MM/YY)
-    const [day, month] = stage.raceDate?.split('/').map(Number) || [0, 0];
-    const raceDate = new Date(currentYear, month - 1, day);
+  // Sort by stage_number to ensure correct index-based active logic if needed
+  const sorted = [...stages].sort((a, b) => (a.stage_number || 0) - (b.stage_number || 0));
+
+  return sorted.map((stage, index) => {
+    // Parse date (either DD/MM/YY from fallback or YYYY-MM-DD from DB)
+    let raceDate: Date;
+    if (stage.date && stage.date.includes('-')) {
+      const [y, m, d] = stage.date.split('-').map(Number);
+      raceDate = new Date(y, m - 1, d, 12, 0, 0);
+    } else {
+      const [day, month] = stage.raceDate?.split('/').map(Number) || [0, 0];
+      raceDate = new Date(currentYear, month - 1, day);
+    }
 
     // Find first upcoming race
     const isUpcoming = raceDate >= today;
-    const previousStagesCompleted = stages.slice(0, index).every(s => {
-      const [d, m] = s.raceDate?.split('/').map(Number) || [0, 0];
-      return new Date(currentYear, m - 1, d) < today;
+    const previousStagesCompleted = sorted.slice(0, index).every(s => {
+      let d: Date;
+      if (s.date && s.date.includes('-')) {
+        const [y, m, dayNum] = s.date.split('-').map(Number);
+        d = new Date(y, m - 1, dayNum, 12, 0, 0);
+      } else {
+        const [day_f, month_f] = s.raceDate?.split('/').map(Number) || [0, 0];
+        d = new Date(currentYear, month_f - 1, day_f);
+      }
+      return d < today;
     });
 
     return {
       ...stage,
       active: isUpcoming && previousStagesCompleted,
-      trackId: stage.location === 'Paulínia' ? 'Paulínia' : (index % 2 === 0 ? 'KNO_A' : 'KNO_B')
+      track_id: stage.track_id || (stage.location === 'Paulínia' ? 'Paulínia' : (index % 2 === 0 ? 'KNO_A' : 'KNO_B'))
     };
   });
 }
@@ -82,29 +98,30 @@ export function Calendar() {
           .order('stage_number');
 
         if (error || !data || data.length === 0) {
-          // Use fallback 2026 season data
           console.log('Using fallback 2026 season data');
-          setStages(getStagesWithActiveFlag(SEASON_2026));
+          setStages(getStagesWithDynamicActive(SEASON_2026));
         } else {
-          setStages(data.map((s: DBStage) => {
-            const date = new Date(s.date);
+          // Process database data with dynamic active flag
+          const mappedData: LocalStage[] = data.map((s: DBStage) => {
+            // Use split to avoid timezone shifts - treat as local date
+            const [, monthStr, dayStr] = s.date.split('-');
+            const monthIdx = parseInt(monthStr, 10) - 1;
+
             return {
-              day: date.getDate().toString().padStart(2, '0'),
-              month: MONTHS[date.getMonth()],
+              ...s,
+              day: dayStr.padStart(2, '0'),
+              month: MONTHS[monthIdx],
               name: s.name,
               location: s.location,
-              active: s.is_active,
-              track_length: s.track_length,
-              track_corners: s.track_corners,
-              track_record: s.track_record,
-              track_description: s.track_description,
-              track_id: s.track_id || (s.location === 'Paulínia' ? 'Paulínia' : (s.stage_number % 2 === 0 ? 'KNO_B' : 'KNO_A'))
+              period: s.period,
+              track_id: s.track_id
             };
-          }));
+          });
+          setStages(getStagesWithDynamicActive(mappedData));
         }
       } catch (err) {
         console.error('Error fetching stages:', err);
-        setStages(getStagesWithActiveFlag(SEASON_2026));
+        setStages(getStagesWithDynamicActive(SEASON_2026));
       }
     };
     fetchStages();
@@ -182,7 +199,7 @@ export function Calendar() {
     <section
       ref={sectionRef}
       id="calendar"
-      className="py-16 md:py-24 bg-gray-50 dark:bg-[#1a1a1a] relative overflow-hidden"
+      className="py-32 md:py-48 bg-gray-50 dark:bg-[#1a1a1a] relative overflow-hidden"
     >
       {/* Racing stripe decoration */}
       <div
@@ -203,7 +220,7 @@ export function Calendar() {
               style={{ fontFamily: 'Teko, sans-serif' }}
             >
               <span className="w-3 h-12 md:h-16 bg-[#F5B500] mr-4 inline-block transform -skew-x-12 shadow-[0_0_15px_rgba(245,181,0,0.5)]" />
-              Etapas 2026
+              TEMPORADA 2026
             </h2>
             <div className="h-1 w-full bg-gradient-to-r from-[#F5B500] to-transparent mt-2 opacity-50" />
           </div>
@@ -252,91 +269,94 @@ export function Calendar() {
                 onClick={() => setSelectedStage(stage)}
                 className={`
                   relative group/card
-                  bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden
-                  border border-white/20 dark:border-white/10
-                  w-64 h-80
-                  flex flex-col
-                  shadow-[0_8px_32px_rgba(0,0,0,0.12)]
-                  transition-all duration-500 cubic-bezier(0.34,1.56,0.64,1)
-                  hover:shadow-[0_20px_50px_rgba(0,0,0,0.2)]
-                  ${stage.active ? 'ring-2 ring-[#F5B500] ring-offset-4 ring-offset-gray-50 dark:ring-offset-[#1a1a1a] scale-105 z-10' : 'opacity-80 hover:opacity-100'}
+                  bg-neutral-900/60 backdrop-blur-2xl rounded-3xl overflow-hidden
+                  border transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
+                  w-80 h-[480px]
+                  flex flex-col shadow-2xl
+                  ${stage.active
+                    ? 'border-[#F5B500] shadow-[#F5B500]/20 scale-[1.03] z-10'
+                    : 'border-white/10 opacity-70 hover:opacity-100 hover:border-[#2E6A9C]/50 hover:scale-[1.01]'
+                  }
                 `}
               >
-                {/* Visual Accent for Active Stage */}
-                {stage.active && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#F5B500]/10 to-transparent pointer-events-none" />
-                )}
-
-                {/* Top decorative bar */}
+                {/* Stage Number Watermark */}
                 <div
-                  className={`h-1.5 flex-shrink-0 ${stage.active ? 'bg-[#F5B500] shadow-[0_0_10px_#F5B500]' : 'bg-gray-200 dark:bg-gray-800'}`}
-                />
+                  className="absolute -top-4 -right-4 text-[11rem] font-black italic text-white/[0.03] leading-none pointer-events-none select-none z-0"
+                  style={{ fontFamily: 'Teko, sans-serif' }}
+                >
+                  {(stage.stage_number || (index + 1)).toString().padStart(2, '0')}
+                </div>
 
-                {/* Card Content */}
-                <div className="p-6 text-center flex flex-col flex-grow items-center">
-                  {/* Date Section */}
-                  <div className="relative mb-4">
-                    <div className="flex items-baseline justify-center">
-                      <span
-                        className={`font-display font-bold text-7xl leading-none tracking-tighter ${stage.active ? 'text-[#F5B500] drop-shadow-[0_0_10px_rgba(245,181,0,0.3)]' : 'text-[#2E6A9C] dark:text-gray-300'
-                          }`}
-                        style={{ fontFamily: 'Teko, sans-serif' }}
-                      >
-                        {stage.day}
-                      </span>
-                    </div>
-                    <div
-                      className={`text-sm font-bold uppercase tracking-[0.2em] -mt-1 ${stage.active ? 'text-[#F5B500]' : 'text-gray-500'}`}
-                    >
-                      {stage.month}
-                    </div>
+                {/* Status Badges */}
+                <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[#F5B500] font-black text-3xl italic leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>
+                      {stage.day} {stage.month.toUpperCase()}
+                    </span>
+                    <span className="text-white/40 text-[10px] font-bold tracking-[0.3em] uppercase">
+                      TEMPORADA 2026
+                    </span>
                   </div>
 
-                  {/* Separator with dynamic width */}
-                  <div className={`h-[1px] w-1/2 mx-auto transition-all duration-500 group-hover/card:w-full ${stage.active ? 'bg-[#F5B500]/40' : 'bg-gray-200 dark:bg-gray-800'} my-4`} />
+                  {stage.active && (
+                    <div className="bg-[#F5B500] text-black text-[10px] font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,181,0,0.5)] animate-pulse">
+                      <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                      PRÓXIMA ETAPA
+                    </div>
+                  )}
+                </div>
 
-                  {/* Stage Info */}
-                  <div className="flex-grow flex flex-col justify-center w-full">
-                    <h3 className="text-lg font-black text-[#2E6A9C] dark:text-white uppercase line-clamp-2 leading-tight mb-2 flex items-center justify-center gap-2">
-                      <CalendarIcon className={`${stage.active ? 'text-[#F5B500]' : 'text-[#2E6A9C]/60'} flex-shrink-0 size-4`} />
+                {/* Main Content */}
+                <div className="mt-auto p-8 relative z-10">
+                  <div className="mb-6">
+                    <h3 className="text-3xl font-bold text-white uppercase leading-tight mb-2 tracking-tight group-hover/card:text-[#F5B500] transition-colors">
                       {stage.name}
                     </h3>
-                    <div
-                      className={`font-display text-xl uppercase italic flex items-center justify-center gap-2 ${stage.active ? 'text-[#F5B500]' : 'text-gray-600 dark:text-gray-400'
-                        }`}
-                      style={{ fontFamily: 'Teko, sans-serif' }}
-                    >
-                      <MapPin size={16} className="text-[#F5B500]" />
-                      {stage.location}
+                    <div className="flex items-center gap-2 text-white/60">
+                      <MapPin size={16} className="text-[#2E6A9C]" />
+                      <span className="text-lg font-medium italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.location}</span>
                     </div>
                   </div>
 
-                  {/* Action Button / Badge */}
-                  <div className="mt-4 w-full h-12 flex items-center justify-center">
-                    {stage.active ? (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedStage(stage);
-                        }}
-                        className="w-full py-2.5 
-                                   bg-[#F5B500] text-white rounded-lg text-lg font-bold uppercase italic
-                                   shadow-[0_4px_15px_rgba(245,181,0,0.4)]
-                                   hover:bg-[#FFD700] hover:shadow-[0_8px_25px_rgba(245,181,0,0.5)]
-                                   transition-all duration-300 transform active:scale-95
-                                   flex items-center justify-center gap-2"
-                        style={{ fontFamily: 'Teko, sans-serif', letterSpacing: '0.05em' }}
-                      >
-                        <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
-                        PRÓXIMA ETAPA
-                      </button>
-                    ) : (
-                      <span className="text-xs font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">
-                        {/* ETAPA CONCLUÍDA */}
-                      </span>
-                    )}
+                  {/* Technical Specs Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-8">
+                    {[
+                      { label: 'HORÁRIO', value: stage.time || (stage.period === 'Noturno' ? '19:00' : '08:00'), icon: <Sun size={12} /> },
+                      { label: 'PNEU', value: stage.tire?.replace('PNEU ', '') || 'MG', color: 'text-green-400' },
+                      { label: 'TURNO', value: stage.period || 'DIURNO', icon: stage.period === 'Noturno' ? <Moon size={12} /> : <Sun size={12} /> }
+                    ].map((spec, i) => (
+                      <div key={i} className="bg-white/5 backdrop-blur-md border border-white/5 rounded-xl p-3 flex flex-col items-center justify-center gap-1">
+                        <span className="text-[8px] font-bold text-white/30 tracking-widest">{spec.label}</span>
+                        <span className={`text-xs font-black ${spec.color || 'text-white'}`}>{spec.value}</span>
+                      </div>
+                    ))}
                   </div>
+
+                  {/* Action Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedStage(stage);
+                    }}
+                    className={`
+                      w-full py-4 rounded-xl text-lg font-black uppercase italic tracking-wider
+                      transition-all duration-300 flex items-center justify-center gap-2
+                      ${stage.active
+                        ? 'bg-[#F5B500] text-black hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]'
+                        : 'bg-[#2E6A9C] text-white hover:bg-[#3a85c3]'
+                      }
+                    `}
+                    style={{ fontFamily: 'Teko, sans-serif' }}
+                  >
+                    DETALHES DA ETAPA
+                    <ChevronRight size={20} />
+                  </button>
                 </div>
+
+                {/* Background Glow */}
+                {stage.active && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#F5B500]/10 via-transparent to-transparent pointer-events-none" />
+                )}
               </div>
             </GlitchCard>
           ))}

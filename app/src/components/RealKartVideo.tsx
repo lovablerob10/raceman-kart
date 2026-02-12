@@ -13,18 +13,30 @@ export function RealKartVideo({ progress, className = '' }: RealKartVideoProps) 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
 
-  // Sync video time with progress
+  const targetTimeRef = useRef(0);
+  const requestRef = useRef<number>(null);
+
+  // Sync video time with progress using RequestAnimationFrame
   useEffect(() => {
     const video = videoRef.current;
-    if (video && isVideoReady && video.duration) {
-      // Clamp progress and calculate time
-      const safeProgress = Math.max(0, Math.min(1, progress));
-      const targetTime = safeProgress * video.duration;
+    if (!video || !isVideoReady || !video.duration) return;
 
-      if (Number.isFinite(targetTime)) {
-        video.currentTime = targetTime;
+    // Update target time ref immediately
+    const safeProgress = Math.max(0, Math.min(1, progress));
+    targetTimeRef.current = safeProgress * video.duration;
+
+    const syncVideo = () => {
+      if (video && Math.abs(video.currentTime - targetTimeRef.current) > 0.01) {
+        video.currentTime = targetTimeRef.current;
       }
-    }
+      requestRef.current = requestAnimationFrame(syncVideo);
+    };
+
+    requestRef.current = requestAnimationFrame(syncVideo);
+
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
   }, [progress, isVideoReady]);
 
   // Calculate speed intensity for effects
@@ -40,11 +52,8 @@ export function RealKartVideo({ progress, className = '' }: RealKartVideoProps) 
         src="/video/kart-video.mp4"
         className="w-full h-full object-cover"
         style={{
-          filter: speedIntensity > 0.5
-            ? `blur(${Math.floor(speedIntensity * 2)}px)`
-            : 'none',
-          transform: speedIntensity > 0.7
-            ? `translateX(${(Math.random() - 0.5) * speedIntensity * 4}px)`
+          filter: speedIntensity > 0.6
+            ? `blur(${Math.floor(speedIntensity * 1.5)}px) brightness(${1 + speedIntensity * 0.2})`
             : 'none',
         }}
         preload="auto"

@@ -13,7 +13,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export interface Pilot {
     id: string;
     name: string;
-    category: 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
+    number: number | null;
     team: string | null;
     photo_url: string | null;
     created_at: string;
@@ -32,6 +33,7 @@ export interface Stage {
     track_record?: string;
     track_description?: string;
     track_id?: string;
+    period?: string;
 }
 
 export interface News {
@@ -51,7 +53,7 @@ export interface News {
 export interface Standing {
     id: string;
     pilot_id: string;
-    category: 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
     points: number;
     position: number | null;
     season_year: number;

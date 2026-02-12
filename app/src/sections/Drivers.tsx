@@ -1,34 +1,21 @@
 import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const proDrivers = [
-  { number: '27', name: 'Lucas Silveira', color: '#F5B500', image: '/images/pilots/pilot_pro_01.png' },
-  { number: '45', name: 'Bruno Oliveira', color: '#3b82f6', image: '/images/pilots/pilot_pro_02.png' },
-  { number: '07', name: 'Marco Aurélio', color: '#3b82f6', image: '/images/pilots/pilot_pro_03.png' },
-  { number: '88', name: 'Gabriel Santos', color: '#F5B500', image: '/images/pilots/pilot_pro_04.png' },
-  { number: '03', name: 'Daniel Mendes', color: '#3b82f6', image: '/images/pilots/pilot_pro_05.png' },
-  { number: '82', name: 'Gustavo Lima', color: '#3b82f6', image: '/images/pilots/pilot_pro_06.png' },
-];
-
-const lightDrivers = [
-  { number: '12', name: 'Thiago Oliveira', color: '#22c55e', image: '/images/pilots/pilot_light_01.png' },
-  { number: '33', name: 'João Pedro', color: '#a855f7', image: '/images/pilots/pilot_light_02.png' },
-  { number: '55', name: 'Mateus Silva', color: '#f59e0b', image: '/images/pilots/pilot_light_03.png' },
-  { number: '77', name: 'Vinícius Souza', color: '#ef4444', image: '/images/pilots/pilot_light_04.png' },
-  { number: '99', name: 'Leonardo Ferreira', color: '#06b6d4', image: '/images/pilots/pilot_light_05.png' },
-  { number: '21', name: 'Rafael Gomes', color: '#84cc16', image: '/images/pilots/pilot_light_06.png' },
-];
+import { supabase, type Pilot } from '../lib/supabase';
 
 export function Drivers() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<'pro' | 'light'>('pro');
+  const [activeTab, setActiveTab] = useState<'Ouro' | 'Prata'>('Ouro');
+  const [pilots, setPilots] = useState<Pilot[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -71,12 +58,34 @@ export function Drivers() {
       );
 
       // Grid animation
-      animateGrid();
+      if (!isLoading) {
+        animateGrid();
+      }
 
     }, section);
 
     return () => ctx.revert();
+  }, [isLoading]);
+
+  useEffect(() => {
+    fetchPilots();
   }, []);
+
+  const fetchPilots = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('pilots')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      if (data) setPilots(data);
+    } catch (err) {
+      console.error('Error fetching pilots:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const animateGrid = () => {
     const cards = gridRef.current?.querySelectorAll('.driver-card');
@@ -96,8 +105,13 @@ export function Drivers() {
     }
   };
 
-  const handleTabChange = (tab: 'pro' | 'light') => {
+  const handleTabChange = (tab: 'Ouro' | 'Prata') => {
     if (tab === activeTab) return;
+
+    // Reset scroll when changing tabs
+    if (gridRef.current) {
+      gridRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+    }
 
     // Animate out current cards
     const cards = gridRef.current?.querySelectorAll('.driver-card');
@@ -114,10 +128,22 @@ export function Drivers() {
           setTimeout(animateGrid, 50);
         }
       });
+    } else {
+      setActiveTab(tab);
     }
   };
 
-  const currentDrivers = activeTab === 'pro' ? proDrivers : lightDrivers;
+  const scroll = (direction: 'left' | 'right') => {
+    if (gridRef.current) {
+      const scrollAmount = gridRef.current.clientWidth * 0.8;
+      gridRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const currentDrivers = pilots.filter(p => p.category === activeTab);
 
   return (
     <section
@@ -165,104 +191,136 @@ export function Drivers() {
         >
           <div className="bg-white/5 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 flex gap-2">
             <button
-              onClick={() => handleTabChange('pro')}
+              onClick={() => handleTabChange('Ouro')}
               className={`
                 px-10 py-3 font-display uppercase text-2xl font-bold italic rounded-xl transition-all duration-500
-                ${activeTab === 'pro'
+                ${activeTab === 'Ouro'
                   ? 'bg-gradient-to-r from-[#F5B500] to-[#FFD700] text-black shadow-[0_10px_30px_rgba(245,181,0,0.4)] scale-105'
                   : 'text-white/40 hover:text-white hover:bg-white/5'
                 }
               `}
               style={{ fontFamily: 'Teko, sans-serif' }}
             >
-              CATEGORIA PRO
+              CATEGORIA OURO
             </button>
             <button
-              onClick={() => handleTabChange('light')}
+              onClick={() => handleTabChange('Prata')}
               className={`
                 px-10 py-3 font-display uppercase text-2xl font-bold italic rounded-xl transition-all duration-500
-                ${activeTab === 'light'
+                ${activeTab === 'Prata'
                   ? 'bg-gradient-to-r from-[#2E6A9C] to-[#3b82f6] text-white shadow-[0_10px_30px_rgba(46,106,156,0.4)] scale-105'
                   : 'text-white/40 hover:text-white hover:bg-white/5'
                 }
               `}
               style={{ fontFamily: 'Teko, sans-serif' }}
             >
-              CATEGORIA LIGHT
+              CATEGORIA PRATA
             </button>
           </div>
         </div>
 
-        {/* Drivers Grid */}
-        <div
-          ref={gridRef}
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8"
-        >
-          {currentDrivers.map((driver) => (
-            <GlitchCard
-              key={driver.number}
-              className="driver-card"
-              intensity="low"
-              glitchColor1={driver.color}
-              glitchColor2="#ffffff"
-            >
-              <div className="relative group cursor-pointer bg-[#101010] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 shadow-2xl">
-                {/* Driver Identity Plate */}
-                <div className="relative aspect-[3/4.5] overflow-hidden">
-                  <img
-                    src={driver.image}
-                    alt={driver.name}
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-115"
-                    loading="lazy"
-                  />
+        {/* Drivers Carousel Container */}
+        <div className="relative group/carousel px-4 md:px-12">
+          {/* Navigation Arrows */}
+          <button
+            onClick={() => scroll('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-4 bg-black/50 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 -translate-x-4 group-hover/carousel:translate-x-0 hidden md:flex items-center justify-center hover:bg-[#F5B500] hover:text-black"
+          >
+            <ChevronLeft size={32} />
+          </button>
 
-                  {/* High-end gradient mask */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-black/20 opacity-80" />
+          <button
+            onClick={() => scroll('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-30 p-4 bg-black/50 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 translate-x-4 group-hover/carousel:translate-x-0 hidden md:flex items-center justify-center hover:bg-[#F5B500] hover:text-black"
+          >
+            <ChevronRight size={32} />
+          </button>
 
-                  {/* Racing Number with Glow */}
-                  <div className="absolute -bottom-4 -left-4">
-                    <div
-                      className="text-white font-display text-8xl font-black italic leading-none opacity-20 group-hover:opacity-40 transition-opacity duration-500 select-none"
-                      style={{ fontFamily: 'Teko, sans-serif' }}
-                    >
-                      {driver.number}
+          {/* Visual Fade Endings */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#080808] to-transparent z-20 pointer-events-none hidden md:block" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#080808] to-transparent z-20 pointer-events-none hidden md:block" />
+
+          {/* Scrolling Area */}
+          <div
+            ref={gridRef}
+            className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-10"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            {currentDrivers.map((driver) => {
+              const driverColor = activeTab === 'Ouro' ? '#F5B500' : '#2E6A9C';
+              const driverImage = driver.photo_url || 'https://images.unsplash.com/photo-1530648672449-81f6c723e2c1?q=80&w=800&auto=format&fit=crop';
+
+              return (
+                <div key={driver.id} className="min-w-[260px] md:min-w-[320px] snap-center driver-card">
+                  <GlitchCard
+                    intensity="low"
+                    glitchColor1={driverColor}
+                    glitchColor2="#ffffff"
+                  >
+                    <div className="relative group cursor-pointer bg-[#101010] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 shadow-2xl">
+                      {/* Driver Identity Plate */}
+                      <div className="relative aspect-[3/4.5] overflow-hidden">
+                        <img
+                          src={driverImage}
+                          alt={driver.name}
+                          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-115"
+                          loading="lazy"
+                        />
+
+                        {/* High-end gradient mask */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-black/20 opacity-80" />
+
+                        {/* Racing Number with Glow */}
+                        <div className="absolute -bottom-4 -left-4">
+                          <div
+                            className="text-white font-display text-8xl font-black italic leading-none opacity-20 group-hover:opacity-40 transition-opacity duration-500 select-none"
+                            style={{ fontFamily: 'Teko, sans-serif' }}
+                          >
+                            {driver.number}
+                          </div>
+                        </div>
+
+                        {/* Floating Number Accent */}
+                        <div className="absolute top-4 right-4">
+                          <div
+                            className="text-white font-display text-3xl font-bold italic bg-black/40 backdrop-blur-md w-12 h-12 flex items-center justify-center rounded-lg border border-white/20 shadow-xl"
+                            style={{
+                              fontFamily: 'Teko, sans-serif',
+                              color: driverColor,
+                              boxShadow: `0 0 20px ${driverColor}40`
+                            }}
+                          >
+                            {driver.number || '00'}
+                          </div>
+                        </div>
+
+                        {/* Interaction Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      </div>
+
+                      {/* Name Label - Slanted style */}
+                      <div
+                        className="relative py-4 px-3 text-center transition-all duration-500 bg-[#1a1a1a]"
+                      >
+                        <div
+                          className="absolute inset-y-0 left-0 w-1.5 shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                          style={{ background: driverColor }}
+                        />
+                        <div className="text-white font-display text-xl leading-none uppercase italic font-bold tracking-tight truncate" style={{ fontFamily: 'Teko, sans-serif' }}>
+                          {driver.name}
+                        </div>
+                        <div className="text-[9px] text-white/30 font-black tracking-widest uppercase mt-1">SQUADRA CORSE</div>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Floating Number Accent */}
-                  <div className="absolute top-4 right-4">
-                    <div
-                      className="text-white font-display text-3xl font-bold italic bg-black/40 backdrop-blur-md w-12 h-12 flex items-center justify-center rounded-lg border border-white/20 shadow-xl"
-                      style={{
-                        fontFamily: 'Teko, sans-serif',
-                        color: driver.color,
-                        boxShadow: `0 0 20px ${driver.color}40`
-                      }}
-                    >
-                      {driver.number}
-                    </div>
-                  </div>
-
-                  {/* Interaction Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </GlitchCard>
                 </div>
-
-                {/* Name Label - Slanted style */}
-                <div
-                  className="relative py-4 px-3 text-center transition-all duration-500 bg-[#1a1a1a]"
-                >
-                  <div
-                    className="absolute inset-y-0 left-0 w-1.5 shadow-[0_0_10px_rgba(255,255,255,0.3)]"
-                    style={{ background: driver.color }}
-                  />
-                  <div className="text-white font-display text-xl leading-none uppercase italic font-bold tracking-tight truncate" style={{ fontFamily: 'Teko, sans-serif' }}>
-                    {driver.name}
-                  </div>
-                  <div className="text-[9px] text-white/30 font-black tracking-widest uppercase mt-1">SQUADRA CORSE</div>
-                </div>
-              </div>
-            </GlitchCard>
-          ))}
+              );
+            })}
+          </div>
         </div>
 
         {/* Premium Stats Summary */}
@@ -282,7 +340,7 @@ export function Drivers() {
                 className="text-5xl md:text-7xl font-display font-black text-[#F5B500] leading-none group-hover:scale-110 transition-all duration-500"
                 style={{ fontFamily: 'Teko, sans-serif', textShadow: '0 0 30px rgba(245,181,0,0.3)' }}
               >
-                {activeTab === 'pro' ? '52' : '34'}
+                {activeTab === 'Ouro' ? '52' : '34'}
               </div>
               <div className="text-white/40 text-xs md:text-sm uppercase font-black tracking-[0.2em] mt-2">Corridas Disputadas</div>
             </div>

@@ -134,7 +134,8 @@ export function News() {
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl relative">
+
             <h2
               ref={titleRef}
               className="text-5xl md:text-7xl font-display font-black uppercase italic text-white flex items-center leading-none tracking-tighter"

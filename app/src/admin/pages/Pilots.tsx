@@ -7,7 +7,8 @@ import { supabase, type Pilot as DBPilot } from '../../lib/supabase';
 interface Pilot {
     id: string;
     name: string;
-    category: 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
+    number: number | null;
     photo: string | null;
     team?: string;
 }
@@ -32,19 +33,21 @@ export function Pilots() {
             setPilots(data.map((p: DBPilot) => ({
                 id: p.id,
                 name: p.name,
-                category: p.category,
+                category: p.category as 'Ouro' | 'Prata',
+                number: p.number,
                 photo: p.photo_url,
                 team: p.team || undefined
             })));
         }
     };
     const [search, setSearch] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'PRO' | 'LIGHT'>('ALL');
+    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'Ouro' | 'Prata'>('ALL');
     const [showModal, setShowModal] = useState(false);
     const [editingPilot, setEditingPilot] = useState<Pilot | null>(null);
     const [formData, setFormData] = useState({
         name: '',
-        category: 'PRO' as 'PRO' | 'LIGHT',
+        category: 'Ouro' as 'Ouro' | 'Prata',
+        number: '' as string | number,
         team: '',
         photo: null as string | null,
     });
@@ -61,12 +64,13 @@ export function Pilots() {
             setFormData({
                 name: pilot.name,
                 category: pilot.category,
+                number: pilot.number || '',
                 team: pilot.team || '',
                 photo: pilot.photo,
             });
         } else {
             setEditingPilot(null);
-            setFormData({ name: '', category: 'PRO', team: '', photo: null });
+            setFormData({ name: '', category: 'Ouro', number: '', team: '', photo: null });
         }
         setShowModal(true);
     };
@@ -74,19 +78,22 @@ export function Pilots() {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingPilot(null);
-        setFormData({ name: '', category: 'PRO', team: '', photo: null });
+        setFormData({ name: '', category: 'Ouro', number: '', team: '', photo: null });
     };
 
     const handleSave = async () => {
+        const payload = {
+            name: formData.name,
+            category: formData.category,
+            number: formData.number === '' ? null : Number(formData.number),
+            team: formData.team || null,
+            photo_url: formData.photo
+        };
+
         if (editingPilot) {
             const { error } = await supabase
                 .from('pilots')
-                .update({
-                    name: formData.name,
-                    category: formData.category,
-                    team: formData.team || null,
-                    photo_url: formData.photo
-                })
+                .update(payload)
                 .eq('id', editingPilot.id);
 
             if (error) {
@@ -97,12 +104,7 @@ export function Pilots() {
         } else {
             const { error } = await supabase
                 .from('pilots')
-                .insert({
-                    name: formData.name,
-                    category: formData.category,
-                    team: formData.team || null,
-                    photo_url: formData.photo
-                });
+                .insert(payload);
 
             if (error) {
                 console.error('Error creating pilot:', error);
@@ -156,8 +158,8 @@ export function Pilots() {
                         className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E6A9C]"
                     >
                         <option value="ALL">Todas</option>
-                        <option value="PRO">PRO</option>
-                        <option value="LIGHT">LIGHT</option>
+                        <option value="Ouro">Ouro</option>
+                        <option value="Prata">Prata</option>
                     </select>
                 </div>
 
@@ -175,8 +177,15 @@ export function Pilots() {
                 {filteredPilots.map((pilot) => (
                     <div
                         key={pilot.id}
-                        className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
+                        className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow relative"
                     >
+                        {/* Pilot Number Badge */}
+                        {pilot.number && (
+                            <div className="absolute top-4 right-4 bg-[#F5B500] text-black font-bold px-2 py-0.5 rounded text-xs shadow-sm" style={{ fontFamily: 'Teko, sans-serif' }}>
+                                #{pilot.number}
+                            </div>
+                        )}
+
                         {/* Photo */}
                         <div className="flex justify-center mb-4">
                             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200">
@@ -205,16 +214,16 @@ export function Pilots() {
                             {pilot.team && (
                                 <p className="text-sm text-gray-500">{pilot.team}</p>
                             )}
-                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${pilot.category === 'PRO'
-                                ? 'bg-[#2E6A9C]/10 text-[#2E6A9C]'
-                                : 'bg-[#F5B500]/10 text-[#F5B500]'
+                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${pilot.category === 'Ouro'
+                                ? 'bg-amber-100 text-amber-600'
+                                : 'bg-slate-100 text-slate-500'
                                 }`}>
                                 {pilot.category}
                             </span>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex justify-center gap-2 mt-4">
+                        <div className="flex justify-center gap-2 mt-4 border-t pt-4">
                             <button
                                 onClick={() => handleOpenModal(pilot)}
                                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -236,10 +245,10 @@ export function Pilots() {
             {showModal && (
                 <>
                     <div
-                        className="fixed inset-0 bg-black/50 z-50"
+                        className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
                         onClick={handleCloseModal}
                     />
-                    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+                    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] bg-white rounded-xl shadow-2xl w-full max-w-md p-6 overflow-y-auto max-h-[90vh]">
                         <h2
                             className="text-2xl font-bold text-slate-800 mb-6"
                             style={{ fontFamily: 'Teko, sans-serif' }}
@@ -259,29 +268,53 @@ export function Pilots() {
                                 />
                             </div>
 
-                            {/* Name */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E6A9C]"
-                                    placeholder="Nome do piloto"
-                                />
+                            <div className="grid grid-cols-3 gap-4">
+                                {/* Name */}
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E6A9C]"
+                                        placeholder="Piloto"
+                                    />
+                                </div>
+
+                                {/* Number */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nº</label>
+                                    <input
+                                        type="number"
+                                        value={formData.number}
+                                        onChange={(e) => setFormData({ ...formData, number: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E6A9C]"
+                                        placeholder="00"
+                                    />
+                                </div>
                             </div>
 
                             {/* Category */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                                <select
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value as 'PRO' | 'LIGHT' })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E6A9C]"
-                                >
-                                    <option value="PRO">PRO</option>
-                                    <option value="LIGHT">LIGHT</option>
-                                </select>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {(['Ouro', 'Prata'] as const).map((cat) => (
+                                        <button
+                                            key={cat}
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, category: cat })}
+                                            className={`px-4 py-2 rounded-lg border italic font-black text-lg transition-all ${formData.category === cat
+                                                ? cat === 'Ouro'
+                                                    ? 'bg-[#F5B500] border-[#F5B500] text-black shadow-lg shadow-[#F5B500]/20'
+                                                    : 'bg-slate-700 border-slate-700 text-white shadow-lg'
+                                                : 'border-gray-200 text-gray-400 hover:border-gray-300'
+                                                }`}
+                                            style={{ fontFamily: 'Teko, sans-serif' }}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Team */}

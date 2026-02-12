@@ -31,8 +31,8 @@ export function RealKartExperience() {
   const updateTelemetry = useCallback((progress: number) => {
     // Calculate speed (parabolic curve - faster in middle)
     const speed = Math.round(progress < 0.5
-      ? progress * 2 * 180
-      : (1 - progress) * 2 * 180);
+      ? progress * 2 * 130
+      : (1 - progress) * 2 * 130);
 
     // Calculate RPM
     const rpm = Math.round(1000 + progress * 14000);
@@ -81,7 +81,7 @@ export function RealKartExperience() {
         trigger: section,
         start: 'top top',
         end: '+=400%',
-        scrub: 0.5, // Add scrub for smoother updates
+        scrub: 1.2, // Increased for smoother 'buttery' motion sync
         onUpdate: (self) => {
           const progress = self.progress;
 
@@ -215,7 +215,7 @@ export function RealKartExperience() {
               <div
                 className="h-full rounded-full transition-all duration-100"
                 style={{
-                  width: `${(telemetry.speed / 180) * 100}%`,
+                  width: `${(telemetry.speed / 130) * 100}%`,
                   background: `linear-gradient(90deg, #2E6A9C 0%, #F5B500 100%)`,
                   boxShadow: '0 0 10px rgba(245, 181, 0, 0.5)'
                 }}
@@ -224,79 +224,15 @@ export function RealKartExperience() {
           </div>
         </div>
 
-        {/* Gear Indicator - Floating Bold */}
-        <div className="absolute bottom-12 right-12 z-20">
-          <div
-            className="p-8 rounded-[2rem] text-center border border-white/10 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
-            }}
-          >
-            <div className="text-[10px] text-white/50 font-black uppercase tracking-[0.3em] mb-2">MARCHA</div>
-            <div
-              className="text-7xl md:text-9xl font-display font-black leading-none italic"
-              style={{
-                fontFamily: 'Teko, sans-serif',
-                color: telemetry.gear === '6' ? '#F5B500' : '#ffffff',
-                textShadow: telemetry.gear === '6' ? '0 0 30px #F5B500' : '0 0 20px rgba(255,255,255,0.2)'
-              }}
-            >
-              {telemetry.gear}
-            </div>
-          </div>
-        </div>
+        {/* Gear Indicator removed per briefing */}
+        {/* <div className="absolute bottom-12 right-12 z-20">
+          ...
+        </div> */}
 
-        {/* Side Info Panel - Tech Grid style */}
-        <div className="absolute top-1/2 right-12 -translate-y-1/2 z-20 hidden lg:block">
-          <div
-            className="space-y-6 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-            style={{
-              background: 'rgba(5, 5, 5, 0.4)',
-            }}
-          >
-            <div>
-              <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-1">MOTOR RPM</div>
-              <div
-                className="text-4xl font-display font-black italic tracking-tight italic"
-                style={{
-                  fontFamily: 'Teko, sans-serif',
-                  color: telemetry.rpm > 13000 ? '#F5B500' : '#ffffff'
-                }}
-              >
-                {telemetry.rpm.toLocaleString()}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-2">OVERBOOST TURBO</div>
-              <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/10">
-                <div
-                  className="h-full bg-gradient-to-r from-[#2E6A9C] to-cyan-400 rounded-full transition-all duration-100"
-                  style={{
-                    width: `${telemetry.turbo}%`,
-                    boxShadow: '0 0 15px rgba(0, 191, 255, 0.4)'
-                  }}
-                />
-              </div>
-              <div className="text-right text-xs text-cyan-400 mt-1 font-mono font-bold">{telemetry.turbo}%</div>
-            </div>
-
-            <div className="flex justify-between items-end gap-6 pt-4 border-t border-white/5">
-              <div>
-                <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">TRACK TEMP</div>
-                <div className="text-2xl font-display font-bold text-[#F5B500] italic" style={{ fontFamily: 'Teko, sans-serif' }}>
-                  {Math.round(85 + telemetry.progress * 40)}°C
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">LAP PROGRESS</div>
-                <div className="text-2xl font-display font-bold text-white italic" style={{ fontFamily: 'Teko, sans-serif' }}>
-                  {Math.round(telemetry.progress * 100)}%
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Side Info Panel removed per briefing */}
+        {/* <div className="absolute top-1/2 right-12 -translate-y-1/2 z-20 hidden lg:block">
+            ...
+        </div> */}
 
         {/* Dynamic Progress line - Cyber style */}
         <div className="absolute bottom-0 left-0 right-0 z-30">

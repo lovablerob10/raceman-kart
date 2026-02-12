@@ -16,17 +16,17 @@
   --f1-gold: #FFD700;
   --f1-white: #FFFFFF;
   --f1-accent: #FF4422;
-  
+
   /* Gradients */
   --gradient-racing: linear-gradient(135deg, var(--f1-red) 0%, #FF4422 50%, var(--f1-gold) 100%);
   --gradient-carbon: linear-gradient(180deg, #1a1a1a 0%, #0D0D0D 100%);
   --gradient-metallic: linear-gradient(90deg, #C0C0C0 0%, #FFFFFF 50%, #C0C0C0 100%);
-  
+
   /* Typography */
   --font-display: 'Teko', sans-serif;
   --font-technical: 'Rajdhani', sans-serif;
   --font-mono: 'Roboto Mono', monospace;
-  
+
   /* Spacing - F1 Grid System */
   --space-unit: 0.25rem;
   --space-xs: calc(var(--space-unit) * 2);
@@ -35,13 +35,13 @@
   --space-lg: calc(var(--space-unit) * 8);
   --space-xl: calc(var(--space-unit) * 12);
   --space-2xl: calc(var(--space-unit) * 16);
-  
+
   /* Animation Timing - Physics Based */
   --ease-racing: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-braking: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-drift: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --ease-inertia: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  
+
   /* Duration */
   --duration-instant: 0.1s;
   --duration-fast: 0.2s;
@@ -109,21 +109,17 @@ body {
 /* === CARBON FIBER TEXTURE === */
 .carbon-fiber {
   background-color: #0D0D0D;
-  background-image: 
-    repeating-linear-gradient(
-      45deg,
+  background-image:
+    repeating-linear-gradient(45deg,
       transparent,
       transparent 2px,
-      rgba(255,255,255,0.03) 2px,
-      rgba(255,255,255,0.03) 4px
-    ),
-    repeating-linear-gradient(
-      -45deg,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px),
+    repeating-linear-gradient(-45deg,
       transparent,
       transparent 2px,
-      rgba(255,255,255,0.02) 2px,
-      rgba(255,255,255,0.02) 4px
-    );
+      rgba(255, 255, 255, 0.02) 2px,
+      rgba(255, 255, 255, 0.02) 4px);
 }
 
 /* === METALLIC STRIPES === */
@@ -138,13 +134,18 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
   animation: metallic-shine 3s linear infinite;
 }
 
 @keyframes metallic-shine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* === TELEMETRY UI ELEMENTS === */
@@ -231,14 +232,14 @@ body {
 /* === GLOW EFFECTS === */
 .glow-red {
   box-shadow: 0 0 20px rgba(225, 6, 0, 0.5),
-              0 0 40px rgba(225, 6, 0, 0.3),
-              0 0 60px rgba(225, 6, 0, 0.1);
+    0 0 40px rgba(225, 6, 0, 0.3),
+    0 0 60px rgba(225, 6, 0, 0.1);
 }
 
 .glow-text {
   text-shadow: 0 0 10px currentColor,
-               0 0 20px currentColor,
-               0 0 40px currentColor;
+    0 0 20px currentColor,
+    0 0 40px currentColor;
 }
 
 /* === HEAT HAZE EFFECT === */
@@ -258,8 +259,13 @@ body {
 }
 
 @keyframes heat-shimmer {
-  0% { transform: translateY(-2px) scale(1.01); }
-  100% { transform: translateY(2px) scale(0.99); }
+  0% {
+    transform: translateY(-2px) scale(1.01);
+  }
+
+  100% {
+    transform: translateY(2px) scale(0.99);
+  }
 }
 
 /* === SPEED LINES === */
@@ -273,15 +279,28 @@ body {
 .speed-line {
   position: absolute;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
   animation: speed-line-move 0.5s linear infinite;
 }
 
 @keyframes speed-line-move {
-  0% { transform: translateX(-100%); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateX(100vw); opacity: 0; }
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
 }
 
 /* === DATA STREAM EFFECT === */
@@ -299,13 +318,18 @@ body {
 }
 
 @keyframes data-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 /* === CHECKERED PATTERN === */
 .checkered {
-  background-image: 
+  background-image:
     linear-gradient(45deg, #000 25%, transparent 25%),
     linear-gradient(-45deg, #000 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #000 75%),
@@ -335,7 +359,7 @@ body {
   transform: skewX(-15deg);
 }
 
-.skew-racing > * {
+.skew-racing>* {
   transform: skewX(15deg);
 }
 
@@ -345,8 +369,15 @@ body {
 }
 
 @keyframes loading-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 /* === SCROLLBAR STYLING === */
@@ -376,6 +407,7 @@ body {
 
 /* === REDUCED MOTION === */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -384,4 +416,35 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* === ANTI-INJECTION GUARDS === */
+/* ULTRA AGGRESSIVE: Hides buttons injected by browser extensions (like Spector, IDM, etc.) */
+[id*="spector"],
+[class*="spector"],
+[id*="download-button"],
+[class*="download-button"],
+[class*="download-wrapper"],
+[class*="ir-button"],
+[id*="idm"],
+[class*="idm"],
+button[class*="download"],
+a[class*="download"],
+[style*="background-color: rgb(0, 149, 246)"],
+[style*="background-color:#0095f6"],
+div[class*="Button-root"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  pointer-events: none !important;
+  z-index: -9999 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+/* Broad sweep to prevent any extra divs in our grid */
+.insta-item>div:not([class*="absolute"]):not([class*="inset-0"]) {
+  display: none !important;
 }

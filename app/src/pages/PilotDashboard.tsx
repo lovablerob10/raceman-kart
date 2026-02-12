@@ -8,7 +8,8 @@ import {
     AlertCircle,
     Send,
     Plus,
-    X
+    X,
+    User
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -41,6 +42,7 @@ export function PilotDashboard() {
     const navigate = useNavigate();
     const [pilot, setPilot] = useState<PilotSession | null>(null);
     const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
+    const [globalRequests, setGlobalRequests] = useState<MaintenanceRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -55,6 +57,19 @@ export function PilotDashboard() {
         const parsedSession = JSON.parse(session);
         setPilot(parsedSession);
         fetchMyRequests(parsedSession.name);
+        fetchGlobalRequests();
+
+        // Optional: set up realtime subscription for global updates
+        const subscription = supabase
+            .channel('global_maintenance')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'maintenance_requests' }, () => {
+                fetchGlobalRequests();
+            })
+            .subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, [navigate]);
 
     const fetchMyRequests = async (pilotName: string) => {
@@ -69,6 +84,18 @@ export function PilotDashboard() {
             setRequests(data || []);
         }
         setLoading(false);
+    };
+
+    const fetchGlobalRequests = async () => {
+        const { data, error } = await supabase
+            .from('maintenance_requests')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+        if (!error) {
+            setGlobalRequests(data || []);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -141,63 +168,103 @@ export function PilotDashboard() {
             </header>
 
             <main className="container mx-auto px-4 py-8 max-w-2xl">
-                {/* Hero / Action */}
-                <div className="bg-gradient-to-br from-[#2E6A9C]/20 to-transparent p-8 rounded-3xl border border-white/5 mb-8 relative overflow-hidden group">
-                    <div className="relative z-10">
-                        <h1 className="text-5xl font-black italic uppercase italic leading-none tracking-tighter mb-2">
-                            CENTRO DE <span className="text-[#F5B500]">OPERAÇÕES</span>
-                        </h1>
-                        <p className="text-white/60 uppercase tracking-widest text-sm mb-6">Área técnica exclusiva para pilotos</p>
+                <div className="grid lg:grid-cols-2 gap-8">
+                    {/* Hero / Action */}
+                    <div className="bg-gradient-to-br from-[#2E6A9C]/20 to-transparent p-8 rounded-3xl border border-white/5 relative overflow-hidden group h-fit">
+                        <div className="relative z-10">
+                            <h1 className="text-5xl font-black italic uppercase leading-none tracking-tighter mb-2">
+                                CENTRO DE <span className="text-[#F5B500]">OPERAÇÕES</span>
+                            </h1>
+                            <p className="text-white/60 uppercase tracking-widest text-sm mb-6">Área técnica exclusiva para pilotos</p>
 
-                        {!showForm ? (
-                            <button
-                                onClick={() => setShowForm(true)}
-                                className="bg-[#F5B500] hover:bg-[#ffc633] text-black px-6 py-4 rounded-xl flex items-center gap-3 font-black uppercase text-xl transition-all shadow-xl active:scale-95"
-                            >
-                                <Plus size={24} />
-                                FAZER NOVO PEDIDO
-                            </button>
-                        ) : (
-                            <div className="bg-[#1a1a1f] p-6 rounded-2xl border border-white/10 relative">
+                            {!showForm ? (
                                 <button
-                                    onClick={() => setShowForm(false)}
-                                    className="absolute top-4 right-4 text-white/40 hover:text-white"
+                                    onClick={() => setShowForm(true)}
+                                    className="w-full bg-[#F5B500] hover:bg-[#ffc633] text-black px-6 py-4 rounded-xl flex items-center justify-center gap-3 font-black uppercase text-xl transition-all shadow-xl active:scale-95"
                                 >
-                                    <X size={24} />
+                                    <Plus size={24} />
+                                    FAZER NOVO PEDIDO
                                 </button>
-                                <h3 className="text-2xl font-bold italic mb-6">NOVA SOLICITAÇÃO</h3>
-                                <form onSubmit={handleSubmit} className="space-y-6 text-left">
-                                    <div className="space-y-1">
-                                        <label className="text-white/40 text-xs uppercase tracking-widest">Manutenção</label>
-                                        <select
-                                            value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white appearance-none text-xl"
-                                            required
-                                        >
-                                            <option value="" className="bg-[#1a1a1f]">Selecione o tipo...</option>
-                                            {CATEGORIES.map(c => <option key={c.value} value={c.value} className="bg-[#1a1a1f]">{c.label}</option>)}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-white/40 text-xs uppercase tracking-widest">Detalhes</label>
-                                        <textarea
-                                            value={formData.message}
-                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                            placeholder="Ex: Trepidação no freio traseiro..."
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-lg min-h-[100px] resize-none"
-                                        />
-                                    </div>
+                            ) : (
+                                <div className="bg-[#1a1a1f] p-6 rounded-2xl border border-white/10 relative">
                                     <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        className="w-full bg-[#F5B500] text-black py-4 rounded-xl font-bold uppercase text-xl flex items-center justify-center gap-3 transition-all hover:bg-[#ffc633]"
+                                        onClick={() => setShowForm(false)}
+                                        className="absolute top-4 right-4 text-white/40 hover:text-white"
                                     >
-                                        {submitting ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={20} /> ENVIAR PARA O BOX</>}
+                                        <X size={24} />
                                     </button>
-                                </form>
+                                    <h3 className="text-2xl font-bold italic mb-6">NOVA SOLICITAÇÃO</h3>
+                                    <form onSubmit={handleSubmit} className="space-y-6 text-left">
+                                        <div className="space-y-1">
+                                            <label className="text-white/40 text-xs uppercase tracking-widest">Manutenção</label>
+                                            <select
+                                                value={formData.category}
+                                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white appearance-none text-xl"
+                                                required
+                                            >
+                                                <option value="" className="bg-[#1a1a1f]">Selecione o tipo...</option>
+                                                {CATEGORIES.map(c => <option key={c.value} value={c.value} className="bg-[#1a1a1f]">{c.label}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-white/40 text-xs uppercase tracking-widest">Detalhes</label>
+                                            <textarea
+                                                value={formData.message}
+                                                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                                placeholder="Ex: Trepidação no freio traseiro..."
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-lg min-h-[100px] resize-none"
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            disabled={submitting}
+                                            className="w-full bg-[#F5B500] text-black py-4 rounded-xl font-bold uppercase text-xl flex items-center justify-center gap-3 transition-all hover:bg-[#ffc633]"
+                                        >
+                                            {submitting ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={20} /> ENVIAR PARA O BOX</>}
+                                        </button>
+                                    </form>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Status do Grid - Global Feed (Simulated or Real-time) */}
+                    <div className="bg-white/5 border border-white/5 rounded-3xl p-6 h-fit max-h-[500px] overflow-hidden flex flex-col">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-[#2E6A9C]/20 flex items-center justify-center border border-[#2E6A9C]/30">
+                                <Clock className="text-[#F5B500]" size={20} />
                             </div>
-                        )}
+                            <div>
+                                <h3 className="text-2xl font-bold italic uppercase leading-none">Status do Grid</h3>
+                                <p className="text-[10px] uppercase tracking-widest text-white/30">Atualizações em tempo real</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
+                            {globalRequests.length === 0 ? (
+                                <p className="text-white/20 text-xs uppercase italic tracking-widest text-center py-8 border border-dashed border-white/5 rounded-xl">
+                                    Aguardando atualizações...
+                                </p>
+                            ) : (
+                                globalRequests.map(req => (
+                                    <div key={req.id} className="bg-white/5 rounded-xl p-3 border border-white/5 flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#F5B500]">
+                                                <User size={14} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold uppercase italic leading-none">{req.pilot}</p>
+                                                <p className="text-[10px] text-[#F5B500] uppercase font-black mt-1">{req.category}</p>
+                                            </div>
+                                        </div>
+                                        <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getStatusColor(req.status)}`}>
+                                            {req.status}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
 

@@ -247,8 +247,8 @@ export function HeroPremium() {
               </div>
               <div className="w-px bg-white/20" />
               <div>
-                <div className="text-4xl font-display font-bold text-[#F5B500]">(mais de 130 corridas)</div>
-                <div className="text-sm text-white/50 uppercase tracking-wider">Histórico</div>
+                <div className="text-4xl font-display font-bold text-[#F5B500]">+130</div>
+                <div className="text-sm text-white/50 uppercase tracking-wider">Pilotos</div>
               </div>
 
             </div>
