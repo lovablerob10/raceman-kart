@@ -1,45 +1,99 @@
-import { useState } from 'react';
-import { Trophy, Medal, Award, Save } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trophy, Medal, Award, Save, Loader2 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 interface Pilot {
-    id: number;
+    id: string;
+    pilot_id: string;
     name: string;
     category: 'PRO' | 'LIGHT';
     points: number;
     position: number;
 }
 
-const initialPilots: Pilot[] = [
-    { id: 1, name: 'EDERSON RODRIGUES', category: 'PRO', points: 245, position: 1 },
-    { id: 2, name: 'THEO TREVISANI', category: 'PRO', points: 230, position: 2 },
-    { id: 3, name: 'RAFAEL CONTATTO', category: 'PRO', points: 215, position: 3 },
-    { id: 4, name: 'WILLIAM SAURA', category: 'PRO', points: 198, position: 4 },
-    { id: 5, name: 'MARCELO BOHAL', category: 'LIGHT', points: 210, position: 1 },
-    { id: 6, name: 'BETO VIEIRA', category: 'LIGHT', points: 195, position: 2 },
-];
-
 export function Standings() {
-    const [pilots, setPilots] = useState<Pilot[]>(initialPilots);
-    const [editedPoints, setEditedPoints] = useState<Record<number, number>>({});
+    const [pilots, setPilots] = useState<Pilot[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [editedPoints, setEditedPoints] = useState<Record<string, number>>({});
     const [hasChanges, setHasChanges] = useState(false);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        fetchStandings();
+    }, []);
+
+    const fetchStandings = async () => {
+        try {
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('standings')
+                .select(`
+                    id,
+                    pilot_id,
+                    points,
+                    position,
+                    category,
+                    pilot:pilot_id (
+                        name
+                    )
+                `)
+                .order('points', { ascending: false });
+
+            if (error) throw error;
+
+            if (data) {
+                const mapped: Pilot[] = data.map((s: any, index: number) => ({
+                    id: s.id,
+                    pilot_id: s.pilot_id,
+                    name: s.pilot?.name || 'Piloto',
+                    category: s.category as 'PRO' | 'LIGHT',
+                    points: s.points,
+                    position: index + 1
+                }));
+                setPilots(mapped);
+            }
+        } catch (err) {
+            console.error('Error fetching standings:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const proPilots = pilots.filter(p => p.category === 'PRO').sort((a, b) => b.points - a.points);
     const lightPilots = pilots.filter(p => p.category === 'LIGHT').sort((a, b) => b.points - a.points);
 
-    const handlePointsChange = (id: number, points: number) => {
+    const handlePointsChange = (id: string, points: number) => {
         setEditedPoints({ ...editedPoints, [id]: points });
         setHasChanges(true);
     };
 
-    const handleSave = () => {
-        const updated = pilots.map(p => ({
-            ...p,
-            points: editedPoints[p.id] ?? p.points
-        }));
-        setPilots(updated);
-        setEditedPoints({});
-        setHasChanges(false);
-        alert('Pontuação atualizada com sucesso!');
+    const handleSave = async () => {
+        try {
+            setSaving(true);
+            const updates = Object.entries(editedPoints).map(([id, points]) => ({
+                id,
+                points
+            }));
+
+            for (const update of updates) {
+                const { error } = await supabase
+                    .from('standings')
+                    .update({ points: update.points })
+                    .eq('id', update.id);
+
+                if (error) throw error;
+            }
+
+            await fetchStandings();
+            setEditedPoints({});
+            setHasChanges(false);
+            alert('Pontuação atualizada com sucesso!');
+        } catch (err) {
+            console.error('Error saving standings:', err);
+            alert('Erro ao salvar as alterações.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const getPositionIcon = (pos: number) => {
@@ -104,6 +158,14 @@ export function Standings() {
         </div>
     );
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center p-20">
+                <Loader2 className="w-10 h-10 text-[#2E6A9C] animate-spin" />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6">
             {/* Header with Save Button */}
@@ -111,14 +173,16 @@ export function Standings() {
                 <p className="text-gray-500">Edite a pontuação dos pilotos</p>
                 <button
                     onClick={handleSave}
-                    disabled={!hasChanges}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${hasChanges
+                    disabled={!hasChanges || saving}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${hasChanges && !saving
                         ? 'bg-[#2E6A9C] text-white hover:bg-[#1e4669]'
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                         }`}
                 >
-                    <Save size={20} />
-                    <span style={{ fontFamily: 'Teko, sans-serif' }}>Salvar Alterações</span>
+                    {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
+                    <span style={{ fontFamily: 'Teko, sans-serif' }}>
+                        {saving ? 'Salvando...' : 'Salvar Alterações'}
+                    </span>
                 </button>
             </div>
 
@@ -133,7 +197,7 @@ export function Standings() {
                 <div className="flex items-end justify-center gap-4">
                     {/* 2nd Place */}
                     <div className="text-center">
-                        <div className="w-20 h-20 rounded-full bg-gray-200 mx-auto mb-2 flex items-center justify-center">
+                        <div className="w-20 h-20 rounded-full bg-gray-200 mx-auto mb-2 flex items-center justify-center overflow-hidden">
                             <Medal className="text-gray-400" size={32} />
                         </div>
                         <div className="bg-gray-200 rounded-t-lg pt-4 pb-2 px-4 h-24 flex items-end justify-center">
@@ -146,7 +210,7 @@ export function Standings() {
 
                     {/* 1st Place */}
                     <div className="text-center">
-                        <div className="w-24 h-24 rounded-full bg-yellow-100 mx-auto mb-2 flex items-center justify-center border-4 border-yellow-400">
+                        <div className="w-24 h-24 rounded-full bg-yellow-100 mx-auto mb-2 flex items-center justify-center border-4 border-yellow-400 overflow-hidden">
                             <Trophy className="text-yellow-500" size={40} />
                         </div>
                         <div className="bg-yellow-400 rounded-t-lg pt-4 pb-2 px-4 h-32 flex items-end justify-center">
@@ -159,7 +223,7 @@ export function Standings() {
 
                     {/* 3rd Place */}
                     <div className="text-center">
-                        <div className="w-16 h-16 rounded-full bg-orange-100 mx-auto mb-2 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-orange-100 mx-auto mb-2 flex items-center justify-center overflow-hidden">
                             <Award className="text-orange-600" size={28} />
                         </div>
                         <div className="bg-orange-200 rounded-t-lg pt-4 pb-2 px-4 h-20 flex items-end justify-center">
