@@ -1,43 +1,60 @@
 import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Trophy, Crown, Star } from 'lucide-react';
+import { Trophy, Crown, Star, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
+import { supabase } from '../lib/supabase';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Champion image mapping
-const championImages: Record<string, string> = {
-  'MARCO AURÉLIO': '/images/pilots/pilot_pro_03.png',
-  'FELIPE ANDRADE': '/images/pilots/pilot_pro_04.png',
-  'RICARDO RAMOS': '/images/pilots/pilot_pro_05.png',
-  'PAULO SOUZA': '/images/pilots/pilot_light_02.png',
-  'PEDRO HENRIQUE': '/images/pilots/pilot_light_01.png',
-  'CARLOS EDUARDO': '/images/pilots/pilot_pro_01.png',
-};
-
-const champions = [
-  { year: '2025', name: 'MARCO AURÉLIO' },
-  { year: '2024', name: 'MARCO AURÉLIO' },
-  { year: '2023', name: 'FELIPE ANDRADE' },
-  { year: '2022', name: 'FELIPE ANDRADE' },
-  { year: '2021', name: 'RICARDO RAMOS' },
-  { year: '2020', name: 'PAULO SOUZA' },
-  { year: '2019', name: 'PEDRO HENRIQUE' },
-  { year: '2018', name: 'CARLOS EDUARDO' },
-];
-
-// Get initials from name
-const getInitials = (name: string): string => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase();
-};
+interface Champion {
+  id: string;
+  year: number;
+  pilot_name: string;
+  category: string;
+  image_url: string;
+}
 
 export function Champions() {
+  const [champions, setChampions] = useState<Champion[]>([]);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    fetchChampions();
+  }, []);
+
+  const fetchChampions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('champions')
+        .select('*')
+        .order('year', { ascending: false })
+        .order('category', { ascending: true });
+
+      if (error) throw error;
+      setChampions(data || []);
+    } catch (err) {
+      console.error('Error fetching champions:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const scrollGallery = (direction: 'left' | 'right') => {
+    if (!galleryRef.current) return;
+    const scrollAmount = galleryRef.current.clientWidth * 0.8;
+    galleryRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    if (loading) return;
+
     const section = sectionRef.current;
     if (!section) return;
 
@@ -93,30 +110,13 @@ export function Champions() {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
 
-  // Champion Avatar component with fallback
-  function ChampionAvatar({ name }: { name: string }) {
-    const [imageError, setImageError] = useState(false);
-    const imageSrc = championImages[name];
-    const initials = getInitials(name);
-
-    if (!imageSrc || imageError) {
-      return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800">
-          <Trophy className="w-16 h-16 text-[#F5B500] mb-2" />
-          <span className="text-white font-bold text-xl">{initials}</span>
-        </div>
-      );
-    }
-
+  if (loading) {
     return (
-      <img
-        src={imageSrc}
-        alt={name}
-        className="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110"
-        onError={() => setImageError(true)}
-      />
+      <section className="py-20 bg-[#050505] flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-12 h-12 text-[#F5B500] animate-spin" />
+      </section>
     );
   }
 
@@ -124,14 +124,12 @@ export function Champions() {
     <section
       ref={sectionRef}
       id="champions"
-      className="py-20 md:py-32 bg-[#050505] relative overflow-hidden"
+      className="py-20 md:py-32 bg-[#050505] relative overflow-hidden group/section"
     >
-      {/* Background decorations - Premium Gold/Racing style */}
+      {/* Background decorations */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-[#F5B500]/10 to-transparent" />
         <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#2E6A9C]/10 to-transparent" />
-
-        {/* Animated particles or blurred gold spots */}
         <div className="absolute top-1/4 -left-20 w-80 h-80 bg-[#F5B500]/5 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-[#2E6A9C]/5 rounded-full blur-[120px]" />
       </div>
@@ -156,94 +154,99 @@ export function Champions() {
           </p>
         </div>
 
-        {/* Champions Gallery - Horizontal Snap Scroll */}
-        <div
-          ref={galleryRef}
-          className="flex overflow-x-auto space-x-6 pb-12 px-4 snap-x snap-mandatory scrollbar-hide no-scrollbar"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {champions.map((champion) => (
-            <GlitchCard
-              key={champion.year}
-              className="champion-card snap-center shrink-0 w-64 md:w-72"
-              intensity="medium"
-              glitchColor1="#F5B500"
-              glitchColor2="#2E6A9C"
-            >
-              <div className="relative group cursor-pointer transition-all duration-500">
-                {/* Premium Gold Card */}
-                <div className="aspect-[3/4.5] overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-2xl relative border border-white/5 group-hover:border-[#F5B500]/30">
-                  {/* Trophy shine overlay */}
-                  <div
-                    className="trophy-shine absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                    style={{
-                      background: 'linear-gradient(110deg, transparent 0%, rgba(245,181,0,0.1) 45%, rgba(245,181,0,0.2) 50%, rgba(245,181,0,0.1) 55%, transparent 100%)',
-                      backgroundSize: '200% 100%'
-                    }}
-                  />
+        {/* Champions Gallery Container with Netflix Arrows */}
+        <div className="relative group/gallery">
+          {/* Navigation Arrows */}
+          <button
+            onClick={() => scrollGallery('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-40 h-[80%] px-4 bg-black/40 text-white opacity-0 group-hover/section:opacity-100 transition-opacity hover:bg-black/60 backdrop-blur-sm hidden md:flex items-center"
+            aria-label="Anterior"
+          >
+            <ChevronLeft className="w-10 h-10 text-[#F5B500]" />
+          </button>
 
-                  {/* Champion Photo */}
-                  <ChampionAvatar name={champion.name} />
+          <button
+            onClick={() => scrollGallery('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-40 h-[80%] px-4 bg-black/40 text-white opacity-0 group-hover/section:opacity-100 transition-opacity hover:bg-black/60 backdrop-blur-sm hidden md:flex items-center"
+            aria-label="Próximo"
+          >
+            <ChevronRight className="w-10 h-10 text-[#F5B500]" />
+          </button>
 
-                  {/* Dark mask at bottom for text readability */}
-                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/80 to-transparent z-20" />
+          {/* Champions Gallery */}
+          <div
+            ref={galleryRef}
+            className="flex overflow-x-auto space-x-6 pb-12 px-4 snap-x snap-mandatory scrollbar-hide no-scrollbar scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {champions.map((champion) => (
+              <GlitchCard
+                key={champion.id}
+                className="champion-card snap-center shrink-0 w-64 md:w-72"
+                intensity="low"
+                glitchColor1="#F5B500"
+                glitchColor2="#2E6A9C"
+              >
+                <div className="relative group cursor-pointer transition-all duration-500">
+                  <div className="aspect-[3/4.5] overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-2xl relative border border-white/5 group-hover:border-[#F5B500]/30">
+                    <div
+                      className="trophy-shine absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                      style={{
+                        background: 'linear-gradient(110deg, transparent 0%, rgba(245,181,0,0.1) 45%, rgba(245,181,0,0.2) 50%, rgba(245,181,0,0.1) 55%, transparent 100%)',
+                        backgroundSize: '200% 100%'
+                      }}
+                    />
 
-                  {/* Year Tag - Floating Sleek Display */}
-                  <div className="absolute top-4 left-4 z-30">
-                    <div className="bg-[#F5B500] text-black font-display font-black px-4 py-1.5 text-3xl shadow-[0_10px_20px_rgba(245,181,0,0.4)] transform -skew-x-12" style={{ fontFamily: 'Teko, sans-serif' }}>
-                      {champion.year}
+                    {/* Photo */}
+                    <img
+                      src={champion.image_url || 'https://images.unsplash.com/photo-1533560272421-facb2cffddfe?auto=format&fit=crop&q=80&w=800'}
+                      alt={champion.pilot_name}
+                      className="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110"
+                    />
+
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/80 to-transparent z-20" />
+
+                    {/* Year Tag */}
+                    <div className="absolute top-4 left-4 z-30">
+                      <div className="bg-[#F5B500] text-black font-display font-black px-4 py-1.5 text-3xl shadow-[0_10px_20px_rgba(245,181,0,0.4)] transform -skew-x-12" style={{ fontFamily: 'Teko, sans-serif' }}>
+                        {champion.year}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Top Trophy Icon */}
-                  <div className="absolute top-4 right-4 z-30 opacity-60 group-hover:opacity-100 transition-opacity">
-                    <Trophy className="w-8 h-8 text-[#F5B500] drop-shadow-[0_0_10px_rgba(245,181,0,0.5)]" />
-                  </div>
+                    {/* Category Tag */}
+                    <div className="absolute top-4 right-4 z-30">
+                      <div className="bg-white/10 backdrop-blur-md text-white font-bold px-3 py-1 text-xs rounded-full border border-white/10 uppercase tracking-widest">
+                        {champion.category}
+                      </div>
+                    </div>
 
-                  {/* Pilot Identity - Premium Plate style */}
-                  <div className="absolute bottom-0 left-0 w-full p-6 z-30">
-                    <div className="text-[#F5B500] font-black tracking-widest text-[10px] uppercase mb-1 drop-shadow-lg">CAMPEÃO TEMPORADA</div>
-                    <p
-                      className="text-white font-display text-4xl font-black uppercase italic leading-none tracking-tighter group-hover:text-[#F5B500] transition-colors"
-                      style={{ fontFamily: 'Teko, sans-serif' }}
-                    >
-                      {champion.name}
-                    </p>
-                  </div>
+                    {/* Pilot Identity */}
+                    <div className="absolute bottom-0 left-0 w-full p-6 z-30">
+                      <div className="text-[#F5B500] font-black tracking-widest text-[10px] uppercase mb-1 drop-shadow-lg">CAMPEÃO TEMPORADA</div>
+                      <p
+                        className="text-white font-display text-4xl font-black uppercase italic leading-none tracking-tighter group-hover:text-[#F5B500] transition-colors"
+                        style={{ fontFamily: 'Teko, sans-serif' }}
+                      >
+                        {champion.pilot_name}
+                      </p>
+                    </div>
 
-                  {/* Hover Accent Glow */}
-                  <div className="absolute inset-0 border-2 border-[#F5B500] opacity-0 group-hover:opacity-40 rounded-2xl transition-all duration-500 z-40 pointer-events-none blur-sm" />
+                    <div className="absolute inset-0 border-2 border-[#F5B500] opacity-0 group-hover:opacity-40 rounded-2xl transition-all duration-500 z-40 pointer-events-none blur-sm" />
+                  </div>
+                  <div className="h-1.5 w-1/2 mx-auto bg-[#F5B500] mt-4 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 shadow-[0_0_15px_#F5B500]" />
                 </div>
-
-                {/* Status indicator bar */}
-                <div className="h-1.5 w-1/2 mx-auto bg-[#F5B500] mt-4 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 shadow-[0_0_15px_#F5B500]" />
-              </div>
-            </GlitchCard>
-          ))}
-        </div>
-
-        {/* Custom Scroll Progress Bar */}
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <div className="h-px w-24 bg-white/10" />
-          <div className="flex gap-2.5">
-            {champions.map((_, index) => (
-              <div
-                key={index}
-                className={`h-1.5 rounded-full transition-all duration-500 ${index === 0 ? 'bg-[#F5B500] w-12 shadow-[0_0_10px_#F5B500]' : 'bg-white/10 w-4'
-                  }`}
-              />
+              </GlitchCard>
             ))}
           </div>
-          <div className="h-px w-24 bg-white/10" />
         </div>
 
-        {/* High-Tech Hall of Fame Stats Section */}
+        {/* Stats Section */}
         <div className="mt-24 max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
               <Trophy className="absolute -right-4 -top-4 w-24 h-24 text-[#F5B500] opacity-10 group-hover:opacity-20 transition-opacity rotate-12" />
               <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>21</div>
+                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>{new Set(champions.map(c => c.year)).size}</div>
                 <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Edições</div>
               </div>
             </div>
@@ -251,7 +254,7 @@ export function Champions() {
             <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
               <Crown className="absolute -right-4 -top-4 w-24 h-24 text-[#2E6A9C] opacity-10 group-hover:opacity-20 transition-opacity -rotate-12" />
               <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>15</div>
+                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>{new Set(champions.map(c => c.pilot_name)).size}</div>
                 <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Lendas</div>
               </div>
             </div>
@@ -259,15 +262,15 @@ export function Champions() {
             <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
               <Star className="absolute -right-4 -top-4 w-24 h-24 text-[#F5B500] opacity-10 group-hover:opacity-20 transition-opacity rotate-45" />
               <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>200<span className="text-[#F5B500]">+</span></div>
-                <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Guerreiros</div>
+                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>200+</div>
+                <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Pilotos</div>
               </div>
             </div>
 
             <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
               <div className="absolute -right-4 -top-4 w-24 h-24 text-[#22c55e] opacity-10 group-hover:opacity-20 transition-opacity flex items-center justify-center font-black text-4xl">KM</div>
               <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>50<span className="text-[#22c55e]">K</span></div>
+                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>50K</div>
                 <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Percorridos</div>
               </div>
             </div>
@@ -275,7 +278,6 @@ export function Champions() {
         </div>
       </div>
     </section>
-
   );
 }
 

@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Save, Moon, Sun, Zap, ZapOff, Globe, Mail, Bell } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Save, Moon, Sun, Zap, ZapOff, Globe, Mail, Bell, Loader2 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 interface Settings {
     siteName: string;
@@ -20,19 +21,82 @@ export function Settings() {
         emailNotifications: true,
     });
 
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
 
+    useEffect(() => {
+        fetchSettings();
+    }, []);
+
+    const fetchSettings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('settings')
+                .select('*')
+                .single();
+
+            if (error) throw error;
+
+            if (data) {
+                setSettings({
+                    siteName: data.site_name,
+                    siteDescription: data.site_description,
+                    contactEmail: data.contact_email,
+                    darkMode: data.dark_mode,
+                    animationsEnabled: data.animations_enabled,
+                    emailNotifications: data.email_notifications,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleChange = (key: keyof Settings, value: any) => {
-        setSettings({ ...settings, [key]: value });
+        setSettings(prev => ({ ...prev, [key]: value }));
         setHasChanges(true);
     };
 
-    const handleSave = () => {
-        // In a real app, this would save to backend
-        localStorage.setItem('siteSettings', JSON.stringify(settings));
-        setHasChanges(false);
-        alert('Configurações salvas com sucesso!');
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            const payload = {
+                site_name: settings.siteName,
+                site_description: settings.siteDescription,
+                contact_email: settings.contactEmail,
+                dark_mode: settings.darkMode,
+                animations_enabled: settings.animationsEnabled,
+                email_notifications: settings.emailNotifications,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await supabase
+                .from('settings')
+                .update(payload)
+                .eq('id', (await supabase.from('settings').select('id').single()).data?.id);
+
+            if (error) throw error;
+
+            setHasChanges(false);
+            alert('Configurações salvas com sucesso!');
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            alert('Erro ao salvar configurações.');
+        } finally {
+            setSaving(false);
+        }
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-[#2E6A9C] animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 max-w-3xl">
@@ -41,14 +105,20 @@ export function Settings() {
                 <p className="text-gray-500">Configure as opções do site</p>
                 <button
                     onClick={handleSave}
-                    disabled={!hasChanges}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${hasChanges
+                    disabled={!hasChanges || saving}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${hasChanges && !saving
                         ? 'bg-[#2E6A9C] text-white hover:bg-[#1e4669]'
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                         }`}
                 >
-                    <Save size={20} />
-                    <span style={{ fontFamily: 'Teko, sans-serif' }}>Salvar Alterações</span>
+                    {saving ? (
+                        <Loader2 size={20} className="animate-spin" />
+                    ) : (
+                        <Save size={20} />
+                    )}
+                    <span style={{ fontFamily: 'Teko, sans-serif' }}>
+                        {saving ? 'Salvando...' : 'Salvar Alterações'}
+                    </span>
                 </button>
             </div>
 

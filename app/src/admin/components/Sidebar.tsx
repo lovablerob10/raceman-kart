@@ -19,6 +19,7 @@ const navItems = [
     { icon: Trophy, label: 'Classificação', path: '/admin/classificacao' },
     { icon: Users, label: 'Pilotos', path: '/admin/pilotos' },
     { icon: Newspaper, label: 'Notícias', path: '/admin/noticias' },
+    { icon: Trophy, label: 'Campeões', path: '/admin/campeoes' },
     { icon: Settings, label: 'Configurações', path: '/admin/configuracoes' },
 ];
 

@@ -12,6 +12,7 @@ const AdminNews = lazy(() => import('./admin/pages/News'));
 const AdminSettings = lazy(() => import('./admin/pages/Settings'));
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
+const AdminChampions = lazy(() => import('./admin/pages/Champions'));
 const PilotLogin = lazy(() => import('./pages/PilotLogin'));
 const PilotDashboard = lazy(() => import('./pages/PilotDashboard'));
 
@@ -101,6 +102,14 @@ export const router = createBrowserRouter([
                 element: (
                     <Suspense fallback={<AdminLoader />}>
                         <AdminPilots />
+                    </Suspense>
+                ),
+            },
+            {
+                path: 'campeoes',
+                element: (
+                    <Suspense fallback={<AdminLoader />}>
+                        <AdminChampions />
                     </Suspense>
                 ),
             },

@@ -12,6 +12,7 @@ const pageTitles: Record<string, string> = {
     '/admin/classificacao': 'Classificação Geral',
     '/admin/pilotos': 'Gestão de Pilotos',
     '/admin/noticias': 'Notícias & Galeria',
+    '/admin/campeoes': 'Galeria de Campeões',
     '/admin/configuracoes': 'Configurações',
 };
 

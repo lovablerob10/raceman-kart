@@ -102,13 +102,29 @@ export function Pilots() {
                 fetchPilots();
             }
         } else {
-            const { error } = await supabase
+            // Create pilot and get the returned ID
+            const { data, error } = await supabase
                 .from('pilots')
-                .insert(payload);
+                .insert(payload)
+                .select()
+                .single();
 
             if (error) {
                 console.error('Error creating pilot:', error);
-            } else {
+            } else if (data) {
+                // Automatically create standing record for the new pilot
+                const { error: standingError } = await supabase
+                    .from('standings')
+                    .insert({
+                        pilot_id: data.id,
+                        category: data.category,
+                        points: 0,
+                        season_year: new Date().getFullYear() > 2025 ? new Date().getFullYear() : 2026
+                    });
+
+                if (standingError) {
+                    console.error('Error creating initial standing:', standingError);
+                }
                 fetchPilots();
             }
         }
