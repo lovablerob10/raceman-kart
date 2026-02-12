@@ -6,7 +6,7 @@ interface Pilot {
     id: string;
     pilot_id: string;
     name: string;
-    category: 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
     points: number;
     position: number;
 }
@@ -46,7 +46,7 @@ export function Standings() {
                     id: s.id,
                     pilot_id: s.pilot_id,
                     name: s.pilot?.name || 'Piloto',
-                    category: s.category as 'PRO' | 'LIGHT',
+                    category: s.category as 'Ouro' | 'Prata',
                     points: s.points,
                     position: index + 1
                 }));
@@ -59,8 +59,8 @@ export function Standings() {
         }
     };
 
-    const proPilots = pilots.filter(p => p.category === 'PRO').sort((a, b) => b.points - a.points);
-    const lightPilots = pilots.filter(p => p.category === 'LIGHT').sort((a, b) => b.points - a.points);
+    const proPilots = pilots.filter(p => p.category === 'Ouro').sort((a, b) => b.points - a.points);
+    const lightPilots = pilots.filter(p => p.category === 'Prata').sort((a, b) => b.points - a.points);
 
     const handlePointsChange = (id: string, points: number) => {
         setEditedPoints({ ...editedPoints, [id]: points });
@@ -192,7 +192,7 @@ export function Standings() {
                     className="text-xl font-bold text-slate-800 mb-6"
                     style={{ fontFamily: 'Teko, sans-serif' }}
                 >
-                    Preview do Pódio - PRO
+                    Preview do Pódio - OURO
                 </h3>
                 <div className="flex items-end justify-center gap-4">
                     {/* 2nd Place */}
@@ -238,8 +238,8 @@ export function Standings() {
 
             {/* Tables */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {renderTable(proPilots, 'Categoria PRO')}
-                {renderTable(lightPilots, 'Categoria LIGHT')}
+                {renderTable(proPilots, 'Categoria OURO')}
+                {renderTable(lightPilots, 'Categoria PRATA')}
             </div>
         </div>
     );
