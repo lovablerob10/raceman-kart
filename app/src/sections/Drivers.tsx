@@ -13,7 +13,7 @@ export function Drivers() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<'PRO' | 'LIGHT'>('PRO');
+  const [activeTab, setActiveTab] = useState<'Ouro' | 'Prata'>('Ouro');
   const [pilots, setPilots] = useState<Pilot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -105,7 +105,7 @@ export function Drivers() {
     }
   };
 
-  const handleTabChange = (tab: 'PRO' | 'LIGHT') => {
+  const handleTabChange = (tab: 'Ouro' | 'Prata') => {
     if (tab === activeTab) return;
 
     // Reset scroll when changing tabs
@@ -191,10 +191,10 @@ export function Drivers() {
         >
           <div className="bg-white/5 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 flex gap-2">
             <button
-              onClick={() => handleTabChange('PRO')}
+              onClick={() => handleTabChange('Ouro')}
               className={`
                 px-10 py-3 font-display uppercase text-2xl font-bold italic rounded-xl transition-all duration-500
-                ${activeTab === 'PRO'
+                ${activeTab === 'Ouro'
                   ? 'bg-gradient-to-r from-[#F5B500] to-[#FFD700] text-black shadow-[0_10px_30px_rgba(245,181,0,0.4)] scale-105'
                   : 'text-white/40 hover:text-white hover:bg-white/5'
                 }
@@ -204,10 +204,10 @@ export function Drivers() {
               CATEGORIA OURO
             </button>
             <button
-              onClick={() => handleTabChange('LIGHT')}
+              onClick={() => handleTabChange('Prata')}
               className={`
                 px-10 py-3 font-display uppercase text-2xl font-bold italic rounded-xl transition-all duration-500
-                ${activeTab === 'LIGHT'
+                ${activeTab === 'Prata'
                   ? 'bg-gradient-to-r from-[#2E6A9C] to-[#3b82f6] text-white shadow-[0_10px_30px_rgba(46,106,156,0.4)] scale-105'
                   : 'text-white/40 hover:text-white hover:bg-white/5'
                 }
@@ -251,7 +251,7 @@ export function Drivers() {
             }}
           >
             {currentDrivers.map((driver) => {
-              const driverColor = activeTab === 'PRO' ? '#F5B500' : '#2E6A9C';
+              const driverColor = activeTab === 'Ouro' ? '#F5B500' : '#2E6A9C';
               const driverImage = driver.photo_url || 'https://images.unsplash.com/photo-1530648672449-81f6c723e2c1?q=80&w=800&auto=format&fit=crop';
 
               return (
@@ -340,7 +340,7 @@ export function Drivers() {
                 className="text-5xl md:text-7xl font-display font-black text-[#F5B500] leading-none group-hover:scale-110 transition-all duration-500"
                 style={{ fontFamily: 'Teko, sans-serif', textShadow: '0 0 30px rgba(245,181,0,0.3)' }}
               >
-                {activeTab === 'PRO' ? '52' : '34'}
+                {activeTab === 'Ouro' ? '52' : '34'}
               </div>
               <div className="text-white/40 text-xs md:text-sm uppercase font-black tracking-[0.2em] mt-2">Corridas Disputadas</div>
             </div>

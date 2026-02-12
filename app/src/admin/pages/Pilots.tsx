@@ -7,7 +7,7 @@ import { supabase, type Pilot as DBPilot } from '../../lib/supabase';
 interface Pilot {
     id: string;
     name: string;
-    category: 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
     number: number | null;
     photo: string | null;
     team?: string;
@@ -33,7 +33,7 @@ export function Pilots() {
             setPilots(data.map((p: DBPilot) => ({
                 id: p.id,
                 name: p.name,
-                category: p.category as 'PRO' | 'LIGHT',
+                category: p.category as 'Ouro' | 'Prata',
                 number: p.number,
                 photo: p.photo_url,
                 team: p.team || undefined
@@ -41,12 +41,12 @@ export function Pilots() {
         }
     };
     const [search, setSearch] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'PRO' | 'LIGHT'>('ALL');
+    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'Ouro' | 'Prata'>('ALL');
     const [showModal, setShowModal] = useState(false);
     const [editingPilot, setEditingPilot] = useState<Pilot | null>(null);
     const [formData, setFormData] = useState({
         name: '',
-        category: 'PRO' as 'PRO' | 'LIGHT',
+        category: 'Ouro' as 'Ouro' | 'Prata',
         number: '' as string | number,
         team: '',
         photo: null as string | null,
@@ -70,7 +70,7 @@ export function Pilots() {
             });
         } else {
             setEditingPilot(null);
-            setFormData({ name: '', category: 'PRO', number: '', team: '', photo: null });
+            setFormData({ name: '', category: 'Ouro', number: '', team: '', photo: null });
         }
         setShowModal(true);
     };
@@ -78,7 +78,7 @@ export function Pilots() {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingPilot(null);
-        setFormData({ name: '', category: 'PRO', number: '', team: '', photo: null });
+        setFormData({ name: '', category: 'Ouro', number: '', team: '', photo: null });
     };
 
     const handleSave = async () => {
@@ -158,8 +158,8 @@ export function Pilots() {
                         className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E6A9C]"
                     >
                         <option value="ALL">Todas</option>
-                        <option value="PRO">Ouro (PRO)</option>
-                        <option value="LIGHT">Prata (LIGHT)</option>
+                        <option value="Ouro">Ouro</option>
+                        <option value="Prata">Prata</option>
                     </select>
                 </div>
 
@@ -214,7 +214,7 @@ export function Pilots() {
                             {pilot.team && (
                                 <p className="text-sm text-gray-500">{pilot.team}</p>
                             )}
-                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${pilot.category === 'PRO'
+                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${pilot.category === 'Ouro'
                                 ? 'bg-amber-100 text-amber-600'
                                 : 'bg-slate-100 text-slate-500'
                                 }`}>
@@ -298,20 +298,20 @@ export function Pilots() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
                                 <div className="grid grid-cols-2 gap-2">
-                                    {(['PRO', 'LIGHT'] as const).map((cat) => (
+                                    {(['Ouro', 'Prata'] as const).map((cat) => (
                                         <button
                                             key={cat}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, category: cat })}
                                             className={`px-4 py-2 rounded-lg border italic font-black text-lg transition-all ${formData.category === cat
-                                                ? cat === 'PRO'
+                                                ? cat === 'Ouro'
                                                     ? 'bg-[#F5B500] border-[#F5B500] text-black shadow-lg shadow-[#F5B500]/20'
                                                     : 'bg-slate-700 border-slate-700 text-white shadow-lg'
                                                 : 'border-gray-200 text-gray-400 hover:border-gray-300'
                                                 }`}
                                             style={{ fontFamily: 'Teko, sans-serif' }}
                                         >
-                                            {cat === 'PRO' ? 'Ouro (PRO)' : 'Prata (LIGHT)'}
+                                            {cat}
                                         </button>
                                     ))}
                                 </div>

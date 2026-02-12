@@ -13,7 +13,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export interface Pilot {
     id: string;
     name: string;
-    category: 'Ouro' | 'Prata' | 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
     number: number | null;
     team: string | null;
     photo_url: string | null;
@@ -53,7 +53,7 @@ export interface News {
 export interface Standing {
     id: string;
     pilot_id: string;
-    category: 'Ouro' | 'Prata' | 'PRO' | 'LIGHT';
+    category: 'Ouro' | 'Prata';
     points: number;
     position: number | null;
     season_year: number;
