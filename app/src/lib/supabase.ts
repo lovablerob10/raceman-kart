@@ -34,6 +34,10 @@ export interface Stage {
     track_description?: string;
     track_id?: string;
     period?: string;
+    training_date?: string;
+    time?: string;
+    tire?: string;
+    day_of_week?: string;
 }
 
 export interface News {

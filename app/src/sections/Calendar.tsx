@@ -114,7 +114,11 @@ export function Calendar() {
               name: s.name,
               location: s.location,
               period: s.period,
-              track_id: s.track_id
+              track_id: s.track_id,
+              time: s.time,
+              tire: s.tire,
+              trainingDate: s.training_date,
+              dayOfWeek: s.day_of_week
             };
           });
           setStages(getStagesWithDynamicActive(mappedData));

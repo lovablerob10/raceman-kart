@@ -35,27 +35,50 @@ export function Stages() {
     const handleSave = async () => {
         if (!editForm) return;
 
-        const { error } = await supabase
-            .from('stages')
-            .update({
-                name: editForm.name,
-                location: editForm.location,
-                date: editForm.date,
-                is_active: editForm.is_active,
-                track_length: editForm.track_length,
-                track_corners: editForm.track_corners,
-                track_record: editForm.track_record,
-                track_description: editForm.track_description,
-                track_id: editForm.track_id
-            })
-            .eq('id', editForm.id);
+        const stageData = {
+            name: editForm.name,
+            location: editForm.location,
+            date: editForm.date,
+            is_active: editForm.is_active,
+            track_length: editForm.track_length,
+            track_corners: editForm.track_corners,
+            track_record: editForm.track_record,
+            track_description: editForm.track_description,
+            track_id: editForm.track_id,
+            period: editForm.period,
+            training_date: editForm.training_date,
+            time: editForm.time,
+            tire: editForm.tire,
+            day_of_week: editForm.day_of_week,
+            stage_number: editForm.stage_number
+        };
 
-        if (!error) {
-            setStages(stages.map(s => s.id === editForm.id ? editForm : s));
-            setEditingId(null);
-            setEditForm(null);
+        if (editingId === 'new') {
+            const { data, error } = await supabase
+                .from('stages')
+                .insert([stageData])
+                .select();
+
+            if (!error && data) {
+                setStages([...stages, data[0]].sort((a, b) => a.stage_number - b.stage_number));
+                setEditingId(null);
+                setEditForm(null);
+            } else {
+                alert('Erro ao criar: ' + error?.message);
+            }
         } else {
-            alert('Erro ao salvar: ' + error.message);
+            const { error } = await supabase
+                .from('stages')
+                .update(stageData)
+                .eq('id', editForm.id);
+
+            if (!error) {
+                setStages(stages.map(s => s.id === editForm.id ? editForm : s).sort((a, b) => a.stage_number - b.stage_number));
+                setEditingId(null);
+                setEditForm(null);
+            } else {
+                alert('Erro ao salvar: ' + error.message);
+            }
         }
     };
 
@@ -81,7 +104,9 @@ export function Stages() {
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '-';
-        const date = new Date(dateStr);
+        // Parse YYYY-MM-DD manually to avoid timezone shifts
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
         return date.toLocaleDateString('pt-BR');
     };
 
@@ -99,7 +124,18 @@ export function Stages() {
             <div className="flex items-center justify-between">
                 <p className="text-gray-500">Gerencie as etapas e os dados técnicos das pistas</p>
                 <button
-                    onClick={() => alert('Função de criar nova etapa em desenvolvimento. Use a edição para os registros atuais.')}
+                    onClick={() => {
+                        setEditingId('new');
+                        setEditForm({
+                            id: '',
+                            stage_number: stages.length + 1,
+                            name: `Etapa ${stages.length + 1}`,
+                            location: '',
+                            date: new Date().toISOString().split('T')[0],
+                            is_active: false,
+                            created_at: new Date().toISOString()
+                        });
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#2E6A9C] text-white rounded-lg hover:bg-[#1e4669] transition-colors"
                 >
                     <Plus size={20} />
@@ -115,7 +151,8 @@ export function Stages() {
                         <thead className="bg-slate-50 border-b border-gray-200">
                             <tr>
                                 <th className="text-left py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest">Etapa Info</th>
-                                <th className="text-left py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest">Local & Pista</th>
+                                <th className="text-left py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest">Local & Dia</th>
+                                <th className="text-left py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest">Horário & Pneu</th>
                                 <th className="text-left py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest">Metadata Técnico</th>
                                 <th className="text-right py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest">Ações</th>
                             </tr>
@@ -141,7 +178,30 @@ export function Stages() {
                                                                 value={editForm.name}
                                                                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                                                                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#2E6A9C] outline-none"
+                                                                placeholder="ex: Etapa 1"
                                                             />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-gray-400 uppercase">Número da Etapa</label>
+                                                                <input
+                                                                    type="number"
+                                                                    value={editForm.stage_number}
+                                                                    onChange={(e) => setEditForm({ ...editForm, stage_number: parseInt(e.target.value) })}
+                                                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-gray-400 uppercase">Período</label>
+                                                                <select
+                                                                    value={editForm.period || 'Diurna'}
+                                                                    onChange={(e) => setEditForm({ ...editForm, period: e.target.value })}
+                                                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                                                                >
+                                                                    <option value="Diurna">Diurna</option>
+                                                                    <option value="Noturna">Noturna</option>
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                         <div>
                                                             <label className="text-[10px] font-bold text-gray-400 uppercase">Localização</label>
@@ -152,12 +212,56 @@ export function Stages() {
                                                                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
                                                             />
                                                         </div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-gray-400 uppercase">Data da Corrida</label>
+                                                                <input
+                                                                    type="date"
+                                                                    value={editForm.date}
+                                                                    onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                                                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-gray-400 uppercase">Data do Treino</label>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="ex: 21/03/26"
+                                                                    value={editForm.training_date || ''}
+                                                                    onChange={(e) => setEditForm({ ...editForm, training_date: e.target.value })}
+                                                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-gray-400 uppercase">Dia da Semana</label>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="ex: Sábado"
+                                                                    value={editForm.day_of_week || ''}
+                                                                    onChange={(e) => setEditForm({ ...editForm, day_of_week: e.target.value })}
+                                                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-gray-400 uppercase">Horário</label>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="ex: 08:00 às 12:00"
+                                                                    value={editForm.time || ''}
+                                                                    onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
+                                                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                         <div>
-                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Data da Corrida</label>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Pneu</label>
                                                             <input
-                                                                type="date"
-                                                                value={editForm.date}
-                                                                onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                                                                type="text"
+                                                                placeholder="ex: PNEU 01"
+                                                                value={editForm.tire || ''}
+                                                                onChange={(e) => setEditForm({ ...editForm, tire: e.target.value })}
                                                                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
                                                             />
                                                         </div>
@@ -293,8 +397,14 @@ export function Stages() {
                                                     </div>
                                                     <div>
                                                         <div className="text-sm font-bold text-slate-700">{stage.location}</div>
-                                                        <div className="text-[10px] text-gray-400 uppercase tracking-widest">{stage.track_id || 'Padrão'}</div>
+                                                        <div className="text-[10px] text-gray-400 uppercase tracking-widest">{stage.day_of_week || 'Sábado'}</div>
                                                     </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-6 px-6">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-slate-600">{stage.time || '08:00 às 12:00'}</span>
+                                                    <span className="text-[10px] text-[#F5B500] font-black uppercase tracking-widest">{stage.tire || 'PNEU 01'}</span>
                                                 </div>
                                             </td>
                                             <td className="py-6 px-6">
@@ -353,9 +463,32 @@ export function Stages() {
                                             <label className="text-xs font-bold text-gray-400 uppercase">Nome</label>
                                             <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
                                         </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase">Número</label>
+                                                <input type="number" value={editForm.stage_number} onChange={e => setEditForm({ ...editForm, stage_number: parseInt(e.target.value) })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase">Período</label>
+                                                <select value={editForm.period || 'Diurna'} onChange={e => setEditForm({ ...editForm, period: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                                                    <option value="Diurna">Diurna</option>
+                                                    <option value="Noturna">Noturna</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div>
                                             <label className="text-xs font-bold text-gray-400 uppercase">Local</label>
                                             <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase">Data Corrida</label>
+                                                <input type="date" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase">Data Treino</label>
+                                                <input type="text" value={editForm.training_date || ''} onChange={e => setEditForm({ ...editForm, training_date: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                            </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
@@ -387,11 +520,18 @@ export function Stages() {
                                             <MapPin size={12} /> {stage.location}
                                         </div>
                                         <div className="flex items-center gap-3 pt-2 text-[10px] text-gray-400 font-bold uppercase">
+                                            <span>{stage.training_date || '-'} (Treino)</span>
+                                            <span>•</span>
+                                            <span>{stage.time || '-'}</span>
+                                            <span>•</span>
+                                            <span className="text-[#F5B500]">{stage.tire || '-'}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 pt-1 text-[10px] text-gray-300 font-medium uppercase">
                                             <span>{stage.track_length || '-'}</span>
                                             <span>•</span>
                                             <span>{stage.track_corners || '-'} Curvas</span>
                                             <span>•</span>
-                                            <span className="text-[#F5B500]">{stage.track_record || '-'}</span>
+                                            <span>{stage.track_record || '-'}</span>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
