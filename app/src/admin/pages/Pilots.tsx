@@ -15,6 +15,17 @@ interface Pilot {
 
 export function Pilots() {
     const [pilots, setPilots] = useState<Pilot[]>([]);
+    const [search, setSearch] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'Ouro' | 'Prata'>('ALL');
+    const [showModal, setShowModal] = useState(false);
+    const [editingPilot, setEditingPilot] = useState<Pilot | null>(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        category: 'Ouro' as 'Ouro' | 'Prata',
+        number: '' as string | number,
+        team: '',
+        photo: null as string | null,
+    });
 
     // Fetch pilots from Supabase
     useEffect(() => {
@@ -40,17 +51,6 @@ export function Pilots() {
             })));
         }
     };
-    const [search, setSearch] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'Ouro' | 'Prata'>('ALL');
-    const [showModal, setShowModal] = useState(false);
-    const [editingPilot, setEditingPilot] = useState<Pilot | null>(null);
-    const [formData, setFormData] = useState({
-        name: '',
-        category: 'Ouro' as 'Ouro' | 'Prata',
-        number: '' as string | number,
-        team: '',
-        photo: null as string | null,
-    });
 
     const filteredPilots = pilots.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
