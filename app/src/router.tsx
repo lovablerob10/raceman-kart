@@ -42,8 +42,9 @@ const AdminNews = lazy(() => import('./admin/pages/News'));
 const AdminSettings = lazy(() => import('./admin/pages/Settings'));
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
-const PilotLogin = lazy(() => import('./pages/PilotLogin'));
-const PilotDashboard = lazy(() => import('./pages/PilotDashboard'));
+
+import PilotLogin from './pages/PilotLogin';
+import PilotDashboard from './pages/PilotDashboard';
 
 // Loading fallback
 const AdminLoader = () => (
@@ -65,20 +66,12 @@ export const router = createBrowserRouter([
     },
     {
         path: '/pilot/login',
-        element: (
-            <Suspense fallback={<AdminLoader />}>
-                <PilotLogin />
-            </Suspense>
-        ),
+        element: <PilotLogin />,
         errorElement: <ErrorPage />,
     },
     {
         path: '/pilot/dashboard',
-        element: (
-            <Suspense fallback={<AdminLoader />}>
-                <PilotDashboard />
-            </Suspense>
-        ),
+        element: <PilotDashboard />,
         errorElement: <ErrorPage />,
     },
     {
