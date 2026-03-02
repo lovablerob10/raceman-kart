@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider, useRouteError } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import App from './App';
+import { AuthProvider } from './hooks/useAuth';
+import { ProtectedRoute } from './admin/components/ProtectedRoute';
 
 // Error Boundary Component
 function ErrorPage() {
@@ -86,9 +88,11 @@ export const router = createBrowserRouter([
     {
         path: '/admin',
         element: (
-            <Suspense fallback={<AdminLoader />}>
-                <AdminLayout />
-            </Suspense>
+            <ProtectedRoute>
+                <Suspense fallback={<AdminLoader />}>
+                    <AdminLayout />
+                </Suspense>
+            </ProtectedRoute>
         ),
         errorElement: <ErrorPage />,
         children: [
@@ -161,7 +165,11 @@ export const router = createBrowserRouter([
 ]);
 
 export function AppRouter() {
-    return <RouterProvider router={router} />;
+    return (
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
+    );
 }
 
 export default AppRouter;

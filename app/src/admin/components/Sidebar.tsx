@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import {
     LayoutDashboard,
     Calendar,
@@ -29,6 +30,13 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+    const { signOut } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/admin/login', { replace: true });
+    };
     return (
         <aside
             className={`
@@ -132,6 +140,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
                 {/* Logout */}
                 <button
+                    onClick={handleLogout}
                     className="
             w-full flex items-center justify-center gap-2 
             px-4 py-2 rounded-lg
