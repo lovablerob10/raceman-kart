@@ -335,10 +335,10 @@ export function Standings() {
                   }
                 `}>
                   <div className={`font-display font-black uppercase italic leading-tight neon-blink ${isWinner ? 'text-2xl' : 'text-xl'}`} style={{ fontFamily: 'Teko, sans-serif' }}>
-                    EM BREVE
+                    {pilot.name}
                   </div>
                   <div className={`text-sm font-bold tracking-tighter ${isWinner ? 'text-[#F5B500]' : 'text-gray-400'}`}>
-                    0 PONTOS
+                    {pilot.points} PONTOS
                   </div>
                 </div>
 
@@ -446,7 +446,7 @@ export function Standings() {
                        block font-display text-xl uppercase italic tracking-wide transition-colors neon-blink
                        ${item.highlight ? 'font-black' : 'group-hover:text-white'}
                      `} style={{ fontFamily: 'Teko, sans-serif' }}>
-                        EM BREVE
+                        {item.name}
                       </span>
                       <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest leading-none">Scuderia RKT</span>
                     </div>
