@@ -13,6 +13,7 @@ const pageTitles: Record<string, string> = {
     '/admin/pilotos': 'Gestão de Pilotos',
     '/admin/noticias': 'Notícias & Galeria',
     '/admin/campeoes': 'Galeria de Campeões',
+    '/admin/patrocinadores': 'Gestão de Patrocinadores',
     '/admin/configuracoes': 'Configurações',
 };
 

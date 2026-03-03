@@ -10,7 +10,8 @@ import {
     ChevronLeft,
     ChevronRight,
     LogOut,
-    Wrench
+    Wrench,
+    Handshake
 } from 'lucide-react';
 
 const navItems = [
@@ -21,6 +22,7 @@ const navItems = [
     { icon: Users, label: 'Pilotos', path: '/admin/pilotos' },
     { icon: Newspaper, label: 'Notícias', path: '/admin/noticias' },
     { icon: Trophy, label: 'Campeões', path: '/admin/campeoes' },
+    { icon: Handshake, label: 'Patrocinadores', path: '/admin/patrocinadores' },
     { icon: Settings, label: 'Configurações', path: '/admin/configuracoes' },
 ];
 

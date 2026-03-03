@@ -44,6 +44,7 @@ const AdminNews = lazy(() => import('./admin/pages/News'));
 const AdminSettings = lazy(() => import('./admin/pages/Settings'));
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
+const AdminSponsors = lazy(() => import('./admin/pages/Sponsors'));
 
 import PilotLogin from './pages/PilotLogin';
 import PilotDashboard from './pages/PilotDashboard';
@@ -157,6 +158,14 @@ export const router = createBrowserRouter([
                 element: (
                     <Suspense fallback={<AdminLoader />}>
                         <AdminSettings />
+                    </Suspense>
+                ),
+            },
+            {
+                path: 'patrocinadores',
+                element: (
+                    <Suspense fallback={<AdminLoader />}>
+                        <AdminSponsors />
                     </Suspense>
                 ),
             },
