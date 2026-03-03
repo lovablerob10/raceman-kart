@@ -15,13 +15,19 @@ const INSTAGRAM_PROFILE_URL = 'https://www.instagram.com/racemankart/';
 interface InstagramPost {
     id: string;
     mediaUrl: string;
-    thumbnailUrl?: string; // Add this for videos
+    thumbnailUrl?: string;
     permalink: string;
     mediaType: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM';
     caption?: string;
     likeCount?: number;
     commentCount?: number;
     timestamp: string;
+    sizes?: {
+        small: { mediaUrl: string };
+        medium: { mediaUrl: string };
+        large: { mediaUrl: string };
+        full: { mediaUrl: string };
+    };
 }
 
 export function InstagramFeed() {
@@ -176,12 +182,18 @@ export function InstagramFeed() {
 
                             {/* Post Media */}
                             <img
-                                src={post.mediaType === 'VIDEO' ? (post.thumbnailUrl || post.mediaUrl) : post.mediaUrl}
+                                src={post.sizes?.medium?.mediaUrl || (post.mediaType === 'VIDEO' ? (post.thumbnailUrl || post.mediaUrl) : post.mediaUrl)}
                                 alt={post.caption || 'Instagram post'}
                                 className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                                 loading="lazy"
                                 onError={(e) => {
-                                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1530648672449-81f6c723e2c1?q=80&w=800&auto=format&fit=crop';
+                                    // Fallback chain: try thumbnailUrl, then placeholder
+                                    const img = e.target as HTMLImageElement;
+                                    if (post.thumbnailUrl && img.src !== post.thumbnailUrl) {
+                                        img.src = post.thumbnailUrl;
+                                    } else {
+                                        img.src = 'https://images.unsplash.com/photo-1530648672449-81f6c723e2c1?q=80&w=800&auto=format&fit=crop';
+                                    }
                                 }}
                             />
 
