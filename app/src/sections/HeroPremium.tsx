@@ -224,7 +224,10 @@ export function HeroPremium() {
 
             {/* CTA Buttons */}
             <div ref={ctaRef} className="flex flex-wrap gap-4 pt-4">
-              <button className="group relative px-8 py-4 bg-[#2E6A9C] text-white font-technical uppercase tracking-wider text-lg overflow-hidden skew-x-[-10deg] hover:skew-x-[-5deg] transition-all duration-300">
+              <button
+                onClick={() => document.getElementById('standings')?.scrollIntoView({ behavior: 'smooth' })}
+                className="group relative px-8 py-4 bg-[#2E6A9C] text-white font-technical uppercase tracking-wider text-lg overflow-hidden skew-x-[-10deg] hover:skew-x-[-5deg] transition-all duration-300"
+              >
                 <span className="relative z-10 skew-x-[10deg] inline-block">
                   Ver Classificação
                 </span>
@@ -232,7 +235,10 @@ export function HeroPremium() {
                 <div className="absolute bottom-0 left-0 w-full h-1 bg-[#F5B500]" />
               </button>
 
-              <button className="group px-8 py-4 border-2 border-white/30 text-white font-technical uppercase tracking-wider text-lg skew-x-[-10deg] hover:border-[#F5B500] hover:bg-white/10 transition-all duration-300">
+              <button
+                onClick={() => document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' })}
+                className="group px-8 py-4 border-2 border-white/30 text-white font-technical uppercase tracking-wider text-lg skew-x-[-10deg] hover:border-[#F5B500] hover:bg-white/10 transition-all duration-300"
+              >
                 <span className="skew-x-[10deg] inline-block group-hover:translate-x-1 transition-transform group-hover:text-[#F5B500]">
                   Próxima Etapa →
                 </span>

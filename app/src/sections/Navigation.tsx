@@ -7,7 +7,7 @@ const navLinks = [
   { label: 'Categorias', href: '#categories' },
   { label: 'Classificação', href: '#standings' },
   { label: 'Campeões', href: '#champions' },
-  { label: 'Notícias', href: '#news' },
+  { label: 'Notícias', href: '#instagram-feed' },
   { label: 'Patrocinadores', href: '#sponsors' },
 ];
 
