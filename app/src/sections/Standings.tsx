@@ -334,7 +334,7 @@ export function Standings() {
                     : 'bg-white/5 border-white/10'
                   }
                 `}>
-                  <div className={`font-display font-black uppercase italic leading-tight neon-blink ${isWinner ? 'text-2xl' : 'text-xl'}`} style={{ fontFamily: 'Teko, sans-serif' }}>
+                  <div className={`font-display font-black uppercase leading-tight ${isWinner ? 'text-2xl' : 'text-xl'}`} style={{ fontFamily: 'Teko, sans-serif' }}>
                     {pilot.name}
                   </div>
                   <div className={`text-sm font-bold tracking-tighter ${isWinner ? 'text-[#F5B500]' : 'text-gray-400'}`}>
@@ -443,7 +443,7 @@ export function Standings() {
                     </div>
                     <div className="ml-4">
                       <span className={`
-                       block font-display text-xl uppercase italic tracking-wide transition-colors neon-blink
+                       block font-display text-xl uppercase tracking-wide transition-colors
                        ${item.highlight ? 'font-black' : 'group-hover:text-white'}
                      `} style={{ fontFamily: 'Teko, sans-serif' }}>
                         {item.name}
