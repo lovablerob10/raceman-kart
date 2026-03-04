@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import gsap from 'gsap';
 import { Trophy, TrendingUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -101,8 +101,8 @@ export function Standings() {
   const podiumRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
   const [animatedPoints, setAnimatedPoints] = useState<number[]>([]);
-  const [standingsData, setStandingsData] = useState<StandingData[]>([]);
-  const [podiumData, setPodiumData] = useState<StandingData[]>([]);
+  const [allData, setAllData] = useState<StandingData[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<'Ouro' | 'Prata'>('Ouro');
 
   useEffect(() => {
     const fetchStandings = async () => {
@@ -124,27 +124,17 @@ export function Standings() {
         if (error) throw error;
 
         if (data && data.length > 0) {
-          const mapped = data.map((s: any, index: number) => ({
-            position: index + 1,
+          const mapped = data.map((s: any) => ({
+            position: 0, // will be set per category
             category: s.category,
             name: s.pilot?.name || 'Piloto',
             points: s.points,
             photo_url: s.pilot?.photo_url,
             number: s.pilot?.number,
-            highlight: index === 0
+            highlight: false
           }));
 
-          setStandingsData(mapped);
-
-          // Set podium (top 3)
-          const podium = [
-            mapped[1] || null, // 2nd
-            mapped[0] || null, // 1st
-            mapped[2] || null  // 3rd
-          ].filter(Boolean) as StandingData[];
-
-          setPodiumData(podium);
-          setAnimatedPoints(new Array(mapped.length).fill(0));
+          setAllData(mapped);
         }
       } catch (err) {
         console.error('Error fetching standings:', err);
@@ -153,6 +143,55 @@ export function Standings() {
 
     fetchStandings();
   }, []);
+
+  // Filter and rank by selected category
+  const filteredData = useMemo(() => {
+    const categoryData = allData
+      .filter(d => d.category === selectedCategory)
+      .sort((a, b) => b.points - a.points)
+      .map((d, index) => ({
+        ...d,
+        position: index + 1,
+        highlight: index === 0
+      }));
+    return categoryData;
+  }, [allData, selectedCategory]);
+
+  const podiumData = useMemo(() => {
+    if (filteredData.length < 3) return filteredData;
+    return [
+      filteredData[1], // 2nd
+      filteredData[0], // 1st
+      filteredData[2], // 3rd
+    ].filter(Boolean);
+  }, [filteredData]);
+
+  // Reset animated points when category changes
+  useEffect(() => {
+    setAnimatedPoints(new Array(filteredData.length).fill(0));
+
+    // Animate points counter
+    const timers: gsap.core.Tween[] = [];
+    filteredData.forEach((item, index) => {
+      const tween = gsap.to({}, {
+        duration: 1.2,
+        delay: index * 0.05,
+        onUpdate: function () {
+          const progress = this.progress();
+          setAnimatedPoints(prev => {
+            const newPoints = [...prev];
+            newPoints[index] = Math.round(item.points * progress);
+            return newPoints;
+          });
+        }
+      });
+      timers.push(tween);
+    });
+
+    return () => {
+      timers.forEach(t => t.kill());
+    };
+  }, [filteredData]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -213,24 +252,7 @@ export function Standings() {
             scrollTrigger: {
               trigger: tableRef.current,
               start: 'top 85%',
-              once: true,
-              onEnter: () => {
-                // Animate points counter
-                standingsData.forEach((item, index) => {
-                  gsap.to({}, {
-                    duration: 1.5,
-                    delay: index * 0.1,
-                    onUpdate: function () {
-                      const progress = this.progress();
-                      setAnimatedPoints(prev => {
-                        const newPoints = [...prev];
-                        newPoints[index] = Math.round(item.points * progress);
-                        return newPoints;
-                      });
-                    }
-                  });
-                });
-              }
+              once: true
             }
           }
         );
@@ -239,7 +261,7 @@ export function Standings() {
     }, section);
 
     return () => ctx.revert();
-  }, [standingsData.length]); // Added standingsData.length to dependency array
+  }, [allData.length]);
 
   const getPositionColor = (position: number) => {
     switch (position) {
@@ -274,7 +296,7 @@ export function Standings() {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-20 relative">
+        <div className="text-center mb-12 relative">
           <div className="inline-flex items-center gap-3 bg-[#2E6A9C]/20 border border-[#2E6A9C]/30 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
             <Trophy size={16} className="text-[#F5B500] animate-bounce" />
             <span className="text-[#F5B500] text-sm font-bold uppercase tracking-widest" style={{ fontFamily: 'Teko, sans-serif' }}>
@@ -286,14 +308,53 @@ export function Standings() {
             className="text-5xl md:text-8xl font-display font-black uppercase italic text-white flex items-center justify-center leading-none tracking-tighter"
             style={{ fontFamily: 'Teko, sans-serif' }}
           >
-            Classificação Geral
+            Classificação
           </h2>
           <div className="h-1.5 w-32 bg-[#F5B500] mx-auto mt-6 shadow-[0_0_15px_#F5B500]" />
+        </div>
+
+        {/* Category Toggle Buttons */}
+        <div className="flex justify-center mb-16">
+          <div className="inline-flex bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10 shadow-2xl">
+            <button
+              onClick={() => setSelectedCategory('Ouro')}
+              className={`
+                relative px-10 py-3 rounded-xl font-display font-black uppercase text-2xl tracking-wider transition-all duration-500
+                ${selectedCategory === 'Ouro'
+                  ? 'bg-gradient-to-r from-[#F5B500] to-[#FFD700] text-black shadow-lg shadow-[#F5B500]/30 scale-105'
+                  : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+                }
+              `}
+              style={{ fontFamily: 'Teko, sans-serif' }}
+            >
+              <span className="flex items-center gap-2">
+                <Trophy size={20} className={selectedCategory === 'Ouro' ? 'text-black' : 'text-[#F5B500]/50'} />
+                Ouro
+              </span>
+            </button>
+            <button
+              onClick={() => setSelectedCategory('Prata')}
+              className={`
+                relative px-10 py-3 rounded-xl font-display font-black uppercase text-2xl tracking-wider transition-all duration-500
+                ${selectedCategory === 'Prata'
+                  ? 'bg-gradient-to-r from-gray-300 to-gray-400 text-black shadow-lg shadow-gray-400/30 scale-105'
+                  : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+                }
+              `}
+              style={{ fontFamily: 'Teko, sans-serif' }}
+            >
+              <span className="flex items-center gap-2">
+                <Trophy size={20} className={selectedCategory === 'Prata' ? 'text-black' : 'text-gray-500/50'} />
+                Prata
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Premium Podium */}
         <div
           ref={podiumRef}
+          key={`podium-${selectedCategory}`}
           className="flex flex-col md:flex-row justify-center items-end gap-0 md:gap-4 mb-24 max-w-5xl mx-auto"
         >
           {[2, 1, 3].map((position) => {
@@ -304,7 +365,7 @@ export function Standings() {
 
             return (
               <div
-                key={position}
+                key={`${selectedCategory}-${position}`}
                 className={`podium-item flex flex-col items-center w-full md:w-1/3 ${isWinner ? 'order-1 md:order-2 z-20 scale-110 md:-translate-y-4' : position === 2 ? 'order-2 md:order-1' : 'order-3'}`}
               >
                 <div className="relative mb-6">
@@ -379,30 +440,33 @@ export function Standings() {
         </div>
 
         {/* Premium Standings Table */}
-        {standingsData.length === 0 || standingsData.reduce((acc, curr) => acc + curr.points, 0) === 0 ? (
+        {filteredData.length === 0 || filteredData.reduce((acc, curr) => acc + curr.points, 0) === 0 ? (
           <div className="max-w-5xl mx-auto rounded-3xl p-20 text-center bg-white/5 backdrop-blur-2xl border border-white/10">
             <TrendingUp size={64} className="text-[#F5B500] mx-auto mb-6 opacity-20" />
             <h3 className="text-4xl font-display font-black uppercase italic text-white/40 mb-4" style={{ fontFamily: 'Teko, sans-serif' }}>
-              A Classificação Geral será liberada após o término da 1ª Etapa
+              A Classificação será liberada após o término da 1ª Etapa
             </h3>
             <p className="text-white/20 uppercase tracking-[0.3em] font-bold">Grid de Titulares em Aquecimento</p>
           </div>
         ) : (
           <div
             ref={tableRef}
+            key={`table-${selectedCategory}`}
             className="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.5)] bg-white/5 backdrop-blur-2xl border border-white/10"
           >
-            <div className="flex bg-gradient-to-r from-[#2E6A9C] via-[#0D0D0D] to-[#F5B500] text-white font-display text-xl md:text-2xl uppercase italic py-5 px-6 tracking-wider" style={{ fontFamily: 'Teko, sans-serif' }}>
+            <div className={`flex text-white font-display text-xl md:text-2xl uppercase italic py-5 px-6 tracking-wider ${selectedCategory === 'Ouro'
+                ? 'bg-gradient-to-r from-[#F5B500] via-[#0D0D0D] to-[#F5B500]'
+                : 'bg-gradient-to-r from-gray-400 via-[#0D0D0D] to-gray-400'
+              }`} style={{ fontFamily: 'Teko, sans-serif' }}>
               <div className="w-20 text-center">POS</div>
-              <div className="w-24 text-center hidden sm:block border-l border-white/20">CAT</div>
               <div className="flex-1 pl-8 border-l border-white/20">PILOTO</div>
               <div className="w-32 text-right pr-6 border-l border-white/20">TOTAL PONTOS</div>
             </div>
 
             <div className="divide-y divide-white/5">
-              {standingsData.map((item, index) => (
+              {filteredData.map((item, index) => (
                 <div
-                  key={item.name}
+                  key={`${selectedCategory}-${item.name}`}
                   className={`
                   standings-row relative group flex items-center py-5 px-6 
                   transition-all duration-500
@@ -419,15 +483,6 @@ export function Standings() {
                     }
                 `} style={{ fontFamily: 'Teko, sans-serif' }}>
                     #{item.position.toString().padStart(2, '0')}
-                  </div>
-
-                  <div className="w-24 text-center hidden sm:block">
-                    <span className={`
-                    text-[10px] font-black px-2.5 py-1 rounded skew-x-[-15deg] uppercase tracking-widest
-                    ${item.category === 'Ouro' ? 'bg-[#F5B500] text-black' : 'bg-gray-700 text-gray-300'}
-                  `}>
-                      <span className="inline-block skew-x-[15deg]">{item.category}</span>
-                    </span>
                   </div>
 
                   <div className="flex-1 pl-8 flex items-center">
@@ -456,7 +511,7 @@ export function Standings() {
                   w-32 text-right pr-6 font-display text-3xl italic font-black tracking-tighter transition-all duration-300
                   ${item.highlight ? 'text-[#F5B500] scale-110' : 'text-white/60 group-hover:text-white'}
                 `} style={{ fontFamily: 'Teko, sans-serif' }}>
-                    {animatedPoints[index]} <span className="text-xs ml-1 opacity-50 not-italic uppercase">Pts</span>
+                    {animatedPoints[index] ?? 0} <span className="text-xs ml-1 opacity-50 not-italic uppercase">Pts</span>
                   </div>
 
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#F5B500] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 shadow-[0_0_10px_#F5B500]" />
