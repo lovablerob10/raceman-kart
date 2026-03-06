@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Calendar, MapPin } from 'lucide-react';
 import { ParticleSystem } from '../components/ParticleSystem';
-import { TelemetryUI } from '../components/TelemetryUI';
 import '../styles/premium.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -253,7 +253,7 @@ export function HeroPremium() {
               </div>
               <div className="w-px bg-white/20" />
               <div>
-                <div className="text-4xl font-display font-bold text-[#F5B500]">+130</div>
+                <div className="text-4xl font-display font-bold text-[#F5B500]">22</div>
                 <div className="text-sm text-white/50 uppercase tracking-wider">Pilotos</div>
               </div>
 
@@ -265,14 +265,53 @@ export function HeroPremium() {
             ref={telemetryRef}
             className="hidden lg:block"
           >
-            <TelemetryUI
-              rpm={12500}
-              speed={125}
-              gear={0}
-              lapTime="0.46.45"
-              position={1}
-              color="#2E6A9C"
-            />
+            {/* PROXIMA ETAPA PANEL (Substitutes Telemetry) */}
+            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative overflow-hidden group shadow-2xl skew-x-[-5deg]">
+              {/* Glassmorphism accents */}
+              <div className="absolute top-0 right-0 w-48 h-48 bg-[#2E6A9C]/20 rounded-full blur-3xl -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#F5B500]/20 rounded-full blur-2xl -ml-10 -mb-10 transition-transform duration-700 group-hover:scale-150" />
+
+              <div className="flex items-center justify-between mb-6 relative z-10 skew-x-[5deg]">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+                  <span className="text-white/70 font-technical tracking-widest text-xs sm:text-sm uppercase">Próxima Batalha</span>
+                </div>
+                <div className="bg-white/10 px-3 py-1 rounded-sm border border-white/10">
+                  <span className="text-[#F5B500] font-display font-bold text-sm tracking-wider">ETAPA 2</span>
+                </div>
+              </div>
+
+              <div className="space-y-5 relative z-10 skew-x-[5deg]">
+                <h3 className="text-4xl sm:text-5xl font-display text-white tracking-wide" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+                  KNO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2E6A9C] to-[#5194cc]">MARÇO</span>
+                </h3>
+
+                <div className="flex flex-col gap-4 pt-2">
+                  <div className="flex items-center gap-3 text-white/90">
+                    <div className="w-8 h-8 rounded-full bg-[#F5B500]/10 flex items-center justify-center border border-[#F5B500]/20">
+                      <Calendar className="w-4 h-4 text-[#F5B500]" />
+                    </div>
+                    <span className="font-medium text-lg">Em Breve</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-white/90">
+                    <div className="w-8 h-8 rounded-full bg-[#2E6A9C]/10 flex items-center justify-center border border-[#2E6A9C]/20">
+                      <MapPin className="w-4 h-4 text-[#2E6A9C]" />
+                    </div>
+                    <span className="font-medium">Kartódromo Nova Odessa</span>
+                  </div>
+                </div>
+
+                <div className="pt-6 mt-4 border-t border-white/10">
+                  <button
+                    onClick={() => document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-technical uppercase tracking-widest text-sm rounded-lg transition-all duration-300 group-hover:border-[#2E6A9C]/50 flex justify-center items-center gap-2"
+                  >
+                    <span>Ver no Calendário</span>
+                    <span className="text-[#F5B500] transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </button>
+                </div>
+              </div>
+            </div>
 
             {/* Decorative elements */}
             <div className="mt-6 flex justify-end gap-2">
