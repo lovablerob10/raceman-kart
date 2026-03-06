@@ -265,50 +265,83 @@ export function HeroPremium() {
             ref={telemetryRef}
             className="hidden lg:block"
           >
-            {/* PROXIMA ETAPA PANEL (Substitutes Telemetry) */}
-            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative overflow-hidden group shadow-2xl skew-x-[-5deg]">
-              {/* Glassmorphism accents */}
-              <div className="absolute top-0 right-0 w-48 h-48 bg-[#2E6A9C]/20 rounded-full blur-3xl -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#F5B500]/20 rounded-full blur-2xl -ml-10 -mb-10 transition-transform duration-700 group-hover:scale-150" />
+            {/* HIGH-IMPACT PROXIMA ETAPA PANEL (Substitutes Telemetry) */}
+            <div className="relative group perspective-1000 mt-12 lg:mt-0">
+              {/* Outer Glow / Shadow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#F5B500] to-[#2E6A9C] rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-pulse" />
 
-              <div className="flex items-center justify-between mb-6 relative z-10 skew-x-[5deg]">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-                  <span className="text-white/70 font-technical tracking-widest text-xs sm:text-sm uppercase">Próxima Batalha</span>
+              <div className="relative bg-gradient-to-br from-[#0a0f16] to-[#121c26] border border-white/10 rounded-2xl overflow-hidden shadow-2xl skew-x-[-5deg] transform-style-3d group-hover:-rotate-x-2 transition-transform duration-500">
+
+                {/* Background Track/Texture Effect */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay" />
+                  <div className="absolute right-0 top-0 w-64 h-64 bg-[#2E6A9C] rounded-full blur-[80px] -mr-20 -mt-20 mix-blend-screen" />
+                  <div className="absolute left-0 bottom-0 w-64 h-64 bg-[#F5B500] rounded-full blur-[80px] -ml-20 -mb-20 mix-blend-screen" />
                 </div>
-                <div className="bg-white/10 px-3 py-1 rounded-sm border border-white/10">
-                  <span className="text-[#F5B500] font-display font-bold text-sm tracking-wider">ETAPA 2</span>
-                </div>
-              </div>
 
-              <div className="space-y-5 relative z-10 skew-x-[5deg]">
-                <h3 className="text-4xl sm:text-5xl font-display text-white tracking-wide" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
-                  KNO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2E6A9C] to-[#5194cc]">MARÇO</span>
-                </h3>
-
-                <div className="flex flex-col gap-4 pt-2">
-                  <div className="flex items-center gap-3 text-white/90">
-                    <div className="w-8 h-8 rounded-full bg-[#F5B500]/10 flex items-center justify-center border border-[#F5B500]/20">
-                      <Calendar className="w-4 h-4 text-[#F5B500]" />
-                    </div>
-                    <span className="font-medium text-lg">Em Breve</span>
+                {/* Top Banner: Status */}
+                <div className="bg-gradient-to-r from-[#F5B500] to-[#d49d00] px-6 py-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                    <span className="text-black font-technical font-bold tracking-widest text-sm uppercase">Próxima Etapa</span>
                   </div>
-                  <div className="flex items-center gap-3 text-white/90">
-                    <div className="w-8 h-8 rounded-full bg-[#2E6A9C]/10 flex items-center justify-center border border-[#2E6A9C]/20">
-                      <MapPin className="w-4 h-4 text-[#2E6A9C]" />
+                  <span className="text-black/80 font-black font-display tracking-wider">02 / 12</span>
+                </div>
+
+                {/* Main Content */}
+                <div className="p-8 relative z-10 flex gap-6 items-center">
+
+                  {/* Left: Huge Date Block */}
+                  <div className="flex flex-col items-center justify-center border-r border-white/10 pr-6">
+                    <span className="text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 leading-none drop-shadow-lg">15</span>
+                    <span className="text-[#F5B500] font-technical tracking-widest uppercase text-xl mt-1">Mar</span>
+                  </div>
+
+                  {/* Right: Info details */}
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h3 className="text-3xl font-display text-white uppercase tracking-wider mb-1" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+                        KNO <span className="text-[#2E6A9C]">Nova Odessa</span>
+                      </h3>
+                      <p className="text-white/60 font-technical text-sm tracking-widest uppercase flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-[#F5B500]" />
+                        Kartódromo Nova Odessa
+                      </p>
                     </div>
-                    <span className="font-medium">Kartódromo Nova Odessa</span>
+
+                    <div className="flex gap-4">
+                      <div className="bg-white/5 border border-white/10 rounded px-3 py-1.5 flex flex-col">
+                        <span className="text-[#F5B500] text-xs font-technical uppercase">Layout</span>
+                        <span className="text-white font-bold text-sm">Traçado B (Inv)</span>
+                      </div>
+                      <div className="bg-white/5 border border-white/10 rounded px-3 py-1.5 flex flex-col">
+                        <span className="text-[#F5B500] text-xs font-technical uppercase">Sessão</span>
+                        <span className="text-white font-bold text-sm">08:00 AM</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-6 mt-4 border-t border-white/10">
+                {/* Call to Action Bottom */}
+                <div className="px-8 pb-8 relative z-10">
                   <button
                     onClick={() => document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-technical uppercase tracking-widest text-sm rounded-lg transition-all duration-300 group-hover:border-[#2E6A9C]/50 flex justify-center items-center gap-2"
+                    className="group/btn relative w-full overflow-hidden rounded-lg bg-[#2E6A9C] text-white font-technical py-4 uppercase tracking-widest text-lg transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(46,106,156,0.3)] hover:shadow-[0_0_30px_rgba(46,106,156,0.6)]"
                   >
-                    <span>Ver no Calendário</span>
-                    <span className="text-[#F5B500] transition-transform duration-300 group-hover:translate-x-1">→</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#21527c] to-[#3a82bf] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                    {/* Swipe metallic effect */}
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-[shimmer_1.5s_infinite]" />
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      <Calendar className="w-5 h-5" />
+                      Visualizar no Calendário
+                    </span>
                   </button>
+                </div>
+
+                {/* Decorative Bottom Bar */}
+                <div className="h-1.5 w-full flex">
+                  <div className="w-1/3 bg-[#F5B500]" />
+                  <div className="w-2/3 bg-[#2E6A9C]" />
                 </div>
               </div>
             </div>
