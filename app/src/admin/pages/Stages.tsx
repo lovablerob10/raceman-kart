@@ -158,6 +158,121 @@ export function Stages() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
+                            {/* New Stage Form Row */}
+                            {editingId === 'new' && editForm && (
+                                <tr>
+                                    <td colSpan={5} className="p-8 bg-blue-50/30">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                            {/* Column 1 */}
+                                            <div className="space-y-4">
+                                                <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                                                    <CalendarIcon size={16} className="text-[#2E6A9C]" />
+                                                    Nova Etapa
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Nome da Etapa</label>
+                                                        <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="ex: Etapa 3" />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Nº da Etapa</label>
+                                                            <input type="number" value={editForm.stage_number} onChange={e => setEditForm({ ...editForm, stage_number: parseInt(e.target.value) })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Período</label>
+                                                            <select value={editForm.period || 'Diurna'} onChange={e => setEditForm({ ...editForm, period: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                                                                <option value="Diurna">Diurna</option>
+                                                                <option value="Noturna">Noturna</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Localização</label>
+                                                        <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="ex: KNO" />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Data da Corrida</label>
+                                                            <input type="date" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Data do Treino</label>
+                                                            <input type="text" placeholder="ex: 21/03/26" value={editForm.training_date || ''} onChange={e => setEditForm({ ...editForm, training_date: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Dia da Semana</label>
+                                                            <input type="text" placeholder="ex: Sábado" value={editForm.day_of_week || ''} onChange={e => setEditForm({ ...editForm, day_of_week: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Horário</label>
+                                                            <input type="text" placeholder="ex: 08:00 às 12:00" value={editForm.time || ''} onChange={e => setEditForm({ ...editForm, time: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Pneu</label>
+                                                        <input type="text" placeholder="ex: PNEU 01" value={editForm.tire || ''} onChange={e => setEditForm({ ...editForm, tire: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                    </div>
+                                                    <div className="flex items-center gap-2 pt-2">
+                                                        <input type="checkbox" id="active-new" checked={editForm.is_active} onChange={e => setEditForm({ ...editForm, is_active: e.target.checked })} className="rounded border-gray-300 text-[#2E6A9C]" />
+                                                        <label htmlFor="active-new" className="text-sm font-medium text-gray-700">Etapa Ativa (Próxima)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* Column 2 */}
+                                            <div className="space-y-4">
+                                                <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                                                    <Activity size={16} className="text-[#F5B500]" />
+                                                    Dados Técnicos
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Extensão</label>
+                                                            <input type="text" placeholder="ex: 1.250m" value={editForm.track_length || ''} onChange={e => setEditForm({ ...editForm, track_length: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase">Curvas</label>
+                                                            <input type="number" placeholder="14" value={editForm.track_corners || 0} onChange={e => setEditForm({ ...editForm, track_corners: parseInt(e.target.value) })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Recorde da Pista</label>
+                                                        <input type="text" placeholder="ex: 48.920s" value={editForm.track_record || ''} onChange={e => setEditForm({ ...editForm, track_record: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono text-[#F5B500]" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase">ID do Traçado (SVG)</label>
+                                                        <select value={editForm.track_id || 'KNO_A'} onChange={e => setEditForm({ ...editForm, track_id: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                                                            <option value="KNO_A">KNO Traçado Norte</option>
+                                                            <option value="KNO_B">KNO Traçado Sul</option>
+                                                            <option value="Paulínia">San Marino Paulínia</option>
+                                                            <option value="DEFAULT">Circuito Padrão</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* Column 3 */}
+                                            <div className="space-y-4">
+                                                <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                                                    <FileText size={16} className="text-gray-400" />
+                                                    Descrição
+                                                </h4>
+                                                <textarea value={editForm.track_description || ''} onChange={e => setEditForm({ ...editForm, track_description: e.target.value })} rows={5} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none" placeholder="Breve descrição técnica do circuito..." />
+                                                <div className="flex gap-3 pt-2">
+                                                    <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 bg-[#2E6A9C] text-white py-3 rounded-xl font-bold hover:bg-[#1e4669] transition-all" style={{ fontFamily: 'Teko, sans-serif', letterSpacing: '0.1em' }}>
+                                                        <Check size={20} /> CRIAR ETAPA
+                                                    </button>
+                                                    <button onClick={handleCancel} className="px-6 border border-gray-200 text-gray-400 flex items-center justify-center rounded-xl hover:bg-gray-50 transition-all">
+                                                        <X size={20} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
                             {stages.map((stage) => (
                                 <tr key={stage.id} className={`hover:bg-gray-50/50 transition-colors ${editingId === stage.id ? 'bg-blue-50/30' : ''}`}>
                                     {editingId === stage.id && editForm ? (
@@ -452,6 +567,49 @@ export function Stages() {
 
                 {/* Mobile View (sm/md) */}
                 <div className="lg:hidden divide-y divide-gray-100">
+                    {/* New Stage Form (Mobile) */}
+                    {editingId === 'new' && editForm && (
+                        <div className="p-4 space-y-4 border-b border-[#2E6A9C]/20 bg-blue-50/20">
+                            <h3 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Teko, sans-serif' }}>Nova Etapa</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 uppercase">Nome</label>
+                                    <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-400 uppercase">Número</label>
+                                        <input type="number" value={editForm.stage_number} onChange={e => setEditForm({ ...editForm, stage_number: parseInt(e.target.value) })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-400 uppercase">Período</label>
+                                        <select value={editForm.period || 'Diurna'} onChange={e => setEditForm({ ...editForm, period: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                                            <option value="Diurna">Diurna</option>
+                                            <option value="Noturna">Noturna</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 uppercase">Local</label>
+                                    <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-400 uppercase">Data Corrida</label>
+                                        <input type="date" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-400 uppercase">Horário</label>
+                                        <input type="text" placeholder="08:00 às 12:00" value={editForm.time || ''} onChange={e => setEditForm({ ...editForm, time: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button onClick={handleSave} className="flex-1 bg-[#2E6A9C] text-white py-2 rounded-lg font-bold text-xs uppercase tracking-widest">Criar Etapa</button>
+                                    <button onClick={handleCancel} className="px-4 border border-gray-200 rounded-lg"><X size={18} /></button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {stages.map((stage) => (
                         <div key={stage.id} className="p-4 space-y-4">
                             {editingId === stage.id && editForm ? (
