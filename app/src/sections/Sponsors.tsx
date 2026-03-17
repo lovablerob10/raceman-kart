@@ -150,10 +150,7 @@ export function Sponsors() {
             {sponsors.map((sponsor) => (
               <div
                 key={sponsor.id}
-                onClick={() => sponsor.website_url && window.open(sponsor.website_url, '_blank')}
-                role={sponsor.website_url ? 'button' : undefined}
-                className={`sponsor-item group relative flex items-center justify-center px-8 py-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 transition-all duration-500 hover:bg-white/10 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] ${sponsor.website_url ? 'cursor-pointer' : ''
-                  } ${sponsor.tier === 'premium' ? 'min-w-[200px] min-h-[120px]' : 'min-w-[160px] min-h-[90px]'
+                className={`sponsor-item group relative flex items-center justify-center px-10 py-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 transition-all duration-500 hover:bg-white/10 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] ${sponsor.tier === 'premium' ? 'min-w-[220px] min-h-[140px]' : 'min-w-[180px] min-h-[110px]'
                   }`}
               >
                 {sponsor.logo_url ? (
@@ -161,8 +158,8 @@ export function Sponsors() {
                     src={sponsor.logo_url}
                     alt={sponsor.name}
                     className={`object-contain transition-all duration-500 group-hover:scale-110 ${sponsor.tier === 'premium'
-                        ? 'max-h-20 max-w-[180px]'
-                        : 'max-h-14 max-w-[140px]'
+                        ? 'max-h-24 max-w-[240px]'
+                        : 'max-h-20 max-w-[200px]'
                       }`}
                   />
                 ) : (
