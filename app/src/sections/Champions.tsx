@@ -179,7 +179,21 @@ export function Champions() {
             className="flex overflow-x-auto space-x-6 pb-12 px-4 snap-x snap-mandatory scrollbar-hide no-scrollbar scroll-smooth"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {champions.map((champion) => (
+            {champions.length === 0 ? (
+              <div className="w-full flex flex-col items-center justify-center py-20">
+                <Trophy className="w-20 h-20 text-[#F5B500]/20 mb-6" />
+                <h3
+                  className="text-4xl md:text-5xl font-display font-black uppercase italic text-white/30 mb-4"
+                  style={{ fontFamily: 'Teko, sans-serif' }}
+                >
+                  Em Breve
+                </h3>
+                <p className="text-white/15 text-lg uppercase tracking-widest font-bold" style={{ fontFamily: 'Teko, sans-serif' }}>
+                  Os campeões de cada temporada serão exibidos aqui
+                </p>
+              </div>
+            ) : (
+            champions.map((champion) => (
               <GlitchCard
                 key={champion.id}
                 className="champion-card snap-center shrink-0 w-64 md:w-72"
@@ -236,7 +250,8 @@ export function Champions() {
                   <div className="h-1.5 w-1/2 mx-auto bg-[#F5B500] mt-4 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 shadow-[0_0_15px_#F5B500]" />
                 </div>
               </GlitchCard>
-            ))}
+            ))
+            )}
           </div>
         </div>
 

@@ -13,9 +13,9 @@ const quickLinks = [
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Instagram, href: '#', label: 'Instagram' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
+  { icon: Facebook, href: 'https://www.facebook.com/racemankart', label: 'Facebook' },
+  { icon: Instagram, href: 'https://www.instagram.com/racemankart', label: 'Instagram' },
+  { icon: Youtube, href: 'https://www.youtube.com/@racemankart5732', label: 'YouTube' },
 ];
 
 export function Footer() {
@@ -107,6 +107,8 @@ export function Footer() {
                   <a
                     key={social.label}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={social.label}
                     className="group relative bg-white/5 p-4 rounded-2xl border border-white/10 transition-all duration-500 hover:bg-white/10 hover:-translate-y-2 hover:border-[#F5B500]/50 overflow-hidden"
                   >
@@ -192,9 +194,9 @@ export function Footer() {
               © 2026 RKT RACEMAN KART • <span className="text-[#F5B500]">ELITE RACING TEAM</span>
             </p>
             <div className="flex items-center gap-4 text-xs font-bold text-white/20 uppercase tracking-[0.2em]">
-              <a href="#" className="hover:text-[#F5B500] transition-colors">Termos</a>
+              <a href="https://www.instagram.com/racemankart" target="_blank" rel="noopener noreferrer" className="hover:text-[#F5B500] transition-colors">@racemankart</a>
               <div className="w-1 h-1 bg-white/20 rounded-full" />
-              <a href="#" className="hover:text-[#F5B500] transition-colors">Privacidade</a>
+              <a href="https://www.facebook.com/racemankart" target="_blank" rel="noopener noreferrer" className="hover:text-[#F5B500] transition-colors">Facebook</a>
             </div>
           </div>
 

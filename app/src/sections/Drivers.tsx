@@ -250,7 +250,23 @@ export function Drivers() {
               WebkitOverflowScrolling: 'touch'
             }}
           >
-            {currentDrivers.map((driver) => {
+            {currentDrivers.length === 0 ? (
+              <div className="w-full flex flex-col items-center justify-center py-20">
+                <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                  <span className="text-5xl font-black italic text-white/10" style={{ fontFamily: 'Teko, sans-serif' }}>?</span>
+                </div>
+                <h3
+                  className="text-4xl md:text-5xl font-display font-black uppercase italic text-white/30 mb-4"
+                  style={{ fontFamily: 'Teko, sans-serif' }}
+                >
+                  Grid em Formação
+                </h3>
+                <p className="text-white/15 text-lg uppercase tracking-widest font-bold" style={{ fontFamily: 'Teko, sans-serif' }}>
+                  Os pilotos da categoria {activeTab} serão listados em breve
+                </p>
+              </div>
+            ) : (
+            currentDrivers.map((driver) => {
               const driverColor = activeTab === 'Ouro' ? '#F5B500' : '#2E6A9C';
               const driverImage = driver.photo_url || 'https://images.unsplash.com/photo-1530648672449-81f6c723e2c1?q=80&w=800&auto=format&fit=crop';
 
@@ -319,7 +335,8 @@ export function Drivers() {
                   </GlitchCard>
                 </div>
               );
-            })}
+            })
+            )}
           </div>
         </div>
 

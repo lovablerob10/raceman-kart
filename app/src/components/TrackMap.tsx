@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { X, Info, Flag, CornerUpRight, Activity } from 'lucide-react';
+import { X, Flag, CornerUpRight, Activity, Lock, Calendar } from 'lucide-react';
 import { type Stage } from '../lib/supabase';
 
 interface TrackMapProps {
@@ -8,73 +8,22 @@ interface TrackMapProps {
     onClose: () => void;
 }
 
-const TRACK_LAYOUTS: Record<string, string> = {
-    // KNO Layout A - Traçado alternativo
-    'KNO_A': `
-      M 120,380
-      L 80,380 C 50,380 40,360 40,340
-      L 40,280 C 40,260 50,240 70,235
-      L 130,215 C 155,208 160,195 150,180
-      L 130,160 C 120,145 130,125 150,120
-      L 200,110 C 220,105 225,90 215,75
-      L 200,60 C 190,45 200,30 220,28
-      L 280,25 C 300,22 310,35 305,55
-      L 295,80 C 285,100 295,115 315,110
-      L 380,90 C 400,85 415,60 430,45
-      L 460,25 C 475,15 495,20 500,40
-      L 510,80 C 515,100 530,105 545,95
-      L 560,80 C 570,65 560,45 545,40
-      L 520,35 C 505,32 500,45 510,55
-      L 535,75 C 548,88 560,110 555,130
-      L 545,160 C 538,185 520,195 500,190
-      L 460,175 C 440,170 425,180 430,200
-      L 440,230 C 445,255 430,270 410,275
-      L 370,285 C 350,290 340,305 345,320
-      L 355,345 C 360,365 345,380 325,380
-      L 270,380 C 250,380 240,365 245,345
-      L 255,320 C 260,300 250,285 230,280
-      L 190,270 C 170,265 165,250 170,235
-      L 180,215 C 185,200 175,185 155,185
-      L 145,185
-      Z
-    `,
-    // KNO Layout B - Etapa 2 Março (Traçado real mapeado EXATAMENTE da linha amarela da foto aérea)
-    'KNO_B': `
-      M 250,420
-      L 100,420
-      C 40,420 30,360 80,330
-      L 180,260
-      C 220,230 240,210 260,190
-      L 350,170
-      L 390,110
-      C 410,70 410,40 450,40
-      C 480,40 490,70 500,100
-      C 520,140 560,160 610,190
-      C 660,220 680,250 660,300
-      C 640,340 670,370 690,390
-      C 720,420 750,440 730,470
-      C 710,500 630,490 600,460
-      C 570,430 540,400 520,330
-      C 500,270 520,240 480,240
-      C 440,240 440,360 400,360
-      C 360,360 370,250 330,250
-      C 290,250 240,300 230,350
-      C 220,400 280,410 300,370
-      C 320,330 360,380 330,420
-      C 310,440 280,420 250,420
-      Z
-    `,
-    'Paulínia': 'M 100,200 C 100,100 200,50 350,50 C 500,50 550,150 500,250 C 450,350 250,380 150,300 C 50,220 100,200 100,200 M 200,150 L 400,150 L 400,250 L 200,250 Z',
-    'DEFAULT': 'M 100,200 A 100,50 0 1,1 500,200 A 100,50 0 1,1 100,200'
+// Map of track IDs that have a real uploaded image
+const TRACK_IMAGES: Record<string, string> = {
+    'KNO_B': '/images/tracks/KNO_B.jpeg',
 };
+
+// Check if a track has a real image uploaded
+function hasTrackImage(trackId: string | undefined): boolean {
+    return !!trackId && !!TRACK_IMAGES[trackId];
+}
 
 export function TrackMap({ stage, onClose }: TrackMapProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const trackPathRef = useRef<SVGPathElement>(null);
-    const neonPathRef = useRef<SVGPathElement>(null);
 
     const trackId = stage.track_id || 'DEFAULT';
-    const path = TRACK_LAYOUTS[trackId] || TRACK_LAYOUTS['DEFAULT'];
+    const trackImage = TRACK_IMAGES[trackId];
+    const isTrackDefined = hasTrackImage(trackId);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -84,42 +33,36 @@ export function TrackMap({ stage, onClose }: TrackMapProps) {
                 { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.7)' }
             );
 
-            // Neon trajectory animation
-            if (neonPathRef.current) {
-                const length = neonPathRef.current.getTotalLength();
-                gsap.set(neonPathRef.current, {
-                    strokeDasharray: `${length / 10} ${length}`,
-                    strokeDashoffset: length
-                });
-
-                gsap.to(neonPathRef.current, {
-                    strokeDashoffset: 0,
-                    duration: 3,
+            // Subtle float on image container
+            if (isTrackDefined) {
+                gsap.to('.track-image-container', {
+                    y: -8,
+                    duration: 2.5,
                     repeat: -1,
-                    ease: 'none'
+                    yoyo: true,
+                    ease: 'power1.inOut'
                 });
             }
 
-            // Isometric tilt float
-            gsap.to('.track-svg-container', {
-                rotateX: 45,
-                rotateZ: -15,
-                y: -20,
-                duration: 2,
-                repeat: -1,
-                yoyo: true,
-                ease: 'power1.inOut'
-            });
+            // Pulse glow for placeholder
+            if (!isTrackDefined) {
+                gsap.to('.placeholder-glow', {
+                    opacity: 0.6,
+                    duration: 2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'sine.inOut'
+                });
+            }
         }, containerRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [isTrackDefined]);
 
     return (
         <div
             ref={containerRef}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
-            style={{ perspective: '1000px' }}
         >
             {/* Backdrop */}
             <div
@@ -141,69 +84,53 @@ export function TrackMap({ stage, onClose }: TrackMapProps) {
                 <div className="flex flex-col lg:flex-row h-full">
 
                     {/* Track Visualization Side */}
-                    <div className="flex-[1.5] relative min-h-[400px] flex items-center justify-center bg-[radial-gradient(circle_at_center,rgba(46,106,156,0.1)_0%,transparent_70%)] overflow-hidden">
+                    <div className="flex-[1.5] relative min-h-[400px] flex items-center justify-center bg-black overflow-hidden">
 
-                        {/* Grid Pattern Background */}
-                        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #2e6a9c 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-
-                        <div className="track-svg-container relative w-full h-[60%] flex items-center justify-center will-change-transform">
-                            <svg
-                                viewBox="0 0 620 450"
-                                className="w-[80%] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-                                fill="none"
-                            >
-                                <path
-                                    d={path}
-                                    stroke="#1a1a1a"
-                                    strokeWidth="24"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    transform="translate(0, 15)"
+                        {isTrackDefined ? (
+                            /* Real Track Image */
+                            <div className="track-image-container relative w-full h-full flex items-center justify-center p-8">
+                                <img
+                                    src={trackImage}
+                                    alt={`Traçado ${stage.name} - ${stage.location}`}
+                                    className="w-full h-full object-contain max-h-[450px] drop-shadow-[0_0_40px_rgba(245,181,0,0.15)]"
                                 />
-
-                                {/* Main Track Surface */}
-                                <path
-                                    ref={trackPathRef}
-                                    d={path}
-                                    stroke="#2E6A9C"
-                                    strokeWidth="20"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="opacity-40"
-                                />
-
-                                {/* Inner White Line Decoration */}
-                                <path
-                                    d={path}
-                                    stroke="rgba(255,255,255,0.05)"
-                                    strokeWidth="16"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-
-                                {/* THE NEON TRAJECTORY */}
-                                <path
-                                    ref={neonPathRef}
-                                    d={path}
-                                    stroke="#F5B500"
-                                    strokeWidth="4"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    style={{ filter: 'drop-shadow(0 0 8px #F5B500)' }}
-                                />
-                            </svg>
-
-                            {/* Float Indicators */}
-                            <div className="absolute top-0 left-0 text-[#F5B500] opacity-20 animate-pulse">
-                                <Info size={120} strokeWidth={0.5} />
+                                {/* Subtle corner vignette */}
+                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
                             </div>
-                        </div>
+                        ) : (
+                            /* Placeholder - Pista não definida */
+                            <div className="relative w-full h-full flex flex-col items-center justify-center p-8">
+                                {/* Background pattern */}
+                                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #F5B500 0, #F5B500 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }} />
 
-                        {/* Scale/Compass decoration */}
-                        <div className="absolute bottom-8 left-8 flex items-center gap-4 text-white/20 text-xs uppercase tracking-[0.3em]">
-                            <div className="w-12 h-px bg-white/20" />
-                            <span>3D TRACK SCANNER v2.0</span>
-                        </div>
+                                {/* Glow */}
+                                <div className="placeholder-glow absolute w-48 h-48 rounded-full bg-[#F5B500]/10 blur-3xl opacity-30" />
+
+                                {/* Lock Icon */}
+                                <div className="relative mb-6">
+                                    <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                        <Lock size={36} className="text-white/20" />
+                                    </div>
+                                </div>
+
+                                {/* Text */}
+                                <h4
+                                    className="text-3xl md:text-4xl font-bold italic text-white/30 uppercase tracking-wider text-center mb-3"
+                                    style={{ fontFamily: 'Teko, sans-serif' }}
+                                >
+                                    PISTA NÃO DEFINIDA
+                                </h4>
+                                <p className="text-white/15 text-sm text-center max-w-[280px] leading-relaxed">
+                                    O traçado será revelado um dia antes da corrida
+                                </p>
+
+                                {/* Calendar hint */}
+                                <div className="mt-6 flex items-center gap-2 text-white/10 text-xs uppercase tracking-widest">
+                                    <Calendar size={14} />
+                                    <span>Aguarde a definição</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Info Side */}
@@ -216,33 +143,56 @@ export function TrackMap({ stage, onClose }: TrackMapProps) {
                             {stage.name} - {stage.location}
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-6 mb-12">
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest mb-2">
-                                    <Flag size={14} className="text-[#F5B500]" />
-                                    Extensão
+                        {isTrackDefined ? (
+                            /* Show track stats only when track has image */
+                            <>
+                                <div className="grid grid-cols-2 gap-6 mb-12">
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                        <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest mb-2">
+                                            <Flag size={14} className="text-[#F5B500]" />
+                                            Extensão
+                                        </div>
+                                        <div className="text-3xl font-bold text-white italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.track_length || '-'}</div>
+                                    </div>
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                        <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest mb-2">
+                                            <CornerUpRight size={14} className="text-[#2E6A9C]" />
+                                            Curvas
+                                        </div>
+                                        <div className="text-3xl font-bold text-white italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.track_corners || '-'}</div>
+                                    </div>
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5 col-span-2">
+                                        <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest mb-2">
+                                            <Activity size={14} className="text-[#F5B500] animate-pulse" />
+                                            Recorde da Pista
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#F5B500] italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.track_record || 'N/A'}</div>
+                                    </div>
                                 </div>
-                                <div className="text-3xl font-bold text-white italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.track_length || '-'}</div>
-                            </div>
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest mb-2">
-                                    <CornerUpRight size={14} className="text-[#2E6A9C]" />
-                                    Curvas
-                                </div>
-                                <div className="text-3xl font-bold text-white italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.track_corners || '-'}</div>
-                            </div>
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5 col-span-2">
-                                <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest mb-2">
-                                    <Activity size={14} className="text-[#F5B500] animate-pulse" />
-                                    Recorde da Pista
-                                </div>
-                                <div className="text-3xl font-bold text-[#F5B500] italic" style={{ fontFamily: 'Teko, sans-serif' }}>{stage.track_record || 'N/A'}</div>
-                            </div>
-                        </div>
 
-                        <p className="text-gray-500 leading-relaxed mb-10 overflow-hidden text-ellipsis">
-                            {stage.track_description || 'Nenhuma descrição técnica disponível para este traçado.'}
-                        </p>
+                                <p className="text-gray-500 leading-relaxed mb-10 overflow-hidden text-ellipsis">
+                                    {stage.track_description || 'Nenhuma descrição técnica disponível para este traçado.'}
+                                </p>
+                            </>
+                        ) : (
+                            /* Placeholder info when track is not defined */
+                            <div className="mb-12">
+                                <div className="p-6 bg-white/[0.02] rounded-2xl border border-white/5 border-dashed">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-10 h-10 rounded-xl bg-[#F5B500]/10 flex items-center justify-center">
+                                            <Lock size={18} className="text-[#F5B500]/50" />
+                                        </div>
+                                        <div>
+                                            <p className="text-white/40 text-sm font-bold uppercase tracking-wider">Dados Indisponíveis</p>
+                                            <p className="text-white/20 text-xs">Extensão · Curvas · Recorde</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-white/15 text-sm leading-relaxed">
+                                        As informações técnicas do traçado serão liberadas junto com a definição da pista, um dia antes da corrida.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
 
                         <button
                             onClick={onClose}
