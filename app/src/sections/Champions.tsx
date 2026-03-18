@@ -40,8 +40,7 @@ export function Champions() {
   const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => fetchChampions(), 3000);
-    return () => clearTimeout(timer);
+    fetchChampions();
   }, []);
 
   const fetchChampions = async (attempt = 1): Promise<void> => {

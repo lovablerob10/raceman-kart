@@ -152,8 +152,7 @@ export function Standings() {
       }
     };
 
-    const timer = setTimeout(() => fetchStandings(), 6000);
-    return () => clearTimeout(timer);
+    fetchStandings();
   }, []);
 
   // Filter and rank by selected category
