@@ -357,7 +357,7 @@ export function Drivers() {
                 className="text-5xl md:text-7xl font-display font-black text-[#F5B500] leading-none group-hover:scale-110 transition-all duration-500"
                 style={{ fontFamily: 'Teko, sans-serif', textShadow: '0 0 30px rgba(245,181,0,0.3)' }}
               >
-                {activeTab === 'Ouro' ? '52' : '34'}
+                25
               </div>
               <div className="text-white/40 text-xs md:text-sm uppercase font-black tracking-[0.2em] mt-2">Corridas Disputadas</div>
             </div>

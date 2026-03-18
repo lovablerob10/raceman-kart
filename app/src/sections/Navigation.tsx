@@ -7,7 +7,7 @@ const navLinks = [
   { label: 'Categorias', href: '#categories' },
   { label: 'Classificação', href: '#standings' },
   { label: 'Campeões', href: '#champions' },
-  { label: 'Notícias', href: '#instagram-feed' },
+  { label: 'Instagram', href: '#instagram-feed' },
   { label: 'Patrocinadores', href: '#sponsors' },
 ];
 
@@ -98,6 +98,7 @@ export function Navigation() {
             <button
               className="nav-item hidden md:block bg-transparent border-2 border-white/50 hover:border-[#F5B500] text-white px-6 py-2 text-sm font-display uppercase hover:bg-[#F5B500] hover:text-[#2D2D2D] transition-all duration-300 rounded skew-x-[-10deg]"
               style={{ fontFamily: 'Teko, sans-serif' }}
+              onClick={() => alert('Regulamento em breve!')}
             >
               <span className="block skew-x-[10deg]">Regulamento</span>
             </button>
@@ -150,6 +151,7 @@ export function Navigation() {
           <button
             className="mt-8 bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 group transition-all"
             style={{ fontFamily: 'Teko, sans-serif' }}
+            onClick={() => { alert('Regulamento em breve!'); setIsMobileMenuOpen(false); }}
           >
             Regulamento
           </button>

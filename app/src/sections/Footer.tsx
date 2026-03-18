@@ -9,7 +9,7 @@ const quickLinks = [
   { label: 'Calendário', href: '#calendar' },
   { label: 'Categorias', href: '#categories' },
   { label: 'Classificação', href: '#standings' },
-  { label: 'Notícias', href: '#news' },
+  { label: 'Instagram', href: '#instagram-feed' },
 ];
 
 const socialLinks = [
@@ -96,7 +96,7 @@ export function Footer() {
             </div>
 
             <p className="text-white/60 text-lg md:text-xl max-w-sm mb-10 leading-relaxed font-medium uppercase italic" style={{ fontFamily: 'Teko, sans-serif' }}>
-              O campeonato de kart amador mais <span className="text-white">agressivo e emocionante</span> do interior paulista. Desde 2006 forjando lendas.
+              O campeonato de kart amador mais <span className="text-white">agressivo e emocionante</span> do interior paulista. Desde 2014 forjando lendas.
             </p>
 
             {/* Premium Social Icons */}

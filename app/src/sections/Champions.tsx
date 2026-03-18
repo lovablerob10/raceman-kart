@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Trophy, Crown, Star, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Crown, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
 import { supabase } from '../lib/supabase';
 
@@ -255,42 +255,7 @@ export function Champions() {
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="mt-24 max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
-              <Trophy className="absolute -right-4 -top-4 w-24 h-24 text-[#F5B500] opacity-10 group-hover:opacity-20 transition-opacity rotate-12" />
-              <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>{new Set(champions.map(c => c.year)).size}</div>
-                <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Edições</div>
-              </div>
-            </div>
 
-            <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
-              <Crown className="absolute -right-4 -top-4 w-24 h-24 text-[#2E6A9C] opacity-10 group-hover:opacity-20 transition-opacity -rotate-12" />
-              <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>{new Set(champions.map(c => c.pilot_name)).size}</div>
-                <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Lendas</div>
-              </div>
-            </div>
-
-            <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
-              <Star className="absolute -right-4 -top-4 w-24 h-24 text-[#F5B500] opacity-10 group-hover:opacity-20 transition-opacity rotate-45" />
-              <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>200+</div>
-                <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Pilotos</div>
-              </div>
-            </div>
-
-            <div className="relative group p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden hover:bg-white/10 transition-all duration-500">
-              <div className="absolute -right-4 -top-4 w-24 h-24 text-[#22c55e] opacity-10 group-hover:opacity-20 transition-opacity flex items-center justify-center font-black text-4xl">KM</div>
-              <div className="relative z-10">
-                <div className="text-4xl md:text-6xl font-display font-black text-white leading-none" style={{ fontFamily: 'Teko, sans-serif' }}>50K</div>
-                <div className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-1">Percorridos</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
