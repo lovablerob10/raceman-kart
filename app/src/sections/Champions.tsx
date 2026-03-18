@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Trophy, Crown, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Crown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
 import { supabase } from '../lib/supabase';
 
@@ -35,6 +35,7 @@ export function Champions() {
         .order('category', { ascending: true });
 
       if (error) throw error;
+      console.log('[Champions] Fetched champions:', data?.length);
       setChampions(data || []);
     } catch (err) {
       console.error('Error fetching champions:', err);
@@ -114,8 +115,17 @@ export function Champions() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-[#050505] flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-12 h-12 text-[#F5B500] animate-spin" />
+      <section id="champions" className="py-20 md:py-32 bg-[#050505] flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 border-4 border-[#F5B500]/20 rounded-full" />
+            <div className="absolute inset-0 border-4 border-transparent border-t-[#F5B500] rounded-full animate-spin" />
+            <Crown size={24} className="absolute inset-0 m-auto text-[#F5B500] animate-pulse" />
+          </div>
+          <h3 className="text-3xl md:text-4xl font-display font-black uppercase italic text-white/60" style={{ fontFamily: 'Teko, sans-serif' }}>
+            Carregando Campeões...
+          </h3>
+        </div>
       </section>
     );
   }

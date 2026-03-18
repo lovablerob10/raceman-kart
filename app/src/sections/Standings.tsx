@@ -102,10 +102,12 @@ export function Standings() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [animatedPoints, setAnimatedPoints] = useState<number[]>([]);
   const [allData, setAllData] = useState<StandingData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<'Ouro' | 'Prata'>('Ouro');
 
   useEffect(() => {
     const fetchStandings = async () => {
+      setIsLoading(true);
       try {
         const { data, error } = await supabase
           .from('standings')
@@ -138,6 +140,8 @@ export function Standings() {
         }
       } catch (err) {
         console.error('Error fetching standings:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -440,13 +444,31 @@ export function Standings() {
         </div>
 
         {/* Premium Standings Table */}
-        {filteredData.length === 0 || filteredData.reduce((acc, curr) => acc + curr.points, 0) === 0 ? (
+        {isLoading ? (
+          <div className="max-w-5xl mx-auto rounded-3xl p-20 text-center bg-white/5 backdrop-blur-2xl border border-white/10">
+            <div className="flex flex-col items-center gap-6">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 border-4 border-[#F5B500]/20 rounded-full" />
+                <div className="absolute inset-0 border-4 border-transparent border-t-[#F5B500] rounded-full animate-spin" />
+                <Trophy size={24} className="absolute inset-0 m-auto text-[#F5B500] animate-pulse" />
+              </div>
+              <h3 className="text-3xl md:text-4xl font-display font-black uppercase italic text-white/60" style={{ fontFamily: 'Teko, sans-serif' }}>
+                Carregando Classificação...
+              </h3>
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-[#F5B500] rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                <div className="w-2 h-2 bg-[#F5B500] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                <div className="w-2 h-2 bg-[#F5B500] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+              </div>
+            </div>
+          </div>
+        ) : filteredData.length === 0 || filteredData.reduce((acc, curr) => acc + curr.points, 0) === 0 ? (
           <div className="max-w-5xl mx-auto rounded-3xl p-20 text-center bg-white/5 backdrop-blur-2xl border border-white/10">
             <TrendingUp size={64} className="text-[#F5B500] mx-auto mb-6 opacity-20" />
             <h3 className="text-4xl font-display font-black uppercase italic text-white/40 mb-4" style={{ fontFamily: 'Teko, sans-serif' }}>
-              A Classificação será liberada após o término da 1ª Etapa
+              Classificação indisponível no momento
             </h3>
-            <p className="text-white/20 uppercase tracking-[0.3em] font-bold">Grid de Titulares em Aquecimento</p>
+            <p className="text-white/20 uppercase tracking-[0.3em] font-bold">Verifique novamente em breve</p>
           </div>
         ) : (
           <div

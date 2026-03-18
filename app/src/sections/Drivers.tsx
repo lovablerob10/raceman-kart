@@ -79,6 +79,7 @@ export function Drivers() {
         .order('name');
 
       if (error) throw error;
+      console.log('[Drivers] Fetched pilots:', data?.length, 'categories:', data?.map((p: any) => p.category).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i));
       if (data) setPilots(data);
     } catch (err) {
       console.error('Error fetching pilots:', err);
@@ -250,7 +251,20 @@ export function Drivers() {
               WebkitOverflowScrolling: 'touch'
             }}
           >
-            {currentDrivers.length === 0 ? (
+            {isLoading ? (
+              <div className="w-full flex flex-col items-center justify-center py-20">
+                <div className="relative w-16 h-16 mb-6">
+                  <div className="absolute inset-0 border-4 border-[#F5B500]/20 rounded-full" />
+                  <div className="absolute inset-0 border-4 border-transparent border-t-[#F5B500] rounded-full animate-spin" />
+                </div>
+                <h3
+                  className="text-3xl md:text-4xl font-display font-black uppercase italic text-white/50"
+                  style={{ fontFamily: 'Teko, sans-serif' }}
+                >
+                  Carregando Pilotos...
+                </h3>
+              </div>
+            ) : currentDrivers.length === 0 ? (
               <div className="w-full flex flex-col items-center justify-center py-20">
                 <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
                   <span className="text-5xl font-black italic text-white/10" style={{ fontFamily: 'Teko, sans-serif' }}>?</span>
@@ -259,11 +273,18 @@ export function Drivers() {
                   className="text-4xl md:text-5xl font-display font-black uppercase italic text-white/30 mb-4"
                   style={{ fontFamily: 'Teko, sans-serif' }}
                 >
-                  Grid em Formação
+                  Nenhum piloto encontrado
                 </h3>
-                <p className="text-white/15 text-lg uppercase tracking-widest font-bold" style={{ fontFamily: 'Teko, sans-serif' }}>
-                  Os pilotos da categoria {activeTab} serão listados em breve
+                <p className="text-white/15 text-lg uppercase tracking-widest font-bold mb-6" style={{ fontFamily: 'Teko, sans-serif' }}>
+                  Categoria {activeTab}
                 </p>
+                <button
+                  onClick={() => { setIsLoading(true); fetchPilots(); }}
+                  className="px-6 py-2 bg-[#F5B500] text-black font-bold uppercase rounded hover:bg-[#F5B500]/80 transition-all"
+                  style={{ fontFamily: 'Teko, sans-serif' }}
+                >
+                  Tentar novamente
+                </button>
               </div>
             ) : (
             currentDrivers.map((driver) => {
@@ -348,7 +369,7 @@ export function Drivers() {
                 className="text-5xl md:text-7xl font-display font-black text-white leading-none group-hover:scale-110 group-hover:text-[#F5B500] transition-all duration-500"
                 style={{ fontFamily: 'Teko, sans-serif' }}
               >
-                {currentDrivers.length}
+                {pilots.length}
               </div>
               <div className="text-white/40 text-xs md:text-sm uppercase font-black tracking-[0.2em] mt-2">Pilotos Confirmados</div>
             </div>
