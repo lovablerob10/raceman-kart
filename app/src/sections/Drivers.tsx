@@ -3,10 +3,24 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
+import fallbackPilots from '../data/fallbackPilots.json';
 
 gsap.registerPlugin(ScrollTrigger);
 
 import { supabase, type Pilot } from '../lib/supabase';
+
+const CACHE_KEY_PILOTS = 'raceman_pilots_cache';
+
+function getCachedPilots(): Pilot[] {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_PILOTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch { /* ignore */ }
+  return fallbackPilots as Pilot[];
+}
 
 export function Drivers() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -14,8 +28,11 @@ export function Drivers() {
   const tabsRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'Ouro' | 'Prata'>('Ouro');
-  const [pilots, setPilots] = useState<Pilot[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Cache-first: load from localStorage instantly
+  const cached = getCachedPilots();
+  const [pilots, setPilots] = useState<Pilot[]>(cached);
+  const [isLoading, setIsLoading] = useState(cached.length === 0);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -58,8 +75,9 @@ export function Drivers() {
       );
 
       // Grid animation
-      if (!isLoading) {
-        animateGrid();
+      if (!isLoading && currentDrivers.length > 0) {
+        // Small delay to ensure cards are rendered in the DOM
+        setTimeout(() => animateGrid(), 100);
       }
 
     }, section);
@@ -71,38 +89,63 @@ export function Drivers() {
     fetchPilots();
   }, []);
 
-  const fetchPilots = async () => {
+  const fetchPilots = async (attempt = 1): Promise<void> => {
+    setFetchError(null);
     try {
+      console.log(`[Drivers] Fetching pilots... (attempt ${attempt})`);
       const { data, error } = await supabase
         .from('pilots')
         .select('*')
         .order('name');
 
-      if (error) throw error;
-      console.log('[Drivers] Fetched pilots:', data?.length, 'categories:', data?.map((p: any) => p.category).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i));
-      if (data) setPilots(data);
-    } catch (err) {
-      console.error('Error fetching pilots:', err);
-    } finally {
+      if (error) {
+        console.error('[Drivers] Supabase error:', error);
+        throw error;
+      }
+      console.log('[Drivers] Success:', data?.length, 'pilots');
+      if (data) {
+        setPilots(data);
+        // Update cache for next visit
+        try { localStorage.setItem(CACHE_KEY_PILOTS, JSON.stringify(data)); } catch { /* quota */ }
+      }
+      setIsLoading(false);
+    } catch (err: any) {
+      console.error(`[Drivers] Error (attempt ${attempt}):`, err?.message || err);
+      if (attempt < 3) {
+        console.log(`[Drivers] Retrying in 2s...`);
+        await new Promise(r => setTimeout(r, 4000));
+        return fetchPilots(attempt + 1);
+      }
+      setFetchError(err?.message || 'Unknown error');
       setIsLoading(false);
     }
   };
 
   const animateGrid = () => {
     const cards = gridRef.current?.querySelectorAll('.driver-card');
-    if (cards) {
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 40, scale: 0.9 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: 'back.out(1.4)',
-        }
-      );
+    if (cards && cards.length > 0) {
+      // First ensure all cards are visible (fallback in case GSAP fails)
+      cards.forEach(card => {
+        (card as HTMLElement).style.opacity = '1';
+        (card as HTMLElement).style.transform = 'none';
+      });
+      // Then animate from hidden to visible
+      try {
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 40, scale: 0.9 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: 'back.out(1.4)',
+          }
+        );
+      } catch (e) {
+        console.warn('[Drivers] GSAP animation failed, cards visible via fallback');
+      }
     }
   };
 
@@ -144,7 +187,11 @@ export function Drivers() {
     }
   };
 
-  const currentDrivers = pilots.filter(p => p.category === activeTab);
+  const currentDrivers = pilots.filter(p => {
+    // Case-insensitive comparison to handle data inconsistencies
+    const pilotCat = (p.category || '').trim();
+    return pilotCat === activeTab || pilotCat.toLowerCase() === activeTab.toLowerCase();
+  });
 
   return (
     <section
@@ -275,8 +322,11 @@ export function Drivers() {
                 >
                   Nenhum piloto encontrado
                 </h3>
+                {fetchError && (
+                  <p className="text-red-400/80 text-sm mb-4 max-w-md text-center">Erro: {fetchError}</p>
+                )}
                 <p className="text-white/15 text-lg uppercase tracking-widest font-bold mb-6" style={{ fontFamily: 'Teko, sans-serif' }}>
-                  Categoria {activeTab}
+                  Categoria {activeTab} — Total no banco: {pilots.length} pilotos
                 </p>
                 <button
                   onClick={() => { setIsLoading(true); fetchPilots(); }}

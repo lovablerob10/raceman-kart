@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Trophy, Crown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlitchCard } from '../components/GlitchCard';
 import { supabase } from '../lib/supabase';
+import fallbackChampions from '../data/fallbackChampions.json';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,9 +16,25 @@ interface Champion {
   image_url: string;
 }
 
+const CACHE_KEY_CHAMPIONS = 'raceman_champions_cache';
+
+function getCachedChampions(): Champion[] {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_CHAMPIONS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch { /* ignore */ }
+  return fallbackChampions as Champion[];
+}
+
 export function Champions() {
-  const [champions, setChampions] = useState<Champion[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Cache-first: load from localStorage instantly
+  const cached = getCachedChampions();
+  const [champions, setChampions] = useState<Champion[]>(cached);
+  const [loading, setLoading] = useState(cached.length === 0);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -26,20 +43,36 @@ export function Champions() {
     fetchChampions();
   }, []);
 
-  const fetchChampions = async () => {
+  const fetchChampions = async (attempt = 1): Promise<void> => {
+    setFetchError(null);
     try {
+      console.log(`[Champions] Fetching... (attempt ${attempt})`);
       const { data, error } = await supabase
         .from('champions')
         .select('*')
-        .order('year', { ascending: false })
-        .order('category', { ascending: true });
+        .order('year', { ascending: false });
 
-      if (error) throw error;
-      console.log('[Champions] Fetched champions:', data?.length);
-      setChampions(data || []);
-    } catch (err) {
-      console.error('Error fetching champions:', err);
-    } finally {
+      if (error) {
+        console.error('[Champions] Supabase error:', error);
+        throw error;
+      }
+      console.log('[Champions] Success:', data?.length);
+      const sorted = (data || []).sort((a: any, b: any) => {
+        if (b.year !== a.year) return b.year - a.year;
+        return (a.category || '').localeCompare(b.category || '');
+      });
+      setChampions(sorted);
+      // Update cache for next visit
+      try { localStorage.setItem(CACHE_KEY_CHAMPIONS, JSON.stringify(sorted)); } catch { /* quota */ }
+      setLoading(false);
+    } catch (err: any) {
+      console.error(`[Champions] Error (attempt ${attempt}):`, err?.message || err);
+      if (attempt < 3) {
+        console.log(`[Champions] Retrying in 2s...`);
+        await new Promise(r => setTimeout(r, 4000));
+        return fetchChampions(attempt + 1);
+      }
+      setFetchError(err?.message || 'Unknown error');
       setLoading(false);
     }
   };
@@ -80,24 +113,33 @@ export function Champions() {
 
       // Gallery cards animation
       const cards = galleryRef.current?.querySelectorAll('.champion-card');
-      if (cards) {
-        gsap.fromTo(
-          cards,
-          { opacity: 0, x: 100, rotation: 10 },
-          {
-            opacity: 1,
-            x: 0,
-            rotation: 0,
-            duration: 0.7,
-            stagger: 0.1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: galleryRef.current,
-              start: 'top 85%',
-              once: true
+      if (cards && cards.length > 0) {
+        // Fallback: ensure cards are visible even if GSAP fails
+        cards.forEach(card => {
+          (card as HTMLElement).style.opacity = '1';
+          (card as HTMLElement).style.transform = 'none';
+        });
+        try {
+          gsap.fromTo(
+            cards,
+            { opacity: 0, x: 100, rotation: 10 },
+            {
+              opacity: 1,
+              x: 0,
+              rotation: 0,
+              duration: 0.7,
+              stagger: 0.1,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: galleryRef.current,
+                start: 'top 85%',
+                once: true
+              }
             }
-          }
-        );
+          );
+        } catch (e) {
+          console.warn('[Champions] GSAP animation failed, cards visible via fallback');
+        }
       }
 
       // Trophy shine animation
@@ -196,11 +238,21 @@ export function Champions() {
                   className="text-4xl md:text-5xl font-display font-black uppercase italic text-white/30 mb-4"
                   style={{ fontFamily: 'Teko, sans-serif' }}
                 >
-                  Em Breve
+                  Nenhum campeão encontrado
                 </h3>
-                <p className="text-white/15 text-lg uppercase tracking-widest font-bold" style={{ fontFamily: 'Teko, sans-serif' }}>
-                  Os campeões de cada temporada serão exibidos aqui
+                {fetchError && (
+                  <p className="text-red-400/80 text-sm mb-4 max-w-md text-center">Erro: {fetchError}</p>
+                )}
+                <p className="text-white/15 text-lg uppercase tracking-widest font-bold mb-6" style={{ fontFamily: 'Teko, sans-serif' }}>
+                  Verifique sua conexão
                 </p>
+                <button
+                  onClick={() => { setLoading(true); fetchChampions(); }}
+                  className="px-6 py-2 bg-[#F5B500] text-black font-bold uppercase rounded hover:bg-[#F5B500]/80 transition-all"
+                  style={{ fontFamily: 'Teko, sans-serif' }}
+                >
+                  Tentar novamente
+                </button>
               </div>
             ) : (
             champions.map((champion) => (

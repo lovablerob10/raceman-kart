@@ -106,9 +106,10 @@ export function Standings() {
   const [selectedCategory, setSelectedCategory] = useState<'Ouro' | 'Prata'>('Ouro');
 
   useEffect(() => {
-    const fetchStandings = async () => {
+    const fetchStandings = async (attempt = 1): Promise<void> => {
       setIsLoading(true);
       try {
+        console.log(`[Standings] Fetching... (attempt ${attempt})`);
         const { data, error } = await supabase
           .from('standings')
           .select(`
@@ -126,8 +127,9 @@ export function Standings() {
         if (error) throw error;
 
         if (data && data.length > 0) {
+          console.log(`[Standings] Success: ${data.length} entries`);
           const mapped = data.map((s: any) => ({
-            position: 0, // will be set per category
+            position: 0,
             category: s.category,
             name: s.pilot?.name || 'Piloto',
             points: s.points,
@@ -138,9 +140,14 @@ export function Standings() {
 
           setAllData(mapped);
         }
-      } catch (err) {
-        console.error('Error fetching standings:', err);
-      } finally {
+        setIsLoading(false);
+      } catch (err: any) {
+        console.error(`[Standings] Error (attempt ${attempt}):`, err?.message || err);
+        if (attempt < 3) {
+          console.log(`[Standings] Retrying in 2s...`);
+          await new Promise(r => setTimeout(r, 4000));
+          return fetchStandings(attempt + 1);
+        }
         setIsLoading(false);
       }
     };

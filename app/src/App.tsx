@@ -42,7 +42,9 @@ function App() {
     // Handle reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
-      gsap.globalTimeline.timeScale(0);
+      // Instead of freezing timeline at timeScale(0) which keeps elements at opacity:0,
+      // just skip animations so elements reach their final visible state
+      gsap.globalTimeline.timeScale(10); // fast-forward all animations
       setIntroComplete(true);
     }
 

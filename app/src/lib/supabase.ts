@@ -7,7 +7,27 @@ if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+        fetch: (url, options = {}) => {
+            // Extended timeout (30s) to handle Supabase free-tier cold starts
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            return fetch(url, {
+                ...options,
+                signal: controller.signal,
+            }).finally(() => clearTimeout(timeoutId));
+        },
+    },
+    realtime: {
+        params: {
+            eventsPerSecond: 2,
+        },
+    },
+    db: {
+        schema: 'public',
+    },
+});
 
 // Types for database tables
 export interface Pilot {
