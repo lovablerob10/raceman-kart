@@ -219,7 +219,7 @@ export function HeroPremium() {
               className="text-xl md:text-2xl text-white/80 font-technical max-w-lg leading-relaxed"
             >
               A emoção do kartismo profissional.
-              <span className="text-[#F5B500]"> Performance extrema</span> nas pistas desde 2006.
+              <span className="text-[#F5B500]"> Performance extrema</span> nas pistas desde 2014.
             </p>
 
             {/* CTA Buttons */}
