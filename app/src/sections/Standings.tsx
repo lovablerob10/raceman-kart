@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import gsap from 'gsap';
 import { Trophy, TrendingUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import fallbackStandings from '../data/fallbackStandings.json';
 
 // Get pilot initials
 const getInitials = (name: string): string => {
@@ -16,6 +17,32 @@ interface StandingData {
   photo_url?: string | null;
   number?: number | null;
   highlight?: boolean;
+}
+
+const CACHE_KEY_STANDINGS = 'raceman_standings_cache';
+
+function mapStandingsRaw(data: any[]): StandingData[] {
+  return data.map((s: any) => ({
+    position: 0,
+    category: s.category,
+    name: s.pilot?.name || 'Piloto',
+    points: s.points,
+    photo_url: s.pilot?.photo_url,
+    number: s.pilot?.number,
+    highlight: false
+  }));
+}
+
+function getCachedStandings(): StandingData[] {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_STANDINGS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch { /* ignore */ }
+  // Fallback: use static JSON
+  return mapStandingsRaw(fallbackStandings as any[]);
 }
 
 // Avatar component with fallback
@@ -101,13 +128,14 @@ export function Standings() {
   const podiumRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
   const [animatedPoints, setAnimatedPoints] = useState<number[]>([]);
-  const [allData, setAllData] = useState<StandingData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Cache-first: load instantly
+  const cached = getCachedStandings();
+  const [allData, setAllData] = useState<StandingData[]>(cached);
+  const [isLoading, setIsLoading] = useState(cached.length === 0);
   const [selectedCategory, setSelectedCategory] = useState<'Ouro' | 'Prata'>('Ouro');
 
   useEffect(() => {
     const fetchStandings = async (attempt = 1): Promise<void> => {
-      setIsLoading(true);
       try {
         console.log(`[Standings] Fetching... (attempt ${attempt})`);
         const { data, error } = await supabase
@@ -128,19 +156,12 @@ export function Standings() {
 
         if (data && data.length > 0) {
           console.log(`[Standings] Success: ${data.length} entries`);
-          const mapped = data.map((s: any) => ({
-            position: 0,
-            category: s.category,
-            name: s.pilot?.name || 'Piloto',
-            points: s.points,
-            photo_url: s.pilot?.photo_url,
-            number: s.pilot?.number,
-            highlight: false
-          }));
-
+          const mapped = mapStandingsRaw(data);
           setAllData(mapped);
+          setIsLoading(false);
+          // Update cache for next visit
+          try { localStorage.setItem(CACHE_KEY_STANDINGS, JSON.stringify(mapped)); } catch { /* quota */ }
         }
-        setIsLoading(false);
       } catch (err: any) {
         console.error(`[Standings] Error (attempt ${attempt}):`, err?.message || err);
         if (attempt < 3) {
