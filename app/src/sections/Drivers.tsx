@@ -86,7 +86,8 @@ export function Drivers() {
   }, [isLoading]);
 
   useEffect(() => {
-    fetchPilots();
+    const timer = setTimeout(() => fetchPilots(), 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchPilots = async (attempt = 1): Promise<void> => {
