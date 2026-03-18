@@ -38,6 +38,7 @@ export interface Stage {
     time?: string;
     tire?: string;
     day_of_week?: string;
+    track_image_url?: string | null;
 }
 
 export interface News {

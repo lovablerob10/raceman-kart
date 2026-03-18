@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, MapPin, Calendar as CalendarIcon, Check, X, Flag, CornerUpRight, Activity, FileText, Hash, Info } from 'lucide-react';
 import { supabase, type Stage } from '../../lib/supabase';
+import { ImageUpload } from '../components/ImageUpload';
 
 
 
@@ -50,7 +51,8 @@ export function Stages() {
             time: editForm.time,
             tire: editForm.tire,
             day_of_week: editForm.day_of_week,
-            stage_number: editForm.stage_number
+            stage_number: editForm.stage_number,
+            track_image_url: editForm.track_image_url
         };
 
         if (editingId === 'new') {
@@ -133,7 +135,8 @@ export function Stages() {
                             location: '',
                             date: new Date().toISOString().split('T')[0],
                             is_active: false,
-                            created_at: new Date().toISOString()
+                            created_at: new Date().toISOString(),
+                            track_image_url: null
                         });
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#2E6A9C] text-white rounded-lg hover:bg-[#1e4669] transition-colors"
@@ -456,9 +459,23 @@ export function Stages() {
                                                     </div>
                                                 </div>
 
-                                                {/* Column 3: Description & Actions */}
+                                                {/* Column 3: Description, Image & Actions */}
                                                 <div className="space-y-4">
                                                     <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                                                        <Activity size={16} className="text-[#2E6A9C]" />
+                                                        Traçado da Pista (Imagem)
+                                                    </h4>
+                                                    <div className="flex justify-center mb-4">
+                                                        <ImageUpload
+                                                            value={editForm.track_image_url || undefined}
+                                                            shape="square"
+                                                            size="lg"
+                                                            onChange={(_, preview) => setEditForm({ ...editForm, track_image_url: preview })}
+                                                            placeholder="Faça o upload do traçado"
+                                                        />
+                                                    </div>
+
+                                                    <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 mt-6">
                                                         <FileText size={16} className="text-gray-400" />
                                                         Descrição
                                                     </h4>
@@ -466,7 +483,7 @@ export function Stages() {
                                                         <textarea
                                                             value={editForm.track_description || ''}
                                                             onChange={(e) => setEditForm({ ...editForm, track_description: e.target.value })}
-                                                            rows={4}
+                                                            rows={2}
                                                             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none"
                                                             placeholder="Breve descrição técnica do circuito..."
                                                         />
@@ -603,7 +620,19 @@ export function Stages() {
                                         <input type="text" placeholder="08:00 às 12:00" value={editForm.time || ''} onChange={e => setEditForm({ ...editForm, time: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">Traçado da Pista (Imagem)</label>
+                                    <div className="flex justify-center">
+                                        <ImageUpload
+                                            value={editForm.track_image_url || undefined}
+                                            shape="square"
+                                            size="md"
+                                            onChange={(_, preview) => setEditForm({ ...editForm, track_image_url: preview })}
+                                            placeholder="Upload do Traçado"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-2 pt-2">
                                     <button onClick={handleSave} className="flex-1 bg-[#2E6A9C] text-white py-2 rounded-lg font-bold text-xs uppercase tracking-widest">Criar Etapa</button>
                                     <button onClick={handleCancel} className="px-4 border border-gray-200 rounded-lg"><X size={18} /></button>
                                 </div>
@@ -658,7 +687,19 @@ export function Stages() {
                                                 <input type="number" value={editForm.track_corners || 0} onChange={e => setEditForm({ ...editForm, track_corners: parseInt(e.target.value) })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">Traçado da Pista (Imagem)</label>
+                                            <div className="flex justify-center">
+                                                <ImageUpload
+                                                    value={editForm.track_image_url || undefined}
+                                                    shape="square"
+                                                    size="md"
+                                                    onChange={(_, preview) => setEditForm({ ...editForm, track_image_url: preview })}
+                                                    placeholder="Upload do Traçado"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 pt-2">
                                             <button onClick={handleSave} className="flex-1 bg-[#2E6A9C] text-white py-2 rounded-lg font-bold text-xs uppercase tracking-widest">Salvar</button>
                                             <button onClick={handleCancel} className="px-4 border border-gray-200 rounded-lg"> <X size={18} /> </button>
                                         </div>

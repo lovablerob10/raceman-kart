@@ -21,6 +21,7 @@ interface LocalStage extends Partial<DBStage> {
   time?: string;
   tire?: string;
   track_id?: string;
+  track_image_url?: string | null;
 }
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -115,6 +116,7 @@ export function Calendar() {
               location: s.location,
               period: s.period,
               track_id: s.track_id,
+              track_image_url: s.track_image_url,
               time: s.time,
               tire: s.tire,
               trainingDate: s.training_date,

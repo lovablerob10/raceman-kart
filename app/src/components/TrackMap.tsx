@@ -8,22 +8,11 @@ interface TrackMapProps {
     onClose: () => void;
 }
 
-// Map of track IDs that have a real uploaded image
-const TRACK_IMAGES: Record<string, string> = {
-    'KNO_B': '/images/tracks/KNO_B.jpeg',
-};
-
-// Check if a track has a real image uploaded
-function hasTrackImage(trackId: string | undefined): boolean {
-    return !!trackId && !!TRACK_IMAGES[trackId];
-}
-
 export function TrackMap({ stage, onClose }: TrackMapProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const trackId = stage.track_id || 'DEFAULT';
-    const trackImage = TRACK_IMAGES[trackId];
-    const isTrackDefined = hasTrackImage(trackId);
+    const trackImage = stage.track_image_url;
+    const isTrackDefined = !!trackImage && trackImage.trim() !== '';
 
     useEffect(() => {
         const ctx = gsap.context(() => {
