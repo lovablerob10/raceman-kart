@@ -1,8 +1,7 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { RealKartVideo } from '../components/RealKartVideo';
-import { useScrollAudio } from '../hooks/useScrollAudio';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,44 +13,7 @@ export function RealKartExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [showContent, setShowContent] = useState(true);
-  const showContentRef = useRef(true); // Ref tracking for stable closure access
-
-  const [telemetry, setTelemetry] = useState({
-    speed: 0,
-    rpm: 0,
-    gear: 'N',
-    turbo: 0,
-    progress: 0
-  });
-
-  // Enable Audio - synced with scroll progress
-  useScrollAudio(telemetry.progress);
-
-  // Update telemetry based on scroll progress
-  const updateTelemetry = useCallback((progress: number) => {
-    // Calculate speed (parabolic curve - faster in middle)
-    const speed = Math.round(progress < 0.5
-      ? progress * 2 * 130
-      : (1 - progress) * 2 * 130);
-
-    // Calculate RPM
-    const rpm = Math.round(1000 + progress * 14000);
-
-    // Calculate gear
-    const gear = progress < 0.15 ? '1' :
-      progress < 0.3 ? '2' :
-        progress < 0.5 ? '3' :
-          progress < 0.7 ? '4' :
-            progress < 0.85 ? '5' : '6';
-
-    setTelemetry({
-      speed,
-      rpm,
-      gear,
-      turbo: Math.round(progress * 100),
-      progress
-    });
-  }, []);
+  const showContentRef = useRef(true);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -76,19 +38,16 @@ export function RealKartExperience() {
         }
       );
 
-      // Scroll trigger for content visibility and progress
+      // Scroll trigger for content visibility (text fades out on scroll)
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: '+=400%',
-        scrub: 1.2, // Increased for smoother 'buttery' motion sync
+        end: '+=200%',
+        scrub: 1.2,
         onUpdate: (self) => {
           const progress = self.progress;
 
-          // Update telemetry for RealKartVideo
-          updateTelemetry(progress);
-
-          // Hide/show title based on progress using Ref to prevent closure staleness
+          // Hide/show title based on progress
           if (progress > 0.15 && showContentRef.current) {
             gsap.to(title, { opacity: 0, y: -50, duration: 0.3 });
             setShowContent(false);
@@ -104,19 +63,19 @@ export function RealKartExperience() {
     }, section);
 
     return () => ctx.revert();
-  }, [updateTelemetry]);
+  }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[500vh] bg-black"
+      className="relative min-h-[200vh] bg-black"
     >
       {/* Sticky Container - Holds everything that stays on screen during scroll */}
       <div className="sticky top-0 h-screen z-[5] overflow-hidden">
 
         {/* 1. The Video Layer */}
         <RealKartVideo
-          progress={telemetry.progress}
+          progress={0}
           className="w-full h-full"
         />
 
@@ -184,64 +143,9 @@ export function RealKartExperience() {
           </div>
         </div>
 
-        {/* 4. PREMIUM HUD Elements (Visible during scroll) */}
-
-        {/* Speed Indicator - Glassmorphism style */}
-        <div className="absolute bottom-12 left-12 z-20">
-          <div
-            className="p-6 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
-            }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-1.5 h-4 bg-[#F5B500]" />
-              <span className="text-[10px] text-white/50 font-black uppercase tracking-[0.3em]">Velocidade Atual</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span
-                className="text-6xl md:text-8xl font-display font-black italic tabular-nums leading-none tracking-tighter"
-                style={{
-                  fontFamily: 'Teko, sans-serif',
-                  color: telemetry.speed > 140 ? '#F5B500' : telemetry.speed > 80 ? '#FFD700' : '#ffffff',
-                  textShadow: telemetry.speed > 120 ? '0 0 30px rgba(245, 181, 0, 0.5)' : 'none'
-                }}
-              >
-                {telemetry.speed}
-              </span>
-              <span className="text-[#F5B500] text-xl font-display font-black italic" style={{ fontFamily: 'Teko, sans-serif' }}>KM/H</span>
-            </div>
-            <div className="mt-4 w-40 md:w-56 h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-100"
-                style={{
-                  width: `${(telemetry.speed / 130) * 100}%`,
-                  background: `linear-gradient(90deg, #2E6A9C 0%, #F5B500 100%)`,
-                  boxShadow: '0 0 10px rgba(245, 181, 0, 0.5)'
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Gear Indicator removed per briefing */}
-        {/* <div className="absolute bottom-12 right-12 z-20">
-          ...
-        </div> */}
-
-        {/* Side Info Panel removed per briefing */}
-        {/* <div className="absolute top-1/2 right-12 -translate-y-1/2 z-20 hidden lg:block">
-            ...
-        </div> */}
-
-        {/* Dynamic Progress line - Cyber style */}
+        {/* Dynamic Progress line */}
         <div className="absolute bottom-0 left-0 right-0 z-30">
-          <div className="h-2 bg-white/5 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#2E6A9C] via-[#F5B500] to-[#FFD700] brightness-150 shadow-[0_0_20px_#F5B500]"
-              style={{ width: `${telemetry.progress * 100}%` }}
-            />
-          </div>
+          <div className="h-1 bg-gradient-to-r from-[#2E6A9C] via-[#F5B500] to-[#FFD700]" />
         </div>
 
 

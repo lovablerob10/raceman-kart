@@ -285,7 +285,7 @@ export function HeroPremium() {
                     <div className="w-2.5 h-2.5 rounded-full bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
                     <span className="text-black font-technical font-bold tracking-widest text-sm uppercase">Próxima Etapa</span>
                   </div>
-                  <span className="text-black/80 font-black font-display tracking-wider">02 / 12</span>
+                  <span className="text-black/80 font-black font-display tracking-wider">02 / 11</span>
                 </div>
 
                 {/* Main Content */}
@@ -293,7 +293,7 @@ export function HeroPremium() {
 
                   {/* Left: Huge Date Block */}
                   <div className="flex flex-col items-center justify-center border-r border-white/10 pr-6">
-                    <span className="text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 leading-none drop-shadow-lg">15</span>
+                    <span className="text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 leading-none drop-shadow-lg">28</span>
                     <span className="text-[#F5B500] font-technical tracking-widest uppercase text-xl mt-1">Mar</span>
                   </div>
 

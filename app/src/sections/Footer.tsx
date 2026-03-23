@@ -198,6 +198,11 @@ export function Footer() {
               <div className="w-1 h-1 bg-white/20 rounded-full" />
               <a href="https://www.facebook.com/racemankart" target="_blank" rel="noopener noreferrer" className="hover:text-[#F5B500] transition-colors">Facebook</a>
             </div>
+            <div className="flex items-center gap-2 text-xs text-white/20">
+              <div className="w-1 h-1 bg-white/20 rounded-full hidden md:block" />
+              <span>Desenvolvido por</span>
+              <a href="https://agenciazmkt.com.br/" target="_blank" rel="noopener noreferrer" className="text-[#F5B500]/70 hover:text-[#F5B500] transition-colors font-bold tracking-wider">z/mkt</a>
+            </div>
           </div>
 
           {/* Premium Scroll Top Button */}
