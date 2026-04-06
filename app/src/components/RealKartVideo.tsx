@@ -1,16 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 interface RealKartVideoProps {
   progress: number;
   className?: string;
+  /** When true, unmutes the video audio */
+  audioEnabled?: boolean;
+  /** Called each time the video completes a loop (count = total loops completed) */
+  onLoopCount?: (count: number) => void;
 }
 
 /**
  * RealKartVideo - Componente que exibe vídeo de kart real
  * em loop contínuo lento (autoplay)
+ *
+ * Supports controlled audio: parent can enable/disable via audioEnabled prop.
+ * Reports loop count via onLoopCount so parent can mute after N loops.
  */
-export function RealKartVideo({ className = '' }: RealKartVideoProps) {
+export function RealKartVideo({ className = '', audioEnabled = false, onLoopCount }: RealKartVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const loopCountRef = useRef(0);
 
   // Set slow playback speed once video is ready
   useEffect(() => {
@@ -31,6 +39,47 @@ export function RealKartVideo({ className = '' }: RealKartVideoProps) {
       return () => video.removeEventListener('loadedmetadata', handleReady);
     }
   }, []);
+
+  // ── Audio control ──
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (audioEnabled) {
+      video.muted = false;
+      // Reset loop counter when audio is freshly enabled
+      loopCountRef.current = 0;
+    } else {
+      video.muted = true;
+    }
+  }, [audioEnabled]);
+
+  // ── Loop counting ──
+  const handleVideoLoop = useCallback(() => {
+    if (!audioEnabled) return;
+    loopCountRef.current += 1;
+    onLoopCount?.(loopCountRef.current);
+  }, [audioEnabled, onLoopCount]);
+
+  // We use the 'ended' event won't fire with loop attr, so we listen to 'timeupdate'
+  // and manually detect when the video restarts. Alternative: use 'seeked' after loop rewind.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let lastTime = 0;
+
+    const onTimeUpdate = () => {
+      // Detect loop: current time jumped backwards significantly
+      if (video.currentTime < lastTime - 1) {
+        handleVideoLoop();
+      }
+      lastTime = video.currentTime;
+    };
+
+    video.addEventListener('timeupdate', onTimeUpdate);
+    return () => video.removeEventListener('timeupdate', onTimeUpdate);
+  }, [handleVideoLoop]);
 
   return (
     <div

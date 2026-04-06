@@ -1,19 +1,39 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { RealKartVideo } from '../components/RealKartVideo';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const MAX_AUDIO_LOOPS = 3;
+
 /**
  * RealKartExperience - Seção imersiva com vídeo Remotion
  * Controlado pelo scroll do usuário com sync frame-a-frame
+ *
+ * Audio behaviour:
+ *   1. Starts muted (browser policy)
+ *   2. When the title text scrolls away, audio unmutes
+ *   3. After 3 video loops, audio mutes again automatically
+ *   4. If the user scrolls back up (title reappears), counter resets
  */
 export function RealKartExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [showContent, setShowContent] = useState(true);
   const showContentRef = useRef(true);
+
+  // ── Audio state ──
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const audioCompletedRef = useRef(false); // true after 3 loops, prevents re-enabling
+
+  // Called by RealKartVideo each time the video loops
+  const handleLoopCount = useCallback((count: number) => {
+    if (count >= MAX_AUDIO_LOOPS) {
+      setAudioEnabled(false);
+      audioCompletedRef.current = true; // don't re-enable until user scrolls back up
+    }
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -52,10 +72,19 @@ export function RealKartExperience() {
             gsap.to(title, { opacity: 0, y: -50, duration: 0.3 });
             setShowContent(false);
             showContentRef.current = false;
+
+            // Enable audio when title disappears (if not already completed 3 loops)
+            if (!audioCompletedRef.current) {
+              setAudioEnabled(true);
+            }
           } else if (progress <= 0.15 && !showContentRef.current) {
             gsap.to(title, { opacity: 1, y: 0, duration: 0.3 });
             setShowContent(true);
             showContentRef.current = true;
+
+            // Title reappeared — mute and reset loop cycle
+            setAudioEnabled(false);
+            audioCompletedRef.current = false;
           }
         }
       });
@@ -77,6 +106,8 @@ export function RealKartExperience() {
         <RealKartVideo
           progress={0}
           className="w-full h-full"
+          audioEnabled={audioEnabled}
+          onLoopCount={handleLoopCount}
         />
 
         {/* 2. Brightness Overlay */}

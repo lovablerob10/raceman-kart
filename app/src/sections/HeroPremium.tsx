@@ -1,11 +1,68 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Calendar, MapPin } from 'lucide-react';
 import { ParticleSystem } from '../components/ParticleSystem';
+import { supabase, type Stage as DBStage } from '../lib/supabase';
 import '../styles/premium.css';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// ── Months lookup ──
+const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+// ── Track layout mapping ──
+const TRACK_LAYOUTS: Record<string, string> = {
+  KNO_A: 'Traçado A',
+  KNO_B: 'Traçado B (Inv)',
+  Paulínia: 'Paulínia',
+};
+
+// ── Location full names ──
+const LOCATION_FULL: Record<string, string> = {
+  KNO: 'Kartódromo Nova Odessa',
+  Paulínia: 'Kartódromo Paulínia',
+};
+
+// ── Fallback data (same as Calendar.tsx) ──
+interface FallbackStage {
+  day: string;
+  month: string;
+  name: string;
+  location: string;
+  stage_number: number;
+  raceDate: string;
+  period: string;
+  time: string;
+  track_id: string;
+}
+
+const SEASON_2026_FALLBACK: FallbackStage[] = [
+  { day: '28', month: 'Fev', name: 'Etapa 1', location: 'KNO', stage_number: 1, raceDate: '28/02/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_A' },
+  { day: '28', month: 'Mar', name: 'Etapa 2', location: 'KNO', stage_number: 2, raceDate: '28/03/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_B' },
+  { day: '25', month: 'Abr', name: 'Etapa 3', location: 'KNO', stage_number: 3, raceDate: '25/04/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_A' },
+  { day: '30', month: 'Mai', name: 'Etapa 4', location: 'KNO', stage_number: 4, raceDate: '30/05/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_B' },
+  { day: '25', month: 'Jun', name: 'Etapa 5', location: 'Paulínia', stage_number: 5, raceDate: '25/06/26', period: 'Noturno', time: '19:00 às 22:00', track_id: 'Paulínia' },
+  { day: '25', month: 'Jul', name: 'Etapa 6', location: 'KNO', stage_number: 6, raceDate: '25/07/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_A' },
+  { day: '29', month: 'Ago', name: 'Etapa 7', location: 'KNO', stage_number: 7, raceDate: '29/08/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_B' },
+  { day: '26', month: 'Set', name: 'Etapa 8', location: 'KNO', stage_number: 8, raceDate: '26/09/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_A' },
+  { day: '24', month: 'Out', name: 'Etapa 9', location: 'KNO', stage_number: 9, raceDate: '24/10/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_B' },
+  { day: '12', month: 'Nov', name: 'Etapa 10', location: 'Paulínia', stage_number: 10, raceDate: '12/11/26', period: 'Noturno', time: '19:00 às 22:00', track_id: 'Paulínia' },
+  { day: '12', month: 'Dez', name: 'Etapa 11', location: 'KNO', stage_number: 11, raceDate: '12/12/26', period: 'Diurna', time: '08:00 às 12:00', track_id: 'KNO_A' },
+];
+
+// ── Resolved next-stage shape used by the panel ──
+interface NextStageInfo {
+  day: string;
+  month: string;
+  stageNumber: number;
+  totalStages: number;
+  location: string;           // short: KNO, Paulínia
+  locationFull: string;       // Kartódromo Nova Odessa
+  trackLayout: string;        // Traçado A
+  time: string;               // 08:00
+  period: string;             // Diurna / Noturno
+}
 
 export function HeroPremium() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,6 +72,104 @@ export function HeroPremium() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const telemetryRef = useRef<HTMLDivElement>(null);
+
+  const [nextStage, setNextStage] = useState<NextStageInfo | null>(null);
+
+  // ── Fetch next stage from Supabase (or fallback) ──
+  useEffect(() => {
+    const resolve = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('stages')
+          .select('*')
+          .order('stage_number');
+
+        if (!error && data && data.length > 0) {
+          const today = new Date();
+          const totalStages = data.length;
+
+          for (const s of data as DBStage[]) {
+            const [y, m, d] = s.date.split('-').map(Number);
+            const raceDate = new Date(y, m - 1, d, 23, 59, 59);
+            if (raceDate >= today) {
+              const monthIdx = m - 1;
+              setNextStage({
+                day: d.toString().padStart(2, '0'),
+                month: MONTHS[monthIdx],
+                stageNumber: s.stage_number,
+                totalStages,
+                location: s.location,
+                locationFull: LOCATION_FULL[s.location] || s.location,
+                trackLayout: TRACK_LAYOUTS[s.track_id || ''] || s.track_id || s.location,
+                time: s.time?.split(' ')[0] || (s.period === 'Noturno' ? '19:00' : '08:00'),
+                period: s.period || 'Diurna',
+              });
+              return;
+            }
+          }
+          // All stages passed – show last one
+          const last = data[data.length - 1] as DBStage;
+          const [y, m, d] = last.date.split('-').map(Number);
+          setNextStage({
+            day: d.toString().padStart(2, '0'),
+            month: MONTHS[m - 1],
+            stageNumber: last.stage_number,
+            totalStages,
+            location: last.location,
+            locationFull: LOCATION_FULL[last.location] || last.location,
+            trackLayout: TRACK_LAYOUTS[last.track_id || ''] || last.track_id || last.location,
+            time: last.time?.split(' ')[0] || '08:00',
+            period: last.period || 'Diurna',
+          });
+        } else {
+          // Fallback to hardcoded season
+          useFallback();
+        }
+      } catch {
+        useFallback();
+      }
+    };
+
+    const useFallback = () => {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const totalStages = SEASON_2026_FALLBACK.length;
+
+      for (const s of SEASON_2026_FALLBACK) {
+        const [dayNum, monthNum] = s.raceDate.split('/').map(Number);
+        const raceDate = new Date(currentYear, monthNum - 1, dayNum, 23, 59, 59);
+        if (raceDate >= today) {
+          setNextStage({
+            day: s.day,
+            month: s.month,
+            stageNumber: s.stage_number,
+            totalStages,
+            location: s.location,
+            locationFull: LOCATION_FULL[s.location] || s.location,
+            trackLayout: TRACK_LAYOUTS[s.track_id] || s.track_id,
+            time: s.time.split(' ')[0],
+            period: s.period,
+          });
+          return;
+        }
+      }
+      // All done – show last
+      const last = SEASON_2026_FALLBACK[SEASON_2026_FALLBACK.length - 1];
+      setNextStage({
+        day: last.day,
+        month: last.month,
+        stageNumber: last.stage_number,
+        totalStages,
+        location: last.location,
+        locationFull: LOCATION_FULL[last.location] || last.location,
+        trackLayout: TRACK_LAYOUTS[last.track_id] || last.track_id,
+        time: last.time.split(' ')[0],
+        period: last.period,
+      });
+    };
+
+    resolve();
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -135,6 +290,16 @@ export function HeroPremium() {
 
     return () => ctx.revert();
   }, []);
+
+  // Derive display values
+  const stageNum = nextStage?.stageNumber.toString().padStart(2, '0') ?? '--';
+  const totalNum = nextStage?.totalStages.toString().padStart(2, '0') ?? '--';
+  const displayDay = nextStage?.day ?? '--';
+  const displayMonth = nextStage?.month ?? '---';
+  const displayLocation = nextStage?.location ?? '---';
+  const displayLocationFull = nextStage?.locationFull ?? '---';
+  const displayLayout = nextStage?.trackLayout ?? '---';
+  const displayTime = nextStage?.time ?? '--:--';
 
   return (
     <section
@@ -260,12 +425,12 @@ export function HeroPremium() {
             </div>
           </div>
 
-          {/* Right: Telemetry Panel */}
+          {/* Right: Telemetry Panel — NOW DYNAMIC */}
           <div
             ref={telemetryRef}
             className="hidden lg:block"
           >
-            {/* HIGH-IMPACT PROXIMA ETAPA PANEL (Substitutes Telemetry) */}
+            {/* HIGH-IMPACT PROXIMA ETAPA PANEL */}
             <div className="relative group perspective-1000 mt-12 lg:mt-0">
               {/* Outer Glow / Shadow */}
               <div className="absolute -inset-1 bg-gradient-to-r from-[#F5B500] to-[#2E6A9C] rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-pulse" />
@@ -279,44 +444,44 @@ export function HeroPremium() {
                   <div className="absolute left-0 bottom-0 w-64 h-64 bg-[#F5B500] rounded-full blur-[80px] -ml-20 -mb-20 mix-blend-screen" />
                 </div>
 
-                {/* Top Banner: Status */}
+                {/* Top Banner: Status — DYNAMIC */}
                 <div className="bg-gradient-to-r from-[#F5B500] to-[#d49d00] px-6 py-2 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
                     <span className="text-black font-technical font-bold tracking-widest text-sm uppercase">Próxima Etapa</span>
                   </div>
-                  <span className="text-black/80 font-black font-display tracking-wider">02 / 11</span>
+                  <span className="text-black/80 font-black font-display tracking-wider">{stageNum} / {totalNum}</span>
                 </div>
 
-                {/* Main Content */}
+                {/* Main Content — DYNAMIC */}
                 <div className="p-8 relative z-10 flex gap-6 items-center">
 
                   {/* Left: Huge Date Block */}
                   <div className="flex flex-col items-center justify-center border-r border-white/10 pr-6">
-                    <span className="text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 leading-none drop-shadow-lg">28</span>
-                    <span className="text-[#F5B500] font-technical tracking-widest uppercase text-xl mt-1">Mar</span>
+                    <span className="text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 leading-none drop-shadow-lg">{displayDay}</span>
+                    <span className="text-[#F5B500] font-technical tracking-widest uppercase text-xl mt-1">{displayMonth}</span>
                   </div>
 
                   {/* Right: Info details */}
                   <div className="flex-1 space-y-4">
                     <div>
                       <h3 className="text-3xl font-display text-white uppercase tracking-wider mb-1" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
-                        KNO <span className="text-[#2E6A9C]">Nova Odessa</span>
+                        {displayLocation} <span className="text-[#2E6A9C]">{displayLocation === 'KNO' ? 'Nova Odessa' : ''}</span>
                       </h3>
                       <p className="text-white/60 font-technical text-sm tracking-widest uppercase flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-[#F5B500]" />
-                        Kartódromo Nova Odessa
+                        {displayLocationFull}
                       </p>
                     </div>
 
                     <div className="flex gap-4">
                       <div className="bg-white/5 border border-white/10 rounded px-3 py-1.5 flex flex-col">
                         <span className="text-[#F5B500] text-xs font-technical uppercase">Layout</span>
-                        <span className="text-white font-bold text-sm">Traçado B (Inv)</span>
+                        <span className="text-white font-bold text-sm">{displayLayout}</span>
                       </div>
                       <div className="bg-white/5 border border-white/10 rounded px-3 py-1.5 flex flex-col">
                         <span className="text-[#F5B500] text-xs font-technical uppercase">Sessão</span>
-                        <span className="text-white font-bold text-sm">08:00 AM</span>
+                        <span className="text-white font-bold text-sm">{displayTime}</span>
                       </div>
                     </div>
                   </div>
