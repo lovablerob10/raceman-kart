@@ -1,47 +1,108 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { RealKartVideo } from '../components/RealKartVideo';
+import { Volume2, VolumeX } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const MAX_AUDIO_LOOPS = 3;
 
 /**
- * RealKartExperience - Seção imersiva com vídeo Remotion
- * Controlado pelo scroll do usuário com sync frame-a-frame
+ * RealKartExperience - Seção imersiva com vídeo de kart
  *
- * Audio behaviour:
- *   1. Starts muted (browser policy)
- *   2. When the title text scrolls away, audio unmutes
- *   3. After 3 video loops, audio mutes again automatically
- *   4. If the user scrolls back up (title reappears), counter resets
+ * Audio approach:
+ *   - A floating sound button appears when the title fades out
+ *   - User clicks to toggle sound ON (browser requires user gesture)
+ *   - After 3 video loops, sound auto-mutes
+ *   - Button stays visible so user can re-enable if desired
  */
 export function RealKartExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [showContent, setShowContent] = useState(true);
   const showContentRef = useRef(true);
 
   // ── Audio state ──
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const audioCompletedRef = useRef(false); // true after 3 loops, prevents re-enabling
+  const [audioOn, setAudioOn] = useState(false);
+  const [showSoundBtn, setShowSoundBtn] = useState(false);
+  const loopCountRef = useRef(0);
 
-  // Called by RealKartVideo each time the video loops
-  const handleLoopCount = useCallback((count: number) => {
-    if (count >= MAX_AUDIO_LOOPS) {
-      setAudioEnabled(false);
-      audioCompletedRef.current = true; // don't re-enable until user scrolls back up
+  // ── Toggle audio (user click = browser gesture = always works) ──
+  const toggleAudio = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (audioOn) {
+      // Turn OFF
+      video.muted = true;
+      video.playbackRate = 0.4;
+      setAudioOn(false);
+    } else {
+      // Turn ON — user clicked so browser allows unmute
+      video.muted = false;
+      video.playbackRate = 1.0;
+      loopCountRef.current = 0;
+      video.play().catch(() => {
+        // Fallback: re-mute if still blocked
+        video.muted = true;
+        video.playbackRate = 0.4;
+      });
+      setAudioOn(true);
+    }
+  }, [audioOn]);
+
+  // ── Loop detection → auto-mute after 3 loops ──
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let lastTime = 0;
+
+    const onTimeUpdate = () => {
+      if (!audioOn) return;
+      // Detect loop: current time jumped backwards
+      if (video.currentTime < lastTime - 1) {
+        loopCountRef.current += 1;
+        if (loopCountRef.current >= MAX_AUDIO_LOOPS) {
+          video.muted = true;
+          video.playbackRate = 0.4;
+          setAudioOn(false);
+        }
+      }
+      lastTime = video.currentTime;
+    };
+
+    video.addEventListener('timeupdate', onTimeUpdate);
+    return () => video.removeEventListener('timeupdate', onTimeUpdate);
+  }, [audioOn]);
+
+  // ── Video init ──
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleReady = () => {
+      video.playbackRate = 0.4;
+      video.play().catch(() => {});
+    };
+
+    if (video.readyState >= 1) {
+      handleReady();
+    } else {
+      video.addEventListener('loadedmetadata', handleReady);
+      return () => video.removeEventListener('loadedmetadata', handleReady);
     }
   }, []);
 
+  // ── GSAP scroll animations ──
   useEffect(() => {
     const section = sectionRef.current;
     const title = titleRef.current;
     if (!section || !title) return;
 
     const ctx = gsap.context(() => {
-      // Title animation (Initial)
+      // Title entrance animation
       gsap.fromTo(title,
         { opacity: 0, y: 100, scale: 0.9 },
         {
@@ -58,7 +119,7 @@ export function RealKartExperience() {
         }
       );
 
-      // Scroll trigger for content visibility (text fades out on scroll)
+      // Scroll trigger for content visibility
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
@@ -67,28 +128,19 @@ export function RealKartExperience() {
         onUpdate: (self) => {
           const progress = self.progress;
 
-          // Hide/show title based on progress
           if (progress > 0.05 && showContentRef.current) {
             gsap.to(title, { opacity: 0, y: -50, duration: 0.3 });
             setShowContent(false);
             showContentRef.current = false;
-
-            // Enable audio when title disappears (if not already completed 3 loops)
-            if (!audioCompletedRef.current) {
-              setAudioEnabled(true);
-            }
+            setShowSoundBtn(true);
           } else if (progress <= 0.05 && !showContentRef.current) {
             gsap.to(title, { opacity: 1, y: 0, duration: 0.3 });
             setShowContent(true);
             showContentRef.current = true;
-
-            // Title reappeared — mute and reset loop cycle
-            setAudioEnabled(false);
-            audioCompletedRef.current = false;
+            setShowSoundBtn(false);
           }
         }
       });
-
     }, section);
 
     return () => ctx.revert();
@@ -99,16 +151,29 @@ export function RealKartExperience() {
       ref={sectionRef}
       className="relative min-h-[200vh] bg-black"
     >
-      {/* Sticky Container - Holds everything that stays on screen during scroll */}
+      {/* Sticky Container */}
       <div className="sticky top-0 h-screen z-[5] overflow-hidden">
 
-        {/* 1. The Video Layer */}
-        <RealKartVideo
-          progress={0}
-          className="w-full h-full"
-          audioEnabled={audioEnabled}
-          onLoopCount={handleLoopCount}
-        />
+        {/* 1. Video Layer */}
+        <div className="absolute inset-0 overflow-hidden" style={{ background: '#000' }}>
+          <video
+            ref={videoRef}
+            src="/video/kart-video.mp4"
+            className="w-full h-full object-cover"
+            preload="auto"
+            muted
+            loop
+            playsInline
+            autoPlay
+          />
+          {/* Vignette */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, transparent 40%, rgba(0,0,0,0.6) 100%)'
+            }}
+          />
+        </div>
 
         {/* 2. Brightness Overlay */}
         <div
@@ -118,7 +183,7 @@ export function RealKartExperience() {
           }}
         />
 
-        {/* 3. Title/Intro Overlay (Fades out) */}
+        {/* 3. Title/Intro Overlay */}
         <div
           className={`absolute inset-0 z-10 flex items-center justify-center transition-all duration-700 ${showContent ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}
@@ -174,11 +239,42 @@ export function RealKartExperience() {
           </div>
         </div>
 
+        {/* 4. Floating Sound Toggle Button */}
+        <button
+          onClick={toggleAudio}
+          className={`absolute bottom-8 right-8 z-50 flex items-center gap-3 px-5 py-3 rounded-full border backdrop-blur-xl cursor-pointer transition-all duration-500 group ${
+            showSoundBtn
+              ? 'opacity-100 translate-y-0'
+              : 'opacity-0 translate-y-4 pointer-events-none'
+          } ${
+            audioOn
+              ? 'bg-[#F5B500]/30 border-[#F5B500]/60 shadow-[0_0_30px_rgba(245,181,0,0.4)]'
+              : 'bg-white/10 border-white/20 shadow-lg hover:bg-white/20 hover:border-white/40'
+          }`}
+          aria-label={audioOn ? 'Desativar som' : 'Ativar som do motor'}
+        >
+          {audioOn ? (
+            <Volume2 className="w-6 h-6 text-[#F5B500] animate-pulse" />
+          ) : (
+            <VolumeX className="w-6 h-6 text-white/80 group-hover:text-white" />
+          )}
+          <span
+            className={`text-sm font-black uppercase tracking-widest ${
+              audioOn ? 'text-[#F5B500]' : 'text-white/80 group-hover:text-white'
+            }`}
+            style={{ fontFamily: 'Teko, sans-serif' }}
+          >
+            {audioOn ? 'SOM LIGADO' : 'ATIVAR SOM'}
+          </span>
+          {!audioOn && (
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#F5B500] rounded-full animate-ping" />
+          )}
+        </button>
+
         {/* Dynamic Progress line */}
         <div className="absolute bottom-0 left-0 right-0 z-30">
           <div className="h-1 bg-gradient-to-r from-[#2E6A9C] via-[#F5B500] to-[#FFD700]" />
         </div>
-
 
       </div>
     </section>
