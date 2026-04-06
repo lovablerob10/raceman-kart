@@ -49,6 +49,14 @@ export function RealKartVideo({ className = '', audioEnabled = false, onLoopCoun
       video.muted = false;
       // Reset loop counter when audio is freshly enabled
       loopCountRef.current = 0;
+
+      // IMPORTANT: browsers may pause the video when unmuting during autoplay.
+      // We must call play() again and handle the rejection gracefully.
+      video.play().catch(() => {
+        // Browser blocked unmuted playback — re-mute and keep playing silently
+        video.muted = true;
+        video.play().catch(() => {});
+      });
     } else {
       video.muted = true;
     }

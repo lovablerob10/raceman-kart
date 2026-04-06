@@ -109,7 +109,7 @@ export function HeroPremium() {
           }
           // All stages passed – show last one
           const last = data[data.length - 1] as DBStage;
-          const [y, m, d] = last.date.split('-').map(Number);
+          const [_y, m, d] = last.date.split('-').map(Number);
           setNextStage({
             day: d.toString().padStart(2, '0'),
             month: MONTHS[m - 1],
