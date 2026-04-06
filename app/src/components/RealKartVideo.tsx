@@ -47,6 +47,7 @@ export function RealKartVideo({ className = '', audioEnabled = false, onLoopCoun
 
     if (audioEnabled) {
       video.muted = false;
+      video.playbackRate = 1.0; // full speed so audio sounds natural
       // Reset loop counter when audio is freshly enabled
       loopCountRef.current = 0;
 
@@ -55,10 +56,12 @@ export function RealKartVideo({ className = '', audioEnabled = false, onLoopCoun
       video.play().catch(() => {
         // Browser blocked unmuted playback — re-mute and keep playing silently
         video.muted = true;
+        video.playbackRate = 0.4;
         video.play().catch(() => {});
       });
     } else {
       video.muted = true;
+      video.playbackRate = 0.4; // back to cinematic slow-mo
     }
   }, [audioEnabled]);
 

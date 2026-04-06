@@ -68,7 +68,7 @@ export function RealKartExperience() {
           const progress = self.progress;
 
           // Hide/show title based on progress
-          if (progress > 0.15 && showContentRef.current) {
+          if (progress > 0.05 && showContentRef.current) {
             gsap.to(title, { opacity: 0, y: -50, duration: 0.3 });
             setShowContent(false);
             showContentRef.current = false;
@@ -77,7 +77,7 @@ export function RealKartExperience() {
             if (!audioCompletedRef.current) {
               setAudioEnabled(true);
             }
-          } else if (progress <= 0.15 && !showContentRef.current) {
+          } else if (progress <= 0.05 && !showContentRef.current) {
             gsap.to(title, { opacity: 1, y: 0, duration: 0.3 });
             setShowContent(true);
             showContentRef.current = true;
