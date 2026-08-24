@@ -106,7 +106,7 @@ export function Navigation() {
             {/* Documentos em PDF */}
             <div className="hidden lg:flex items-center gap-2">
               <a
-                href="/documentos/regulamento-raceman-2026.pdf"
+                href="/documentos/regulamento-raceman-2026.pdf?v=2"
                 download="Regulamento Raceman 2026.pdf"
                 className="nav-item whitespace-nowrap bg-transparent border-2 border-white/50 hover:border-[#F5B500] text-white px-3 py-2 text-sm font-display uppercase hover:bg-[#F5B500] hover:text-[#2D2D2D] transition-all duration-300 rounded skew-x-[-10deg]"
                 style={{ fontFamily: 'Teko, sans-serif' }}
@@ -169,7 +169,7 @@ export function Navigation() {
             </a>
           ))}
           <a
-            href="/documentos/regulamento-raceman-2026.pdf"
+            href="/documentos/regulamento-raceman-2026.pdf?v=2"
             download="Regulamento Raceman 2026.pdf"
             className="mt-8 bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 group transition-all"
             style={{ fontFamily: 'Teko, sans-serif' }}
