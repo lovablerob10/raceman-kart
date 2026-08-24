@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -67,6 +68,7 @@ export default function Inscricao2027() {
   const [showBottomCTA, setShowBottomCTA] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -141,11 +143,7 @@ export default function Inscricao2027() {
 
   const NavLinks = () => (
     <>
-      <button onClick={() => scrollTo('campeonato')} className="text-sm font-semibold tracking-wide hover:text-brand-yellow transition-colors">O CAMPEONATO</button>
-      <button onClick={() => scrollTo('investimento')} className="text-sm font-semibold tracking-wide hover:text-brand-yellow transition-colors">INVESTIMENTO</button>
-      <button onClick={() => scrollTo('premiacao')} className="text-sm font-semibold tracking-wide hover:text-brand-yellow transition-colors">PREMIAÇÃO</button>
-      <button onClick={() => scrollTo('kartodromos')} className="text-sm font-semibold tracking-wide hover:text-brand-yellow transition-colors">KARTÓDROMOS</button>
-      <button onClick={() => scrollTo('patrocinadores')} className="text-sm font-semibold tracking-wide hover:text-brand-yellow transition-colors">PATROCINADORES</button>
+      <button onClick={() => { setMobileMenuOpen(false); navigate('/'); }} className="text-sm font-semibold tracking-wide hover:text-brand-yellow transition-colors">PÁGINA INICIAL</button>
       <Button 
         onClick={() => scrollTo('inscricao')}
         className="bg-brand-yellow text-brand-navy hover:bg-brand-yellow/90 font-['Bricolage_Grotesque'] font-bold rounded-none uppercase text-xs tracking-wider"
