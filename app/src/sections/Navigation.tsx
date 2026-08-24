@@ -85,13 +85,13 @@ export function Navigation() {
             </a>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="nav-item relative px-4 py-2 text-white font-display uppercase tracking-wide text-lg lg:text-xl group overflow-hidden"
+                  className="nav-item relative px-2 py-2 text-white font-display uppercase tracking-wide text-lg xl:text-xl group overflow-hidden"
                   style={{ fontFamily: 'Teko, sans-serif' }}
                 >
                   <span className="relative z-10 transition-colors group-hover:text-[#F5B500]">
@@ -103,18 +103,29 @@ export function Navigation() {
               ))}
             </div>
 
-            {/* Regulation Button */}
-            <button
-              className="nav-item hidden md:block bg-transparent border-2 border-white/50 hover:border-[#F5B500] text-white px-6 py-2 text-sm font-display uppercase hover:bg-[#F5B500] hover:text-[#2D2D2D] transition-all duration-300 rounded skew-x-[-10deg]"
-              style={{ fontFamily: 'Teko, sans-serif' }}
-              onClick={() => alert('Regulamento em breve!')}
-            >
-              <span className="block skew-x-[10deg]">Regulamento</span>
-            </button>
+            {/* Documentos em PDF */}
+            <div className="hidden lg:flex items-center gap-2">
+              <a
+                href="/documentos/regulamento-raceman-2026.pdf"
+                download="Regulamento Raceman 2026.pdf"
+                className="nav-item whitespace-nowrap bg-transparent border-2 border-white/50 hover:border-[#F5B500] text-white px-3 py-2 text-sm font-display uppercase hover:bg-[#F5B500] hover:text-[#2D2D2D] transition-all duration-300 rounded skew-x-[-10deg]"
+                style={{ fontFamily: 'Teko, sans-serif' }}
+              >
+                <span className="block skew-x-[10deg]">Regulamento</span>
+              </a>
+              <a
+                href="/documentos/classificacao-2026-etapa-5.pdf"
+                download="Classificacao Raceman 2026 - Etapa 5.pdf"
+                className="nav-item whitespace-nowrap bg-transparent border-2 border-white/50 hover:border-[#F5B500] text-white px-3 py-2 text-sm font-display uppercase hover:bg-[#F5B500] hover:text-[#2D2D2D] transition-all duration-300 rounded skew-x-[-10deg]"
+                style={{ fontFamily: 'Teko, sans-serif' }}
+              >
+                <span className="block skew-x-[10deg]">PDF Classificação</span>
+              </a>
+            </div>
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden nav-item text-white p-2"
+              className="lg:hidden nav-item text-white p-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -134,7 +145,7 @@ export function Navigation() {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 bg-[#2D2D2D]/98 backdrop-blur-lg transition-all duration-500 md:hidden ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        className={`fixed inset-0 z-40 bg-[#2D2D2D]/98 backdrop-blur-lg transition-all duration-500 lg:hidden ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
       >
         <div className="flex flex-col items-center justify-center h-full space-y-6 px-8 text-center">
@@ -157,13 +168,24 @@ export function Navigation() {
               {link.label}
             </a>
           ))}
-          <button
+          <a
+            href="/documentos/regulamento-raceman-2026.pdf"
+            download="Regulamento Raceman 2026.pdf"
             className="mt-8 bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 group transition-all"
             style={{ fontFamily: 'Teko, sans-serif' }}
-            onClick={() => { alert('Regulamento em breve!'); setIsMobileMenuOpen(false); }}
+            onClick={() => setIsMobileMenuOpen(false)}
           >
             Regulamento
-          </button>
+          </a>
+          <a
+            href="/documentos/classificacao-2026-etapa-5.pdf"
+            download="Classificacao Raceman 2026 - Etapa 5.pdf"
+            className="bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 group transition-all"
+            style={{ fontFamily: 'Teko, sans-serif' }}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            PDF Classificação
+          </a>
         </div>
 
         {/* Decorative elements */}
