@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react';
 import App from './App';
 import { AuthProvider } from './hooks/useAuth';
 import { ProtectedRoute } from './admin/components/ProtectedRoute';
+import { Toaster } from 'sonner';
 
 // Error Boundary Component
 function ErrorPage() {
@@ -45,6 +46,7 @@ const AdminSettings = lazy(() => import('./admin/pages/Settings'));
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
 const AdminSponsors = lazy(() => import('./admin/pages/Sponsors'));
+const Inscricao2027 = lazy(() => import('./pages/Inscricao2027'));
 
 import PilotLogin from './pages/PilotLogin';
 import PilotDashboard from './pages/PilotDashboard';
@@ -65,6 +67,15 @@ export const router = createBrowserRouter([
     {
         path: '/',
         element: <App />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: '/inscricao2027',
+        element: (
+            <Suspense fallback={<AdminLoader />}>
+                <Inscricao2027 />
+            </Suspense>
+        ),
         errorElement: <ErrorPage />,
     },
     {
@@ -177,6 +188,7 @@ export function AppRouter() {
     return (
         <AuthProvider>
             <RouterProvider router={router} />
+            <Toaster position="top-center" richColors />
         </AuthProvider>
     );
 }

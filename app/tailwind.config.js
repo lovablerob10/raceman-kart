@@ -53,6 +53,8 @@ module.exports = {
           yellow: "#F5B500",
           dark: "#2D2D2D",
           white: "#FFFFFF",
+          navy: "#071D3B",
+          graphite: "#1C1C1C",
         },
       },
       borderRadius: {
