@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const navLinks = [
   { label: 'Calendário', href: '#calendar' },
@@ -9,10 +10,12 @@ const navLinks = [
   { label: 'Campeões', href: '#champions' },
   { label: 'Instagram', href: '#instagram-feed' },
   { label: 'Patrocinadores', href: '#sponsors' },
+  { label: 'Inscrição', href: '/inscricao2027' },
 ];
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -42,6 +45,12 @@ export function Navigation() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    // Links que nao sao ancora (#) sao rotas: navega em vez de rolar a pagina
+    if (!href.startsWith('#')) {
+      setIsMobileMenuOpen(false);
+      navigate(href);
+      return;
+    }
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
