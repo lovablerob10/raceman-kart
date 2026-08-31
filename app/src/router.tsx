@@ -48,6 +48,25 @@ const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
 const AdminSponsors = lazy(() => import('./admin/pages/Sponsors'));
 const Inscricao2027 = lazy(() => import('./pages/Inscricao2027'));
 
+// Paginas de secao: cada item do menu tem url propria. As secoes continuam
+// existindo na home, que segue sendo a pagina longa.
+const SecaoPage = lazy(() => import('./pages/SecaoPage'));
+const SecCalendar = lazy(() => import('./sections/Calendar').then(m => ({ default: m.Calendar })));
+const SecDrivers = lazy(() => import('./sections/Drivers').then(m => ({ default: m.Drivers })));
+const SecStandings = lazy(() => import('./sections/Standings').then(m => ({ default: m.Standings })));
+const SecChampions = lazy(() => import('./sections/Champions').then(m => ({ default: m.Champions })));
+const SecInstagram = lazy(() => import('./sections/InstagramFeed').then(m => ({ default: m.InstagramFeed })));
+const SecSponsors = lazy(() => import('./sections/Sponsors').then(m => ({ default: m.Sponsors })));
+
+const paginasDeSecao = [
+    { path: '/calendario', Secao: SecCalendar },
+    { path: '/categorias', Secao: SecDrivers },
+    { path: '/classificacao', Secao: SecStandings },
+    { path: '/campeoes', Secao: SecChampions },
+    { path: '/instagram', Secao: SecInstagram },
+    { path: '/patrocinadores', Secao: SecSponsors },
+];
+
 import PilotLogin from './pages/PilotLogin';
 import PilotDashboard from './pages/PilotDashboard';
 
@@ -78,6 +97,17 @@ export const router = createBrowserRouter([
         ),
         errorElement: <ErrorPage />,
     },
+    ...paginasDeSecao.map(({ path, Secao }) => ({
+        path,
+        element: (
+            <Suspense fallback={<AdminLoader />}>
+                <SecaoPage>
+                    <Secao />
+                </SecaoPage>
+            </Suspense>
+        ),
+        errorElement: <ErrorPage />,
+    })),
     {
         path: '/pilot/login',
         element: <PilotLogin />,

@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { getClassificacaoAtual, CLASSIFICACAO_FALLBACK } from '../lib/documentos';
 
 const navLinks = [
-  { label: 'Calendário', href: '#calendar' },
-  { label: 'Categorias', href: '#categories' },
-  { label: 'Classificação', href: '#standings' },
-  { label: 'Campeões', href: '#champions' },
-  { label: 'Instagram', href: '#instagram-feed' },
-  { label: 'Patrocinadores', href: '#sponsors' },
+  { label: 'Calendário', href: '/calendario' },
+  { label: 'Categorias', href: '/categorias' },
+  { label: 'Classificação', href: '/classificacao' },
+  { label: 'Campeões', href: '/campeoes' },
+  { label: 'Instagram', href: '/instagram' },
+  { label: 'Patrocinadores', href: '/patrocinadores' },
   { label: 'Inscrição', href: '/inscricao2027' },
 ];
 
