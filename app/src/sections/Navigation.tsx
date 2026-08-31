@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getClassificacaoAtual, CLASSIFICACAO_FALLBACK } from '../lib/documentos';
 
 const navLinks = [
   { label: 'Calendário', href: '#calendar' },
@@ -16,6 +17,18 @@ const navLinks = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  // O PDF da classificacao e trocado pelo painel admin, entao a url vem do
+  // Storage. O arquivo embutido no build fica como reserva: se a consulta
+  // falhar, o botao continua funcionando com a ultima versao publicada.
+  const [classificacaoUrl, setClassificacaoUrl] = useState(CLASSIFICACAO_FALLBACK);
+
+  useEffect(() => {
+    let ativo = true;
+    getClassificacaoAtual()
+      .then((doc) => { if (ativo && doc) setClassificacaoUrl(doc.url); })
+      .catch(() => { /* mantem o fallback embutido */ });
+    return () => { ativo = false; };
+  }, []);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -114,8 +127,10 @@ export function Navigation() {
                 <span className="block skew-x-[10deg]">Regulamento</span>
               </a>
               <a
-                href="/documentos/classificacao-2026-etapa-5.pdf"
-                download="Classificacao Raceman 2026 - Etapa 5.pdf"
+                href={classificacaoUrl}
+                download="Classificacao Raceman Kart.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="nav-item whitespace-nowrap bg-transparent border-2 border-white/50 hover:border-[#F5B500] text-white px-3 py-2 text-sm font-display uppercase hover:bg-[#F5B500] hover:text-[#2D2D2D] transition-all duration-300 rounded skew-x-[-10deg]"
                 style={{ fontFamily: 'Teko, sans-serif' }}
               >
@@ -178,8 +193,10 @@ export function Navigation() {
             Regulamento
           </a>
           <a
-            href="/documentos/classificacao-2026-etapa-5.pdf"
-            download="Classificacao Raceman 2026 - Etapa 5.pdf"
+            href={classificacaoUrl}
+            download="Classificacao Raceman Kart.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 group transition-all"
             style={{ fontFamily: 'Teko, sans-serif' }}
             onClick={() => setIsMobileMenuOpen(false)}

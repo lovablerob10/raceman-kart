@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Trophy, Medal, Award, Save, Loader2, Plus, Trash2, X, UserPlus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { UploadClassificacaoPdf } from '../components/UploadClassificacaoPdf';
 
 interface Pilot {
     id: string;
@@ -334,6 +335,8 @@ export function Standings() {
             {/* Header with Save Button */}
             <div className="flex items-center justify-between">
                 <p className="text-gray-500">Edite a pontuação dos pilotos</p>
+                <div className="flex items-center gap-3">
+                <UploadClassificacaoPdf />
                 <button
                     onClick={handleSave}
                     disabled={!hasChanges || saving}
@@ -347,6 +350,7 @@ export function Standings() {
                         {saving ? 'Salvando...' : 'Salvar Alterações'}
                     </span>
                 </button>
+                </div>
             </div>
 
             {/* Podium Preview */}
