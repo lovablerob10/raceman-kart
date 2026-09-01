@@ -30,6 +30,15 @@ export function Navigation() {
     return () => { ativo = false; };
   }, []);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // A area do piloto ainda nao existe. O botao fica visivel para anunciar,
+  // e ao ser clicado avisa que esta por vir em vez de nao fazer nada.
+  const [avisoPiloto, setAvisoPiloto] = useState(false);
+
+  const clicarAreaPiloto = () => {
+    setAvisoPiloto(true);
+    setIsMobileMenuOpen(false);
+    setTimeout(() => setAvisoPiloto(false), 2200);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,7 +107,7 @@ export function Navigation() {
             </a>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-1">
+            <div className="hidden xl:flex items-center space-x-1">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
@@ -116,8 +125,20 @@ export function Navigation() {
               ))}
             </div>
 
-            {/* Documentos em PDF */}
-            <div className="hidden lg:flex items-center gap-2">
+            {/* Area do Piloto (em construcao) */}
+            <button
+              onClick={clicarAreaPiloto}
+              title="Em breve"
+              className="hidden xl:flex items-center whitespace-nowrap bg-[#F5B500] hover:bg-[#ffc633] text-[#2D2D2D] px-4 py-2 text-sm font-display uppercase font-bold transition-all duration-300 rounded skew-x-[-10deg] shadow-lg shadow-[#F5B500]/20 mr-2"
+              style={{ fontFamily: 'Teko, sans-serif' }}
+            >
+              <span className="block skew-x-[10deg] tracking-wide">
+                {avisoPiloto ? 'Em breve' : 'Área do Piloto'}
+              </span>
+            </button>
+
+ .             {/* Documentos em PDF */}
+            <div className="hidden xl:flex items-center gap-2">
               <a
                 href="/documentos/regulamento-raceman-2026.pdf?v=2"
                 download="Regulamento Raceman 2026.pdf"
@@ -140,7 +161,7 @@ export function Navigation() {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden nav-item text-white p-2"
+              className="xl:hidden nav-item text-white p-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -160,7 +181,7 @@ export function Navigation() {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 bg-[#2D2D2D]/98 backdrop-blur-lg transition-all duration-500 lg:hidden ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        className={`fixed inset-0 z-40 bg-[#2D2D2D]/98 backdrop-blur-lg transition-all duration-500 xl:hidden ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
       >
         <div className="flex flex-col items-center justify-center h-full space-y-6 px-8 text-center">
@@ -183,7 +204,15 @@ export function Navigation() {
               {link.label}
             </a>
           ))}
-          <a
+          <button
+            onClick={clicarAreaPiloto}
+            className="mt-8 bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 transition-all"
+            style={{ fontFamily: 'Teko, sans-serif' }}
+          >
+            {avisoPiloto ? 'Em breve' : 'Área do Piloto'}
+          </button>
+
+ .           <a
             href="/documentos/regulamento-raceman-2026.pdf?v=2"
             download="Regulamento Raceman 2026.pdf"
             className="mt-8 bg-[#F5B500] text-[#2D2D2D] px-8 py-4 text-xl font-bold italic uppercase rounded flex items-center gap-2 group transition-all"
