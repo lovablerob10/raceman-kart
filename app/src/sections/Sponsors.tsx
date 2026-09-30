@@ -6,6 +6,11 @@ import { supabase } from '../lib/supabase';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Contato comercial da diretoria. Mesmo numero usado na pagina de inscricao.
+const WHATSAPP_PATROCINIO =
+  'https://wa.me/5511999556595?text=' +
+  encodeURIComponent('Olá! Tenho interesse em ser patrocinador do RKT Raceman Kart.');
+
 interface Sponsor {
   id: string;
   name: string;
@@ -221,15 +226,18 @@ export function Sponsors() {
               </div>
 
               <div className="flex flex-col items-center gap-6">
-                <button
-                  className="group/btn relative px-12 py-5 bg-[#F5B500] text-black font-display font-black uppercase text-2xl italic tracking-widest rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-[0_20px_40px_rgba(245,181,0,0.4)] overflow-hidden"
+                <a
+                  href={WHATSAPP_PATROCINIO}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/btn relative inline-block px-12 py-5 bg-[#F5B500] text-black font-display font-black uppercase text-2xl italic tracking-widest rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-[0_20px_40px_rgba(245,181,0,0.4)] overflow-hidden"
                   style={{ fontFamily: 'Teko, sans-serif' }}
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     SEJA UM PATROCINADOR <Flag size={24} />
                   </span>
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
-                </button>
+                </a>
                 <div className="flex items-center gap-2 text-white/30 text-xs font-bold uppercase tracking-widest">
                   <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
                   CAPACIDADE LIMITADA
